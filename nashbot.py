@@ -35,18 +35,36 @@ async def on_message(message):
         'hi??',
         'u called?',
         'mmm im responding',
-        'joe mama OOOOOHHHHHH-',
+        'yo mama OOOOOHHHHHH-',
         'this message is better than 6/10 hi response options',
         'howdus :sunflower:',
         'hello. but at what cost...',
         'hi urself bucko',
         '...are u talking... to me? h-hello?',
         'greetings mortal',
+        'honk. yes thats right, i speak clown now',
+        'do u have a minute 2 talk abt our lord & saviour jesus christ?',
+        'hewwo... :point_right: :point_left:',
+        'beep boop my brain is soup. jk i dont have a brain',
+        'this is an extra super rare response!!!!! or maybe its the most common one. youll never know',
+        'salutations, etc.',
+        'd-did you hear that? a-! ah-!! a g-g-g-ghost!!??!!',
+        'congratulations!! you win!! enter your card details and national insurance no. to continue :)',
+        'why hello there my strangely fleshy companion what can i do for u on this fine day',
+        'error 404 hi response not found. suggestion: give the bot a raise',
+        'greetings... fRoM tHe wOrLd oF tOmOrRoW!!!! (spooky)',
+        'my, what a phenomenal greeting. however will i top that',
     ]
 
     if message.content == 'hi':
         response = random.choice(hi_quotes)
         await message.channel.send(response)
+    elif message.content == 'high five':
+        await message.channel.send('u gots it pardner :hand_splayed: :cowboy:')
+    elif message.content == 'pingus':
+        await message.channel.send('pongus. or possibly chongus. only time will tell...')
+    elif message.content == 'nashbot':
+        await message.channel.send('SILENCE!! do not speak that word in vain, mortal. didnt you see the trademark??')
 
 
 @client.event

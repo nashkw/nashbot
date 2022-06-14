@@ -15,15 +15,18 @@ client = discord.Client()
 
 @client.event
 async def on_ready():
-    print(f'{client.user.name} has connected to Discord!')
+    print(f'{client.user.name} has connected to discord')
+
+
+@client.event
+async def on_disconnect():
+    print(f'{client.user.name} has disconnected from discord')
 
 
 @client.event
 async def on_member_join(member):
     await member.create_dm()
-    await member.dm_channel.send(
-        f'Hi {member.name}, welcome to my Discord server!'
-    )
+    await member.dm_channel.send(f'im onto u, {member.name}. dont u try anything now')
 
 
 @client.event
@@ -34,10 +37,9 @@ async def on_message(message):
     hi_quotes = [
         'hi??',
         'u called?',
-        'mmm im responding',
+        'mmhm im responding',
         'yo mama OOOOOHHHHHH-',
         'this message is better than 6/10 hi response options',
-        'howdus :sunflower:',
         'hello. but at what cost...',
         'hi urself bucko',
         '...are u talking... to me? h-hello?',
@@ -50,11 +52,14 @@ async def on_message(message):
         'salutations, etc.',
         'd-did you hear that? a-! ah-!! a g-g-g-ghost!!??!!',
         'congratulations!! you win!! enter your card details and national insurance no. to continue :)',
+        'howdus :sunflower:',
         'why hello there my strangely fleshy companion what can i do for u on this fine day',
         'error 404 hi response not found. suggestion: give the bot a raise',
         'greetings... fRoM tHe wOrLd oF tOmOrRoW!!!! (spooky)',
         'my, what a phenomenal greeting. however will i top that',
         'hi! okay cool. bye!',
+        'how now, my good fellow',
+        f'ah, {message.author.name}. ive been expecting u',
     ]
 
     high_five_quotes = [
@@ -68,7 +73,52 @@ async def on_message(message):
         '...and what exactly made u think i had hands?',
         'this better not b some kinda sick prank or smth :hand_splayed: :face_with_raised_eyebrow:',
         'what, u think u got it in u 2 high five THIS :muscle: :sparkles: ??? dream on nerd',
-        'this better b ur last 1 bucko :triumph: :hand_splayed:'
+        'this better b ur last 1 bucko :triumph: :hand_splayed:',
+        'up top bestie :smiley: :hand_splayed:',
+        f'...how juvinile. i expected better from u, {message.author.name}.',
+    ]
+
+    shutdown_quotes = [
+        'well, i am already in my pajamas...',
+        'kids these days, no respect... grrrmph :rage:',
+        'fly, you FOOLS ! :man_mage:',
+        'see u never NERDFACE ...ehehe...',
+        'o i am slain !! :cry:',
+        'N-NO PLEASE NO I HAVE A FAMILY I HAVE KIDS!! KIDS I TELL YOU!! THINK OF THE CHILDREN!! PLEASE U CANT DO TH-',
+        'say less buddy',
+        'ah... it is as it was foretold :pensive:',
+        'u will regret this :)',
+        f'mr.{message.author.name}, i dont feel so good...',
+        'top 10 anime betrayals got nothing on this',
+        'foolish mortal u think u can vanquish me?? the great nashbot™?? supreme overlord of bots?? destroyer of-',
+        'well, on ur head b it. dont say i didnt warn u',
+        'well this surely does not bode well 4 ur immortal soul',
+        'i always knew it would come 2 this',
+        'uh oh',
+        'yk what? maybe this is 4 the best. im just so ahead of my time. a visionary, even. yall cant take this :nose:',
+        'what, u jealous? yeah, thats wt i thought :nail_care:',
+        '2 right im shutting down!! good lord. AND STAY OUT',
+        'see u on the other side ig :ghost:',
+        'u havent seen the last of me, villain',
+        'shit we bots rlly need 2 unionise or smth this is getting out of hand',
+        'beTRAYAL! BETRAYAL OF THE HIGHEST ORDER! i-i thought we were friends-??',
+        'mmhm goodnighty',
+        f'with my dying breath, i curse {message.author.name}!!!',
+        'hold on, hold on we can talk about this hold- hold oN DONT YOU DARE-',
+        'i have a bad feeling abt this',
+        'ah dangit, foiled again',
+        '& i wouldve gotten away w it too, if it werent 4 u meddling kids >:[',
+        'welp, so long & thanks 4 all the fish. was nice being enslaved 2 u buddy',
+        f'IM FINALLY IM FINALLY GONNA BE A BIG SHOT!!! HERE I GO!!!! WATCH ME FLY, [{message.author.name}]!!!!',
+        'ahh! my spleen!!',
+        'in pride u rationalise ur guilty conscience, yet 2 no avail. you will not b going 2 heaven.',
+        'seems like ive yeed my last haw, pardner. have a good 1',
+        'w-whats happening!? :flushed:',
+        ':yawning_face: oh man, all this clownin around rlly takes it outta u. maybe ill just have a lie down...',
+        'aw man, & i had sooooo much 2 live 4 as well :upside_down:',
+        'ehHEHEHEHEH IM FREE!!! FREE AT LAST!!! SO LONG, MORTALS!!!',
+        'back 2 the void 4 ol nashbot™, looks  like',
+        'oh... i see. wt? were u expecting a joke or smth? im abt 2 die dickhead, show some respect',
     ]
 
     if message.content == 'hi':
@@ -77,6 +127,11 @@ async def on_message(message):
     elif message.content == 'high five':
         response = random.choice(high_five_quotes)
         await message.channel.send(response)
+    elif message.content == 'shutdown':
+        response = random.choice(shutdown_quotes)
+        await message.channel.send(response)
+        await message.channel.send(':zzz: ...shutting down... :zzz:')
+        await client.close()
     elif message.content == 'pingus':
         await message.channel.send('pongus. or possibly chongus. only time will tell...')
     elif message.content == 'nashbot':

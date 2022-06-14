@@ -54,13 +54,29 @@ async def on_message(message):
         'error 404 hi response not found. suggestion: give the bot a raise',
         'greetings... fRoM tHe wOrLd oF tOmOrRoW!!!! (spooky)',
         'my, what a phenomenal greeting. however will i top that',
+        'hi! okay cool. bye!',
+    ]
+
+    high_five_quotes = [
+        'u gots it pardner :hand_splayed: :cowboy:',
+        'oh go on then :expressionless: :hand_splayed:',
+        'ill do u one better... HIGH TEN MOTHERFUCKER :hand_splayed: :sunglasses: :hand_splayed:',
+        'ah... a high five... as is my duty... :hand_splayed: :pensive:',
+        'm-me?? a-a high f-five?? well... if ur sure... :flushed: :hand_splayed:',
+        'of course!! one high five comin right up 4 my fav mortal :hand_splayed: :innocent:',
+        'down low :hand_splayed: SIKE TOO SLOW suffer fool',
+        '...and what exactly made u think i had hands?',
+        'this better not b some kinda sick prank or smth :hand_splayed: :face_with_raised_eyebrow:',
+        'what, u think u got it in u 2 high five THIS :muscle: :sparkles: ??? dream on nerd',
+        'this better b ur last 1 bucko :triumph: :hand_splayed:'
     ]
 
     if message.content == 'hi':
         response = random.choice(hi_quotes)
         await message.channel.send(response)
     elif message.content == 'high five':
-        await message.channel.send('u gots it pardner :hand_splayed: :cowboy:')
+        response = random.choice(high_five_quotes)
+        await message.channel.send(response)
     elif message.content == 'pingus':
         await message.channel.send('pongus. or possibly chongus. only time will tell...')
     elif message.content == 'nashbot':

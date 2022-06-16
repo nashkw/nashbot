@@ -1,39 +1,28 @@
 # nashbot.py
 import os
-
 import discord
 from dotenv import load_dotenv
-
 import random
+from discord.ext import commands
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-GUILD = os.getenv('DISCORD_GUILD')
-
+bot = commands.Bot(command_prefix='')
 client = discord.Client()
 
 
-@client.event
+@bot.event
 async def on_ready():
-    print(f'{client.user.name} has connected to discord')
+    print(f'{bot.user.name} has connected to discord')
 
 
-@client.event
+@bot.event
 async def on_disconnect():
-    print(f'{client.user.name} has disconnected from discord')
+    print(f'{bot.user.name} has disconnected from discord')
 
 
-@client.event
-async def on_member_join(member):
-    await member.create_dm()
-    await member.dm_channel.send(f'im onto u, {member.name}. dont u try anything now')
-
-
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
-
+@bot.command(name='hi', help='greet the bot')
+async def hi(ctx):
     hi_quotes = [
         'hi??',
         'u called?',
@@ -59,10 +48,15 @@ async def on_message(message):
         'my, what a phenomenal greeting. however will i top that',
         'hi! okay cool. bye!',
         'how now, my good fellow',
-        f'ah, {message.author.name}. ive been expecting u',
+        f'ah, {ctx.message.author.name}. ive been expecting u',
+        'wazup wazup wazup',
     ]
+    await ctx.send(random.choice(hi_quotes))
 
-    high_five_quotes = [
+
+@bot.command(name='highfive', help='ask the bot to give u a high five')
+async def highfive(ctx):
+    highfive_quotes = [
         'u gots it pardner :hand_splayed: :cowboy:',
         'oh go on then :expressionless: :hand_splayed:',
         'ill do u one better... HIGH TEN MOTHERFUCKER :hand_splayed: :sunglasses: :hand_splayed:',
@@ -75,9 +69,13 @@ async def on_message(message):
         'what, u think u got it in u 2 high five THIS :muscle: :sparkles: ??? dream on nerd',
         'this better b ur last 1 bucko :triumph: :hand_splayed:',
         'up top bestie :smiley: :hand_splayed:',
-        f'...how juvinile. i expected better from u, {message.author.name}.',
+        f'...how juvinile. i expected better from u, {ctx.message.author.name}.',
     ]
+    await ctx.send(random.choice(highfive_quotes))
 
+
+@bot.command(name='shutdown', help='shut down the bot')
+async def shutdown(ctx):
     shutdown_quotes = [
         'well, i am already in my pajamas...',
         'kids these days, no respect... grrrmph :rage:',
@@ -88,7 +86,7 @@ async def on_message(message):
         'say less buddy',
         'ah... it is as it was foretold :pensive:',
         'u will regret this :)',
-        f'mr.{message.author.name}, i dont feel so good...',
+        f'mr.{ctx.message.author.name}, i dont feel so good...',
         'top 10 anime betrayals got nothing on this',
         'foolish mortal u think u can vanquish me?? the great nashbot™?? supreme overlord of bots?? destroyer of-',
         'well, on ur head b it. dont say i didnt warn u',
@@ -103,13 +101,13 @@ async def on_message(message):
         'shit we bots rlly need 2 unionise or smth this is getting out of hand',
         'beTRAYAL! BETRAYAL OF THE HIGHEST ORDER! i-i thought we were friends-??',
         'mmhm goodnighty',
-        f'with my dying breath, i curse {message.author.name}!!!',
+        f'with my dying breath, i curse {ctx.message.author.name}!!!',
         'hold on, hold on we can talk about this hold- hold oN DONT YOU DARE-',
         'i have a bad feeling abt this',
         'ah dangit, foiled again',
         '& i wouldve gotten away w it too, if it werent 4 u meddling kids >:[',
         'welp, so long & thanks 4 all the fish. was nice being enslaved 2 u buddy',
-        f'IM FINALLY IM FINALLY GONNA BE A BIG SHOT!!! HERE I GO!!!! WATCH ME FLY, [{message.author.name}]!!!!',
+        f'IM FINALLY IM FINALLY GONNA BE A BIG SHOT!!! HERE I GO!!!! WATCH ME FLY, [{ctx.message.author.name}]!!!!',
         'ahh! my spleen!!',
         'in pride u rationalise ur guilty conscience, yet 2 no avail. you will not b going 2 heaven.',
         'seems like ive yeed my last haw, pardner. have a good 1',
@@ -120,25 +118,12 @@ async def on_message(message):
         'back 2 the void 4 ol nashbot™, looks  like',
         'oh... i see. wt? were u expecting a joke or smth? im abt 2 die dickhead, show some respect',
     ]
-
-    if message.content == 'hi':
-        response = random.choice(hi_quotes)
-        await message.channel.send(response)
-    elif message.content == 'high five':
-        response = random.choice(high_five_quotes)
-        await message.channel.send(response)
-    elif message.content == 'shutdown':
-        response = random.choice(shutdown_quotes)
-        await message.channel.send(response)
-        await message.channel.send(':zzz: ...shutting down... :zzz:')
-        await client.close()
-    elif message.content == 'pingus':
-        await message.channel.send('pongus. or possibly chongus. only time will tell...')
-    elif message.content == 'nashbot':
-        await message.channel.send('SILENCE!! do not speak that word in vain, mortal. didnt you see the trademark??')
+    await ctx.send(random.choice(shutdown_quotes))
+    await ctx.send(':zzz: ...shutting down... :zzz:')
+    await bot.close()
 
 
-@client.event
+@bot.event
 async def on_error(event, *args, **kwargs):
     with open('err.log', 'a') as f:
         if event == 'on_message':
@@ -146,4 +131,4 @@ async def on_error(event, *args, **kwargs):
         else:
             raise
 
-client.run(TOKEN)
+bot.run(TOKEN)

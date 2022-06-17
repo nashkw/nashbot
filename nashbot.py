@@ -23,34 +23,38 @@ async def on_disconnect():
     print(f'{bot.user.name} has disconnected from discord')
 
 
+async def read_quote(ctx, quote) :
+    if isinstance(quote, tuple):
+        for line in quote:
+            await ctx.send(line)
+            await asyncio.sleep(1)
+    else:
+        await ctx.send(quote)
+
+
 @bot.command(name='hi', help='greet the bot')
 async def hi(ctx):
     quotes = await get_hi_quotes(ctx)
-    await ctx.send(random.choice(quotes))
+    await read_quote(ctx, random.choice(quotes))
 
 
 @bot.command(name='highfive', help='ask the bot to give u a high five')
 async def highfive(ctx):
     quotes = await get_highfive_quotes(ctx)
-    await ctx.send(random.choice(quotes))
+    await read_quote(ctx, random.choice(quotes))
 
 
 @bot.command(name='shutdown', help='shut down the bot')
 async def shutdown(ctx):
     quotes = await get_shutdown_quotes(ctx)
-    await ctx.send(random.choice(quotes))
-    await asyncio.sleep(1)
-    await ctx.send(':zzz: ...shutting down... :zzz:')
+    await read_quote(ctx, (random.choice(quotes), ':zzz: ...shutting down... :zzz:'))
     await bot.close()
 
 
 @bot.command(name='joke', help='ask the bot to tell u a joke')
 async def joke(ctx):
     quotes = await get_joke_quotes(ctx)
-    response = random.choice(quotes)
-    await ctx.send(response[0])
-    await asyncio.sleep(1)
-    await ctx.send(response[1])
+    await read_quote(ctx, random.choice(quotes))
 
 
 @bot.event

@@ -9,8 +9,8 @@ from quotes import *
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-bot = commands.Bot(command_prefix='')
-client = discord.Client()
+intents = discord.Intents.default()
+bot = commands.Bot(command_prefix='', intents=intents)
 
 
 @bot.event
@@ -56,9 +56,6 @@ async def joke(ctx):
 @bot.event
 async def on_error(event, *args, **kwargs):
     with open('err.log', 'a') as f:
-        if event == 'on_message':
-            f.write(f'Unhandled message: {args[0]}\n\n')
-        else:
-            raise
+        f.write(f'Unhandled error: {args[0]}\n\n')
 
 bot.run(TOKEN)

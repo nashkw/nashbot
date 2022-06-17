@@ -63,7 +63,7 @@ async def get_shutdown_quotes(ctx):
         'say less buddy',
         'ah... it is as it was foretold :pensive:',
         'u will regret this :)',
-        f'mr.{ctx.message.author.name}, i dont feel so good...',
+        f'mr. {ctx.message.author.name}, i dont feel so good...',
         'top 10 anime betrayals got nothing on this',
         'foolish mortal u think u can vanquish me?? the great nashbot™?? supreme overlord of bots?? destroyer of-',
         'well, on ur head b it. dont say i didnt warn u',

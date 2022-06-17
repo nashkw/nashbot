@@ -358,3 +358,30 @@ async def get_joke_quotes(ctx):
         ),
     ]
     return joke_quotes
+
+
+async def get_kkjoke_quotes(ctx):
+    kkjoke_quotes = [
+        (
+            'joe',
+            'joe proceeds 2 break into tears. '
+            'his grandmas alzheimers has progressed 2 the point where she no longer remembers him',
+        ),
+        (
+            'lettuce',
+            'lettuce in & youll find out ;)',
+        ),
+        (
+          'tank',
+          'youre welcome :)',
+        ),
+        (
+          'nobel',
+          'nobel... thats why i knocked',
+        ),
+        (
+          'luke',
+          'luke thru the peephole dummy thats why its there :skull:',
+        ),
+    ]
+    return kkjoke_quotes

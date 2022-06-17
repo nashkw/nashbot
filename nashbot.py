@@ -57,6 +57,24 @@ async def joke(ctx):
     await read_quote(ctx, random.choice(quotes))
 
 
+@bot.command(name='kkjoke', help='ask the bot to tell u a knock knock joke')
+async def kkjoke(ctx):
+    quotes = await get_kkjoke_quotes(ctx)
+    quotes = random.choice(quotes)
+
+    def check1(m):
+        return m.content == 'whos there' and m.channel == ctx.channel
+
+    def check2(m):
+        return m.content == quotes[0] + ' who' and m.channel == ctx.channel
+
+    await read_quote(ctx, 'knock knock')
+    msg = await bot.wait_for("message", check=check1)
+    await read_quote(ctx, quotes[0])
+    msg = await bot.wait_for("message", check=check2)
+    await read_quote(ctx, quotes[1:])
+
+
 @bot.event
 async def on_error(event, *args, **kwargs):
     with open('err.log', 'a') as f:

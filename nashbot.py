@@ -63,10 +63,10 @@ async def kkjoke(ctx):
     quotes = random.choice(quotes)
 
     def check1(m):
-        return m.content == 'whos there' and m.channel == ctx.channel
+        return m.content == 'whos there' and m.channel == ctx.channel and m.author == ctx.message.author
 
     def check2(m):
-        return m.content == quotes[0] + ' who' and m.channel == ctx.channel
+        return m.content == quotes[0] + ' who' and m.channel == ctx.channel and m.author == ctx.message.author
 
     await read_quote(ctx, 'knock knock')
     msg = await bot.wait_for("message", check=check1)

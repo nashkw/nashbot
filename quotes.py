@@ -364,24 +364,265 @@ async def get_kkjoke_quotes(ctx):
     kkjoke_quotes = [
         (
             'joe',
-            'joe proceeds 2 break into tears. '
-            'his grandmas alzheimers has progressed 2 the point where she no longer remembers him',
+            'joe proceeds 2 break down into tears. '
+            'his grandmothers alzheimers has progressed 2 the point where she no longer remembers him',
+        ),
+        (
+            'joe',
+            'JOE MAMA OOOOOOOOOOOOOOOOOOOOOOOOOOOHHHHH-',
+        ),
+        (
+            'joe',
+            'joe-kes r rlly hard 2 write okay gimmie a break here ask 4 a high five or smth :sob:',
         ),
         (
             'lettuce',
             'lettuce in & youll find out ;)',
         ),
         (
-          'tank',
-          'youre welcome :)',
+            'tank',
+            'youre welcome :)',
         ),
         (
-          'nobel',
-          'nobel... thats why i knocked',
+            'nobel',
+            'nobel... thats why i knocked',
         ),
         (
-          'luke',
-          'luke thru the peephole dummy thats why its there :skull:',
+            'luke',
+            'luke thru the peephole dummy thats why its there :skull:',
+        ),
+        (
+            'figs',
+            'figs the doorbell dude, its not working!',
+        ),
+        (
+            'cows say',
+            'bruh cows say "moo" did u fail nursery or smth lmfao',
+        ),
+        (
+            'howl',
+            'howl u know if u dont open the door? lol',
+        ),
+        (
+            'says',
+            'says me!? who else lmao',
+        ),
+        (
+            'a little old lady',
+            'omg i didnt know u could yodel !!',
+        ),
+        (
+            'snow',
+            'snow use now, jokes over m8',
+        ),
+        (
+            'hour',
+            'im good, hour u?',
+        ),
+        (
+            'wooo',
+            'wooo hoo!! glad we all excited up in here!!! ...can i come in now?',
+        ),
+        (
+            'orange',
+            'orange u gonna let me in?? im cold :(',
+        ),
+        (
+            'who',
+            '....am i.... am i talking 2 an owl rn',
+        ),
+        (
+            'anita',
+            'anita use the bathroom iTS AN EMERGENCY LET ME INNNN-',
+        ),
+        (
+            'water',
+            'water u doin askin 4 knock knock jokes rn dont u have shit 2 b doing bro',
+        ),
+        (
+            'leaf',
+            'leaf me alone! howre u even doing this??? im a bot i dont have a front door this is just gettin weird yo',
+        ),
+        (
+            'annie',
+            'annie way im leavin now but u should probs do smth abt that bomb i left on ur doorstep. toodles',
+        ),
+        (
+            'annie'
+            'annie-one u like bb ;)))'
+        ),
+        (
+            'nanna',
+            'nanna yo business ya nosey bastard',
+        ),
+        (
+            'canoe',
+            'canoe stop messin around laddie i dont have all day',
+        ),
+        (
+            'iran',
+            'iran all the way here & if u even think abt not letting me in rn might actually just flip & '
+            'become an ax murderer so. i think yk wt u have 2 do',
+        ),
+        (
+            'dozen',
+            'dozen any1 wanna talk abt our lord & saviour jesus christ?? :(',
+        ),
+        (
+            'thermos',
+            'thermos b a better joke than this jfc i need 2 up my game',
+        ),
+        (
+            'razor',
+            'razor hands! this is a stick up! :knife: :knife:',
+        ),
+        (
+            'olive',
+            'olive u bb :smiling_face_with_3_hearts: :hearts:',
+        ),
+        (
+            'oily',
+            'oily-terally live here tho??? wts happening here this scenario is gettin confusing',
+        ),
+        (
+            'oily',
+            'oily-terally told u already m8 :upside_down:',
+        ),
+        (
+            'etch',
+            'oh, bless u !!',
+        ),
+        (
+            'police',
+            'police let me in dude the cops r hot on my tail im 2 beautiful 2 go 2 jail :cold_sweat: :weary:',
+        ),
+        (
+            'police',
+            '...u do know this could go on ur permanent record as resisting arrest right?:police_officer: open up kid',
+        ),
+        (
+            'boo',
+            'omg no im sorry dont cry it was just a joke!! :anguished: :grimacing:',
+        ),
+        (
+            'theodore',
+            'theodore is stuck man, open up!',
+        ),
+        (
+            'stopwatch',
+            f'stopwatch ur doin this instant & let me in {ctx.message.author.name} or so help me god :triumph:',
+        ),
+        (
+            'spell',
+            '...okay?? W. H. O.',
+        ),
+        (
+            'icy',
+            'icy u lookin thru that peephole dont play like u dont know who it is -__- now open up',
+        ),
+        (
+            'voodoo',
+            'voodoo u think u r?? this isnt ur house??? u got 10 seconds b4 im callin the cops wtf',
+        ),
+        (
+            'cash',
+            'nah, im more into almonds',
+        ),
+        (
+            'alex',
+            'alex-plain later!! let me in!!',
+        ),
+        (
+            'iva',
+            'iva sore hand from knocking can u pls just open up :(',
+        ),
+        (
+            'iva',
+            'iva run out of jokes whoops :flushed: :grimacing:',
+        ),
+        (
+            'dishes',
+            '...dishes not a very good joke',
+        ),
+        (
+            'avenue',
+            'avenue heard this joke b4??',
+        ),
+        (
+            'avenue',
+            'avenue got better things 2 b doing then makin ur poor bot tell knock knock jokes all day :sweat:',
+        ),
+        (
+            'avenue',
+            'avenue heard? its illegal 2 engage in knock knock humour now. ur in big trouble bucko',
+        ),
+        (
+            'otto',
+            'otto know, i forgot. memories not wt it used 2 b ngl. ...whos door is this again?',
+        ),
+        (
+            'norma lee',
+            'norma lee i dont knock on rando doors but in my defence u had a big sign saying "KNOCK ON THIS DOOR" so...'
+        ),
+        (
+            'nashbot',
+            '...',
+            'tbh idk how 2 even respond in face of such blinding stupidity. my name is nashbot™. that is my full name. '
+            'r u feeling okay? maybe go lie down 4 a while',
+        ),
+        (
+            'nashbot',
+            'nashbot... trademark?? hello?? what is happening',
+        ),
+        (
+            'nashbot',
+            f'wow, low blow {ctx.message.author.name}. u know i dont have a surname. '
+            'didnt expect this from u honestly... :|',
+        ),
+        (
+            'nashbot',
+            'well ur mom calls me "sexy bot daddy" if that helps?? :smirk: lmao. yk who i am dumbo',
+        ),
+        (
+            'ivor',
+            'ivor u let me in or i climb thru the mf window :triumph: :rage:',
+        ),
+        (
+            'adore',
+            'adore cannot stop me foolish mortal... prepare 2 die u... u *worm* :smiling_imp:',
+        ),
+        (
+            'i am',
+            'wait... u dont kno who u r??? this is 4 sure a shocking development the plot only thickens damn',
+        ),
+        (
+            'amish',
+            'omg i cant belive im talking 2 a shoe',
+        ),
+        (
+            'talking fish',
+            'um... how many talking fish do u know?? lmao',
+        ),
+        (
+            'armageddon',
+            'armageddon a little peckish... hmm... wt a nice door u have... '
+            'would b a real same if someone was 2... :flushed: take a lil bite... :eyes:',
+        ),
+        (
+            'saul',
+            'saul there is pardner. there aint no more :cowboy:',
+        ),
+        (
+          'a broken pencil',
+          '...yk wt nvm. its pointless',
+        ),
+        (
+            'dejav',
+            'knock knock',
+        ),
+        (
+            'ears',
+            'ears another lame punchline. when will my fucks return from the war',
         ),
     ]
     return kkjoke_quotes

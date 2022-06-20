@@ -809,7 +809,7 @@ welcome_responses = [
     'the door is open',
 ]
 
-welcomed_quotes = [
+welcome_quotes = [
     'oh!! excellent!! thanks 4 inviting me in!! :D',
     '...hang on, u sure this is how knock knock jokes go? i coulda sworn... actually nvm this is better. 10/10 ending',
     'oh fuck u :middle_finger: :middle_finger: :middle_finger: (yeah thats right i have 3 middle fingers)',
@@ -830,6 +830,6 @@ welcomed_quotes = [
         'dont mind if i do :smirk:',
         '...',
         'oh FUCK my bad i dont have a body lmao. forgot abt that. guess ill stay out here :weary:',
-        '(lets not think abt how i knocked on the door)',
+        '(lets not think 2 hard abt how i knocked on the door)',
      ),
 ]

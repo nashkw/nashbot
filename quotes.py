@@ -1,6 +1,18 @@
 # quotes.py
 
 
+import asyncio
+
+
+async def read_quote(ctx, quote) :
+    if isinstance(quote, tuple):
+        for line in quote:
+            await ctx.send(line)
+            await asyncio.sleep(1)
+    else:
+        await ctx.send(quote)
+
+
 async def get_hi_quotes(ctx):
     hi_quotes = [
         'hi??',

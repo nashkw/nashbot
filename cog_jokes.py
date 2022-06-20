@@ -1,0 +1,3 @@
+# cog_jokes.py
+
+

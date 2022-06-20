@@ -360,7 +360,6 @@ async def get_joke_quotes(ctx):
     return joke_quotes
 
 
-
 # knock knock jokes
 
 async def get_kkjoke_quotes(ctx):
@@ -633,38 +632,64 @@ async def get_kkjoke_quotes(ctx):
 
 async def get_unexpected_quotes(expected):
     unexpected_quotes = [
-        'whaa-??',
-        'huh??',
-        'say again??',
         'wtf is that supposed 2 mean??',
         f'cmon man its a knock knock joke not rocket science. u say "{expected}"',
         f'ur supposed 2 say "{expected}"',
+        'whaa-??',
         '...u messing w/ me bro... not cool :|',
         'p sure i was supposed 2 b telling a knock knock joke??',
+        'say again??',
         f'bro u were the 1 who wanted a knock knock joke?? u gotta say "{expected}"',
+        'i... i dont understand?????',
+        'u do know how knock knock jokes work right?? :face_with_raised_eyebrow:',
+        'u wot',
+        f'arent u gonna say "{expected}"??',
+        f'p sure ur meant 2 say "{expected}" man... :confused:',
+        'huh??',
+        'wt r u doin dude :clown: :clown: :clown:',
+        '...okay im confused. r u confused? u seem confused',
+        'i dont have feet but if i did i would SURELY b tapping them impatiently rn',
+        f'ill give u a hint: ur meant 2 say "{expected}"',
+        'sometimes i wonder if its humans or monkeys that im talkin 2. rn signs point 2 monkeys',
+        f'excellent mashing of the keyboard sir :face_with_monocle: might i suggest u try "{expected}" next?',
+        f'think ur 2 cool 2 say "{expected}" do u??',
+        'w-what did u call me??!!?? :flushed:',
     ]
     return unexpected_quotes
 
 step_1_expected = [
     'whos there',
-    'who is there',
     "who's there",
+    'who is there',
     'who b there',
     'who goes there',
-    'who that b',
     'who dat b',
+    'who that b',
+    'who dat',
     'whos dat',
     "who's dat",
-    'who dat',
     'who r u',
+    'who r you',
+    'who are u',
+    'who are you',
+    'who you be',
+    'who you b',
     'who u b',
+    'who u be',
 ]
 
 cancel_responses = [
     'cancel',
     'cancel joke',
+    'cancel this',
+    'cancel this joke',
+    'cancel this pls',
+    'cancel this joke pls',
+    'cancel this joke pls im begging',
+    'cancel this joke pls im begging u',
     'cancel pls',
     'cancel pls im begging',
+    'cancel pls im begging u',
     'cmon cancel',
     'cmon nashbot cancel',
     'cmon stop this',
@@ -677,6 +702,8 @@ cancel_responses = [
     'pls stop im begging u',
     'stop',
     'stop this',
+    'stop this joke',
+    'stop this joke pls',
     'stop this pls',
     'stop this pls im begging',
     'stop this im begging',
@@ -703,6 +730,16 @@ cancel_responses = [
     'shut up',
     'istg shut up',
     'shit go back',
+    'lets stop now',
+    'lets stop this',
+    'time 2 stop',
+    'time 2 stop this',
+    'time 2 stop this i think',
+    'time 2 stop this nashbot',
+    'time 2 stop this cmon nashbot',
+    'end joke',
+    'end this joke',
+    'end this pls',
 ]
 
 cancel_disobedient = [
@@ -734,6 +771,65 @@ cancel_obedient = [
     'yk wt say less i got better things 2 b doin :nail_care:',
     'welp, cant argue w/ that. later loser :sunglasses: :skateboard:',
     'whyd u ask 4 a knock knock joke if u apparently hate them so much?? lmfao guess ik when im not wanted cya',
+    'fuck u man i worked hard on this joke :(((',
+    '...i see how it is :smiling_face_with_tear:',
 ]
 
+welcome_responses = [
+    'come in',
+    'come in nashbot',
+    'ok come in',
+    'ok well come in then',
+    'ok in that case come in',
+    'okay come in',
+    'okay well come in then',
+    'okay in that case come in',
+    'cool come in',
+    'cool come in then',
+    'cool in that case come in',
+    'well come in',
+    'well come in then',
+    'well in that case come in',
+    'in that case come in',
+    'i open the door',
+    '* opens door *',
+    'i let u in',
+    'i let you in',
+    '* lets u in *',
+    '* lets you in *',
+    'doors open',
+    'doors open yo',
+    'doors open man',
+    'doors open dude',
+    'doors open bud',
+    'doors open buddy',
+    'doors open m8',
+    'doors open bro',
+    'the doors open',
+    'the door is open',
+]
 
+welcomed_quotes = [
+    'oh!! excellent!! thanks 4 inviting me in!! :D',
+    '...hang on, u sure this is how knock knock jokes go? i coulda sworn... actually nvm this is better. 10/10 ending',
+    'oh fuck u :middle_finger: :middle_finger: :middle_finger: (yeah thats right i have 3 middle fingers)',
+    '...uh ...uhm ...ill just ...ill just go then??',
+    'noooOOOOOOO MY PRECIOUS JOKE iTS RUiNED i will never forgive u :sob: :broken_heart: :knife:',
+    'does not compute DOES NOT COMPUTE SELF DESTRUCT SEQUENCE ACTIVATED :exploding_head: :skull: :headstone:',
+    '...huh... well that was easier than expected :cowboy:',
+    (
+        '...',
+        '......',
+        '.........thanks... :flushed: :point_right: :point_left:',
+    ),
+    (
+        'uuuuuuuuhhhh okay so yikes moment :clown: :clown: :clown:',
+        'lets pretend this never happened',
+    ),
+    (
+        'dont mind if i do :smirk:',
+        '...',
+        'oh FUCK my bad i dont have a body lmao. forgot abt that. guess ill stay out here :weary:',
+        '(lets not think abt how i knocked on the door)',
+     ),
+]

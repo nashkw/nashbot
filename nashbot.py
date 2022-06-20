@@ -66,7 +66,7 @@ async def kkjoke(ctx):
         return m.channel == ctx.channel and m.author == ctx.message.author
 
     def clean_msg(m):
-        return m.content.lower().strip().replace('?', '').replace('...', '')
+        return m.content.lower().strip().replace('?', '').replace('...', '').replace(' :)', '')
 
     async def wait_for_response(expected):
         while True:
@@ -83,7 +83,8 @@ async def kkjoke(ctx):
                     await read_quote(ctx, f'{ctx.message.author.name}: {random.choice(expected)}?')
                     return True  # successful progression
             else:
-                await read_quote(ctx, random.choice(await get_unexpected_quotes(random.choice(expected))))
+                quotes_unexpected = await get_unexpected_quotes(random.choice(expected))
+                await read_quote(ctx, random.choice(quotes_unexpected))
 
     await read_quote(ctx, 'knock knock')
     if not await wait_for_response(step_1_expected):

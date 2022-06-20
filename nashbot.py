@@ -1,18 +1,20 @@
 # nashbot.py
-import asyncio
+
+
 import os
-import discord
-from dotenv import load_dotenv
 import random
+import asyncio
+import discord
+import youtube_dl
+from dotenv import load_dotenv
 from discord.ext import commands
 from quotes import *
-import youtube_dl
+from settings import *
 
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-intents = discord.Intents.default()
-bot = commands.Bot(command_prefix='', intents=intents)
+bot = commands.Bot(command_prefix='', intents=discord.Intents.default())
 
 
 @bot.event
@@ -27,6 +29,7 @@ async def on_disconnect():
 
 @bot.event
 async def on_error(event, *args, **kwargs):
+    print(f'logging error: {args[0]}\n')
     with open('err.log', 'a') as f:
         f.write(f'Unhandled error: {args[0]}\n\n')
 
@@ -42,33 +45,29 @@ async def read_quote(ctx, quote) :
 
 @bot.command(name='hi', help='greet the bot')
 async def hi(ctx):
-    quotes = await get_hi_quotes(ctx)
-    await read_quote(ctx, random.choice(quotes))
+    await read_quote(ctx, random.choice(await get_hi_quotes(ctx)))
 
 
 @bot.command(name='highfive', help='ask the bot to give u a high five')
 async def highfive(ctx):
-    quotes = await get_highfive_quotes(ctx)
-    await read_quote(ctx, random.choice(quotes))
+    await read_quote(ctx, random.choice(await get_highfive_quotes(ctx)))
 
 
 @bot.command(name='shutdown', help='shut down the bot')
 async def shutdown(ctx):
-    quotes = await get_shutdown_quotes(ctx)
-    await read_quote(ctx, (random.choice(quotes), ':zzz: ...shutting down... :zzz:'))
+    await read_quote(ctx, random.choice(await get_shutdown_quotes(ctx)))
+    await read_quote(ctx, ':zzz: ...shutting down... :zzz:')
     await bot.close()
 
 
 @bot.command(name='joke', help='ask the bot to tell u a joke')
 async def joke(ctx):
-    quotes = await get_joke_quotes(ctx)
-    await read_quote(ctx, random.choice(quotes))
+    await read_quote(ctx, random.choice(await get_joke_quotes(ctx)))
 
 
 @bot.command(name='kkjoke', help='ask the bot to tell u a knock knock joke')
 async def kkjoke(ctx):
-    quotes = await get_kkjoke_quotes(ctx)
-    quotes = random.choice(quotes)
+    quotes = random.choice(await get_kkjoke_quotes(ctx))
 
     def check(m):
         return m.channel == ctx.channel and m.author == ctx.message.author
@@ -107,54 +106,43 @@ async def kkjoke(ctx):
     await read_quote(ctx, quotes[1:])
 
 
-@bot.command(name='music_play', help='tell the bot play u music from a URL')
-async def music_play(ctx, url: str):
-    try:
-        if os.path.isfile('song.mp3'):
-            os.remove('song.mp3')
-    except PermissionError:
-        await read_quote(ctx, 'theres already smth playing bro')
+@bot.command(name='playmusic', help='tell the bot play music from a youtube link')
+async def playmusic(ctx, url: str):
+    if ctx.author.voice is None:
+        await read_quote(ctx, 'join a voice channel 1st bro, i need an audience 4 this kinda thing yk ;)')
         return
 
-    v_channel = discord.utils.get(ctx.guild.voice_channels, name=ctx.author.voice.channel.name)
-    await v_channel.connect()
-    voice = discord.utils.get(bot.voice_clients, guild=ctx.guild)
-
-    ydl_opts = {
-        'format': 'bestaudio/best',
-        'extractaudio': True,
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '192',
-        }],
-    }
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([url])
-    for file in os.listdir('./'):
-        if file.endswith('.mp3'):
-            os.rename(file, 'song.mp3')
-    voice.play(discord.FFmpegPCMAudio('song.mp3'))
-
-
-@bot.command(name='music_stop', help='tell the bot 2 stop playing music')
-async def music_stop(ctx):
-    voice = discord.utils.get(bot.voice_clients, guild=ctx.guild)
-    if voice.is_connected():
-        await read_quote(ctx, random.choice(await get_music_leave_quotes(ctx)))
-        await voice.disconnect()
+    if ctx.voice_client is None:
+        await ctx.author.voice.channel.connect()
     else:
-        await read_quote(ctx, random.choice(await get_music_cant_leave_quotes(ctx)))
+        await ctx.voice_client.move_to(ctx.author.voice.channel)
+
+    with youtube_dl.YoutubeDL(YDL_OPTS) as ydl:
+        info = ydl.extract_info(url, download=False)
+        source = await discord.FFmpegOpusAudio.from_probe(info['formats'][0]['url'], **FFMPEG_OPTS)
+        ctx.voice_client.play(source)
+        await read_quote(ctx, f':musical_note:  now playing: "{info["title"]}" :musical_note:')
 
 
-@bot.command(name='music_pause_button', help='tell the bot 2 pause the music')
-async def music_pause(ctx):
-    voice = discord.utils.get(bot.voice_clients, guild=ctx.guild)
-    if voice.is_playing():
-        voice.pause()
-    elif voice.is_paused():
-        voice.resume()
+@bot.command(name='stopmusic', help='tell the bot to stop playing music')
+async def stopmusic(ctx):
+    if ctx.voice_client is None:
+        await read_quote(ctx, random.choice(await get_no_music_quotes(ctx)))
     else:
-        await read_quote(ctx, random.choice(await get_music_cant_pause_quotes(ctx)))
+        await read_quote(ctx, random.choice(await get_endmusic_quotes(ctx)))
+        await read_quote(ctx, ':no_entry_sign: music stopped :no_entry_sign:')
+        await ctx.voice_client.disconnect()
+
+
+@bot.command(name='pausemusic', help='tell the bot to pause or unpause music')
+async def pause(ctx):
+    if ctx.voice_client is None:
+        await read_quote(ctx, random.choice(await get_no_music_quotes(ctx)))
+    elif ctx.voice_client.is_playing():
+        ctx.voice_client.pause()
+        await read_quote(ctx, ':pause_button: music paused :pause_button:')
+    elif ctx.voice_client.is_paused():
+        ctx.voice_client.resume()
+        await read_quote(ctx, ':arrow_forward: music unpaused :arrow_forward:')
 
 bot.run(TOKEN)

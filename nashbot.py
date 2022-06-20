@@ -13,7 +13,11 @@ from quotes import *
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-bot = commands.Bot(command_prefix='', intents=discord.Intents.default())
+bot = commands.Bot(
+    command_prefix='',
+    intents=discord.Intents.default(),
+    help_command=commands.DefaultHelpCommand(no_category='misc')
+)
 
 cogs = [cog_jokes, cog_music]
 for cog in cogs:

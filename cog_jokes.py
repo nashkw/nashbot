@@ -27,7 +27,7 @@ class Jokes(commands.Cog, name='jokes'):
 
         async def wait_for_response(expected):
             while True:
-                content = clean_msg(await bot.wait_for("message", check=check))
+                content = clean_msg(await self.bot.wait_for("message", check=check))
                 if content in expected:
                     return True  # successful progression
                 elif content in welcome_responses:

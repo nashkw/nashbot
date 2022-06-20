@@ -826,7 +826,7 @@ welcome_quotes = [
     '...hang on, u sure this is how knock knock jokes go? i coulda sworn... actually nvm this is better. 10/10 ending',
     'oh fuck u :middle_finger: :middle_finger: :middle_finger: (yeah thats right i have 3 middle fingers)',
     '...uh ...uhm ...ill just ...ill just go then??',
-    'noooOOOOOOO MY PRECIOUS JOKE iTS RUiNED i will never forgive u :sob: :broken_heart: :knife:',
+    'noooOOOOOO MY PRECIOUS JOKE iTS RUiNED i will never forgive u :sob: :broken_heart: :knife:',
     'does not compute DOES NOT COMPUTE SELF DESTRUCT SEQUENCE ACTIVATED :exploding_head: :skull: :headstone:',
     '...huh... well that was easier than expected :cowboy:',
     (

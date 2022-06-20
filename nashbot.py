@@ -62,16 +62,34 @@ async def kkjoke(ctx):
     quotes = await get_kkjoke_quotes(ctx)
     quotes = random.choice(quotes)
 
-    def check1(m):
-        return m.content == 'whos there' and m.channel == ctx.channel and m.author == ctx.message.author
-
-    def check2(m):
-        return m.content == quotes[0] + ' who' and m.channel == ctx.channel and m.author == ctx.message.author
+    def check(m):
+        return m.channel == ctx.channel and m.author == ctx.message.author
 
     await read_quote(ctx, 'knock knock')
-    msg = await bot.wait_for("message", check=check1)
+    while True:
+        m = await bot.wait_for("message", check=check)
+        content = m.content.lower().strip().replace('?', '')
+        if content in step_1_expected:
+            break
+        elif content in cancel_responses:
+            await read_quote(ctx, random.choice(cancel_quotes))
+            break
+        else:
+            await read_quote(ctx, random.choice(await get_unexpected_quotes('whos there')))
+
     await read_quote(ctx, quotes[0])
-    msg = await bot.wait_for("message", check=check2)
+    while True:
+        m = await bot.wait_for("message", check=check)
+        content = m.content.lower().strip().replace('?', '')
+        expected = quotes[0] + ' who'
+        if content == expected:
+            break
+        elif content in cancel_responses:
+            await read_quote(ctx, random.choice(cancel_quotes))
+            break
+        else:
+            await read_quote(ctx, random.choice(await get_unexpected_quotes(expected)))
+
     await read_quote(ctx, quotes[1:])
 
 

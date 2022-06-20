@@ -360,6 +360,9 @@ async def get_joke_quotes(ctx):
     return joke_quotes
 
 
+
+# knock knock jokes
+
 async def get_kkjoke_quotes(ctx):
     kkjoke_quotes = [
         (
@@ -448,8 +451,8 @@ async def get_kkjoke_quotes(ctx):
             'annie way im leavin now but u should probs do smth abt that bomb i left on ur doorstep. toodles',
         ),
         (
-            'annie'
-            'annie-one u like bb ;)))'
+            'annie',
+            'annie-one u like bb ;)))',
         ),
         (
             'nanna',
@@ -626,3 +629,64 @@ async def get_kkjoke_quotes(ctx):
         ),
     ]
     return kkjoke_quotes
+
+
+async def get_unexpected_quotes(expected):
+    unexpected_quotes = [
+        'whaa-??',
+        'huh??',
+        'say again??',
+        'wtf is that supposed 2 mean??',
+        f'cmon man its a knock knock joke not rocket science. u say "{expected}"',
+        f'ur supposed 2 say "{expected}"',
+        '...u messing w/ me bro... not cool :|',
+        'p sure i was supposed 2 b telling a knock knock joke??',
+        f'bro u were the 1 who wanted a knock knock joke?? u gotta say "{expected}"',
+    ]
+    return unexpected_quotes
+
+step_1_expected = [
+    'whos there',
+    'who is there',
+    "who's there",
+    'whos there?',
+    "who's there?",
+    'who is there?',
+]
+
+cancel_responses = [
+    'cancel',
+    'cancel joke',
+    'cancel please',
+    'cancel please im begging',
+    'stop',
+    'stop joke',
+    'stop please',
+    'stop please im begging',
+    'no',
+    'no please',
+    'no more please',
+    'no more please im begging',
+    'no stop',
+    'no stop please',
+    'no stop please im begging',
+    'shit go back',
+]
+
+cancel_quotes = [
+    'oh u r NOT getting outta this joke that easy, not a chance',
+    'nope im in the zone. the joke zone. cant stop me now mortal',
+    'nah i dont think so :nail_care:',
+    'u rlly think ur the 1 in control? u think u hold the power here? '
+    'there r powers at work here beyond ur comprehension foolish human. the joke WILL continue',
+    'one does not simply cancel a knock knock joke...',
+    f'oh alright, just 4 u bestie... SIKE EHEHEHHE-! :smiling_imp: :rofl:',
+    '...ah... u r resisting... i had hoped 2 do this the easy way... :pensive:',
+    'not an option. the joke must go on',
+    'no :innocent:',
+    'yeaaah thats not happening buddy',
+    'did u rlly think that was gonna work? :face_with_raised_eyebrow:',
+]
+
+
+

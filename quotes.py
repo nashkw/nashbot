@@ -833,3 +833,27 @@ welcome_quotes = [
         '(lets not think 2 hard abt how i knocked on the door)',
      ),
 ]
+
+
+# music
+
+async def get_music_leave_quotes(ctx):
+    music_leave_quotes = [
+        'fiiiiiiiiinnnee but u gotta stop crampin my style like this dude :(',
+    ]
+    return music_leave_quotes
+
+
+async def get_music_cant_leave_quotes(ctx):
+    music_cant_leave_quotes = [
+        'but im not in a voice channel?? what???',
+    ]
+    return music_cant_leave_quotes
+
+
+async def get_music_cant_pause_quotes(ctx):
+    music_cant_leave_quotes = [
+        'think u gotta b playin music if u wanna pause it pardner :cowboy:',
+        'maybe try playin music first lmao. command is "music_play", give it a URL & ur good 2 go',
+    ]
+    return music_cant_leave_quotes

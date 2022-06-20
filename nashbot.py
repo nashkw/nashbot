@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 import random
 from discord.ext import commands
 from quotes import *
+import youtube_dl
+
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -21,6 +23,12 @@ async def on_ready():
 @bot.event
 async def on_disconnect():
     print(f'{bot.user.name} has disconnected from discord')
+
+
+@bot.event
+async def on_error(event, *args, **kwargs):
+    with open('err.log', 'a') as f:
+        f.write(f'Unhandled error: {args[0]}\n\n')
 
 
 async def read_quote(ctx, quote) :
@@ -99,9 +107,54 @@ async def kkjoke(ctx):
     await read_quote(ctx, quotes[1:])
 
 
-@bot.event
-async def on_error(event, *args, **kwargs):
-    with open('err.log', 'a') as f:
-        f.write(f'Unhandled error: {args[0]}\n\n')
+@bot.command(name='music_play', help='tell the bot play u music from a URL')
+async def music_play(ctx, url: str):
+    try:
+        if os.path.isfile('song.mp3'):
+            os.remove('song.mp3')
+    except PermissionError:
+        await read_quote(ctx, 'theres already smth playing bro')
+        return
+
+    v_channel = discord.utils.get(ctx.guild.voice_channels, name=ctx.author.voice.channel.name)
+    await v_channel.connect()
+    voice = discord.utils.get(bot.voice_clients, guild=ctx.guild)
+
+    ydl_opts = {
+        'format': 'bestaudio/best',
+        'extractaudio': True,
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }],
+    }
+    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        ydl.download([url])
+    for file in os.listdir('./'):
+        if file.endswith('.mp3'):
+            os.rename(file, 'song.mp3')
+    voice.play(discord.FFmpegPCMAudio('song.mp3'))
+
+
+@bot.command(name='music_stop', help='tell the bot 2 stop playing music')
+async def music_stop(ctx):
+    voice = discord.utils.get(bot.voice_clients, guild=ctx.guild)
+    if voice.is_connected():
+        await read_quote(ctx, random.choice(await get_music_leave_quotes(ctx)))
+        await voice.disconnect()
+    else:
+        await read_quote(ctx, random.choice(await get_music_cant_leave_quotes(ctx)))
+
+
+@bot.command(name='music_pause_button', help='tell the bot 2 pause the music')
+async def music_pause(ctx):
+    voice = discord.utils.get(bot.voice_clients, guild=ctx.guild)
+    if voice.is_playing():
+        voice.pause()
+    elif voice.is_paused():
+        voice.resume()
+    else:
+        await read_quote(ctx, random.choice(await get_music_cant_pause_quotes(ctx)))
 
 bot.run(TOKEN)

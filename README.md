@@ -1,0 +1,2 @@
+# nashbot
+personal discord bot

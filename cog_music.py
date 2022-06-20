@@ -39,7 +39,6 @@ class Music(commands.Cog, name='music'):
         if ctx.voice_client is None:
             await read_quote(ctx, random.choice(await get_no_music_quotes(ctx)))
         else:
-            await read_quote(ctx, random.choice(await get_endmusic_quotes(ctx)))
             await read_quote(ctx, ':no_entry_sign: music stopped :no_entry_sign:')
             await ctx.voice_client.disconnect()
 

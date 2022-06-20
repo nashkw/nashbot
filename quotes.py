@@ -849,13 +849,6 @@ welcome_quotes = [
 
 # music
 
-async def get_endmusic_quotes(ctx):
-    music_leave_quotes = [
-        'fiiiiiiiiinnnee but u gotta stop crampin my style like this dude :(',
-    ]
-    return music_leave_quotes
-
-
 async def get_no_music_quotes(ctx):
     music_cant_leave_quotes = [
         'think u gotta b playin music if u wanna do that pardner :cowboy:',

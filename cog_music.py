@@ -6,7 +6,10 @@ import discord
 import youtube_dl
 from discord.ext import commands
 from quotes import *
-from settings import *
+
+
+FFMPEG_OPTS = { 'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn', }
+YDL_OPTS = {'format': 'bestaudio', }
 
 
 class Music(commands.Cog, name='music'):

@@ -75,8 +75,8 @@ class Music(commands.Cog, name='music'):
         if not self.looping:
             await self.music_loop(ctx)
 
-    @commands.command(name='clearmusic', help='tell the bot to clear the music queue')
-    async def clearmusic(self, ctx):
+    @commands.command(name='qclear', help='tell the bot to clear the music queue')
+    async def qclear(self, ctx):
         if not ctx.voice_client:
             await read_quote(ctx, random.choice(await get_no_music_quotes(ctx)))
         else:
@@ -102,14 +102,35 @@ class Music(commands.Cog, name='music'):
             ctx.voice_client.stop()
             await read_quote(ctx, f':track_next: skipped: "{self.nowplaying}" :track_next: ')
 
-    @commands.command(name='showmusic', help='ask the bot to read out the current music queue')
-    async def showmusic(self, ctx):
+    @commands.command(name='qshow', help='ask the bot to read out the current music queue')
+    async def qshow(self, ctx):
         if self.nowplaying:
             await read_quote(ctx, ('music queue:', f'> 0: :musical_note: "{self.nowplaying}" :musical_note:'))
             for index, item in enumerate(self.queue_titles):
                 await read_quote(ctx, f'> {index+1}: "{item}"')
         else:
             await read_quote(ctx, 'TODO queue empty')
+
+    @commands.command(name='qremove', help='ask the bot to remove a song from the music queue')
+    async def qremove(self, ctx, index: int):
+        if not ctx.voice_client:
+            await read_quote(ctx, random.choice(await get_no_music_quotes(ctx)))
+        else:
+            if index == 0:
+                ctx.voice_client.stop()
+            elif 0 < index-1 < len(self.queue_titles):
+                newq = asyncio.Queue()
+                i = 0
+                while not self.queue_sources.empty():
+                    item = self.queue_sources.get_nowait()
+                    if i != index-1:
+                        newq.put_nowait(item)
+                    i = i + 1
+                self.queue_sources = newq
+                await read_quote(ctx, f':negative_squared_cross_mark: removed from music queue: "{self.queue_titles.pop(index-1)}" :negative_squared_cross_mark: ')
+            else:
+                await read_quote(ctx, 'index error')
+
 
 def setup(bot):
     bot.add_cog(Music(bot))

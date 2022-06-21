@@ -9,7 +9,7 @@ from quotes import *
 
 
 FFMPEG_OPTS = { 'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn', }
-YDL_OPTS = {'format': 'bestaudio', }
+YDL_OPTS = {'format': 'bestaudio', 'noplaylist': True, }
 
 
 class Music(commands.Cog, name='music'):
@@ -34,8 +34,8 @@ class Music(commands.Cog, name='music'):
 
     async def music_loop(self, ctx):
         await self.bot.wait_until_ready()
-        while not self.bot.is_closed():
-            self.looping = True
+        self.looping = True
+        while not self.bot.is_closed() and self.looping:
             self.next.clear()
             try:
                 source = self.queue_sources.get_nowait()
@@ -53,6 +53,14 @@ class Music(commands.Cog, name='music'):
     @commands.command(name='play', help='tell the bot play music from youtube')
     async def play(self, ctx,  *, search: str):
         await ctx.trigger_typing()
+        info = self.ydl.extract_info(f"ytsearch:{search}", download=False)
+
+        if not info['entries']:
+            await read_quote(ctx, 'TODO no results found')
+            return
+        else:
+            info = info['entries'][0]
+
         if not ctx.author.voice:
             await read_quote(ctx, 'TODO join a voice channel 1st bro, i need an audience 4 this kinda thing yk ;)')
             return
@@ -60,7 +68,7 @@ class Music(commands.Cog, name='music'):
             await ctx.author.voice.channel.connect()
         else:
             await ctx.voice_client.move_to(ctx.author.voice.channel)
-        info = self.ydl.extract_info(f"ytsearch:{search}", download=False)['entries'][0]
+
         await self.queue_sources.put(await discord.FFmpegOpusAudio.from_probe(info['formats'][0]['url'], **FFMPEG_OPTS))
         self.queue_titles.append(info['title'])
         await read_quote(ctx, f':white_check_mark: added to music queue: "{info["title"]}" :white_check_mark: ')
@@ -97,9 +105,9 @@ class Music(commands.Cog, name='music'):
     @commands.command(name='showmusic', help='ask the bot to read out the current music queue')
     async def showmusic(self, ctx):
         if self.nowplaying:
-            await read_quote(ctx, ('music queue:', f'> :musical_note: "{self.nowplaying}" :musical_note:'))
-            for item in self.queue_titles:
-                await read_quote(ctx, f'> "{item}"')
+            await read_quote(ctx, ('music queue:', f'> 0: :musical_note: "{self.nowplaying}" :musical_note:'))
+            for index, item in enumerate(self.queue_titles):
+                await read_quote(ctx, f'> {index+1}: "{item}"')
         else:
             await read_quote(ctx, 'TODO queue empty')
 

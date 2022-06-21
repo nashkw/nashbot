@@ -127,9 +127,19 @@ class Music(commands.Cog, name='music'):
                         newq.put_nowait(item)
                     i = i + 1
                 self.queue_sources = newq
-                await read_quote(ctx, f':negative_squared_cross_mark: removed from music queue: "{self.queue_titles.pop(index-1)}" :negative_squared_cross_mark: ')
+                await read_quote(ctx, f':negative_squared_cross_mark: removed from music queue: '
+                                      f'"{self.queue_titles.pop(index-1)}" :negative_squared_cross_mark: ')
             else:
-                await read_quote(ctx, 'index error')
+                await read_quote(ctx, ':warning: invalid index. here, find the index w/ this list & try again :warning:')
+                await ctx.invoke(self.bot.get_command('qshow'))
+
+    @qremove.error
+    async def qremove_error(self, ctx, error):
+        if not self.nowplaying:
+            await read_quote(ctx, ':warning: cant remove anything from an empty queue lmao :warning:')
+        elif isinstance(error, commands.MissingRequiredArgument):
+            await read_quote(ctx, ':warning: 2 use this cmd u gotta give the index of the song u want gone :warning:')
+            await ctx.invoke(self.bot.get_command('qshow'))
 
 
 def setup(bot):

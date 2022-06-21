@@ -852,6 +852,6 @@ welcome_quotes = [
 async def get_no_music_quotes(ctx):
     music_cant_leave_quotes = [
         'think u gotta b playin music if u wanna do that pardner :cowboy:',
-        'maybe try playin music first lmao. command is "music_play", give it a URL & ur good 2 go',
+        'maybe try playin music first lmao. command is "play [ur song name here]", give it a URL & ur good 2 go',
     ]
     return music_cant_leave_quotes

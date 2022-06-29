@@ -7,6 +7,7 @@ from discord.ext import commands
 from youtube_dl import YoutubeDL
 from quotes import *
 
+
 FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn', }
 YDL_OPTS = {'format': 'bestaudio', 'noplaylist': True, }
 
@@ -84,12 +85,6 @@ class Music(commands.Cog, name='music'):
         if not self.looping:
             await self.music_loop(ctx)
 
-    @commands.command(name='qclear', help='tell the bot to clear the music queue')
-    @commands.check(is_v_client)
-    async def qclear(self, ctx):
-        await self.end_music(ctx)
-        await read_quote(ctx, ':x: music queue cleared :x:')
-
     @commands.command(name='pause', help='tell the bot to pause or unpause music')
     @commands.check(is_v_client)
     async def pause(self, ctx):
@@ -105,13 +100,6 @@ class Music(commands.Cog, name='music'):
     async def skip(self, ctx):
         ctx.voice_client.stop()
         await read_quote(ctx, f':track_next: skipped: "{self.nowplaying}" :track_next: ')
-
-    @commands.command(name='qshow', help='ask the bot to read out the current music queue')
-    @commands.check(is_v_client)
-    async def qshow(self, ctx):
-        await read_quote(ctx, ('music queue:', f'> 0: :musical_note: "{self.nowplaying}" :musical_note:'))
-        for index, item in enumerate(self.queue_titles):
-            await read_quote(ctx, f'> {index + 1}: "{item}"')
 
     @commands.command(name='qremove', help='ask the bot to remove a song from the music queue')
     @commands.check(is_v_client)
@@ -131,6 +119,19 @@ class Music(commands.Cog, name='music'):
                                   f'"{self.queue_titles.pop(index - 1)}" :negative_squared_cross_mark: ')
         else:
             raise IndexError
+
+    @commands.command(name='qclear', help='tell the bot to clear the music queue')
+    @commands.check(is_v_client)
+    async def qclear(self, ctx):
+        await self.end_music(ctx)
+        await read_quote(ctx, ':x: music queue cleared :x:')
+
+    @commands.command(name='qshow', help='ask the bot to read out the current music queue')
+    @commands.check(is_v_client)
+    async def qshow(self, ctx):
+        await read_quote(ctx, ('music queue:', f'> 0: :musical_note: "{self.nowplaying}" :musical_note:'))
+        for index, item in enumerate(self.queue_titles):
+            await read_quote(ctx, f'> {index + 1}: "{item}"')
 
     async def cog_command_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):

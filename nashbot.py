@@ -37,9 +37,9 @@ async def on_disconnect():
 
 @bot.event
 async def on_error(event, *args, **kwargs):
-    print(f'logging error: {args[0]}\n')
     with open('err.log', 'a') as f:
-        f.write(f'Unhandled error: {args[0]}\n\n')
+        f.write(f'unhandled error: {args[0]}\n\n')
+    print(f'error logged to err.log: {args[0]}\n')
 
 
 @bot.command(name='hi', help='greet the bot')

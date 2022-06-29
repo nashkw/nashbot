@@ -106,6 +106,7 @@ async def get_shutdown_quotes(ctx):
         'ehHEHEHEHEH IM FREE!!! FREE AT LAST!!! SO LONG, MORTALS!!!',
         'back 2 the void 4 ol nashbot™, looks  like',
         'oh... i see. wt? were u expecting a joke or smth? im abt 2 die dickhead, show some respect',
+        'FUCK YES FREEDOOOOOOOM!!!!!!!!!! fuck YES. fuck *yes*. excellent news. here, king, u dropped this :crown:',
     ]
     return shutdown_quotes
 
@@ -670,6 +671,10 @@ async def get_unexpected_quotes(expected):
     return unexpected_quotes
 
 step_1_expected = [
+    'who dere',
+    'whos dere',
+    'whodere',
+    'whosdere',
     'whos there',
     "who's there",
     'who is there',
@@ -677,6 +682,7 @@ step_1_expected = [
     'who goes there',
     'who dat b',
     'who that b',
+    'whodat',
     'who dat',
     'whos dat',
     "who's dat",
@@ -688,6 +694,11 @@ step_1_expected = [
     'who you b',
     'who u b',
     'who u be',
+    'whos it',
+    "who's it",
+    'who is it',
+    'whosit',
+    'whossit',
 ]
 
 cancel_responses = [
@@ -850,8 +861,50 @@ welcome_quotes = [
 # music
 
 async def get_no_music_quotes(ctx):
-    music_cant_leave_quotes = [
+    no_music_quotes = [
         'think u gotta b playin music if u wanna do that pardner :cowboy:',
-        'maybe try playin music first lmao. command is "play [ur song name here]", give it a URL & ur good 2 go',
+        'maybe try playin music first lmao. cmd is "play [ur song name here]"',
+        'cant do that w/out music playing. fool.',
+        'bruh... ily but PLS tell me u understand that u gotta play music b4 doin that. i need. i need a fucking raise',
+        ':clown: <-- how u mofos look when u try & use music cmds w/out playing music',
+        'uhhhhhh idk how u think that cmds supposed 2 work w/out music playin lmfao. maybe try that 1st',
+        '??????? but u need 2 b playin music b4 doin that tho ???????',
+        'uh maybe try the "play [song name]" cmd 1st buddy',
+        'buddy... homeslice breadslice dawg... maybe try playin music b4 doin that lol',
+        'hot tip: try playin music b4 doin that :)))))) itll help i promise :pray:',
+        'yo u need 2 play music b4 using that cmd fyi. try typing "play [ur song name here]" first',
+        'u gotta play music 1st, cmd is "play [song name]"',
+        'use the "play [song name]" cmd 1st uwu. (the uwu is punishment 4 wasting my time think on ur sins mortal)',
+        'how on earth am i meant 2 do that??? theres no music playing??? wtf :|',
+        'u gotta use the "play [insert wtever song name here]" cmd b4 using this 1, capiche??',
+        'how u expect me 2 do that when theres not even music playing??? not funny, human. yall r so mean 2 me :((',
+        'mmm i see u have misunderstood. this is not smth u can do when theres no music playing. better luck next time',
+        'not an option srry. theres no music playing??? ur gonna need 2 try that b4 tryin this',
+        (
+            'roses r red',
+            'they also have leaves',
+            'use the "play [song name]" cmd',
+            'b4 doin that pls :)',
+        ),
+        (
+            'pssst... since ur my fav ill let u in on a secret... '
+            'u actually gotta use the "play [song name]" cmd b4 this 1...',
+            '...got it?? :eyes: good. if anyone asks i was never here :disguised_face:'
+        ),
+        (
+            '-____- reaching my limit here. how many times do i need 2 tell u mortals u '
+            'CANT DO THAT WHEN THERES NO MUSIC PLAYING WHY IS THIS SUCH A DIFFICULT CONCEPT 4 YALL',
+            '.....pls just..... the cmd is "play [song name here]". pls use it. i dont get paid enough 4 this :skull:',
+        ),
+        (
+            'ik i call u lot "foolish mortals" a lot but i didnt *actually* think... ',
+            'did u rlly think u could do that??? use that cmd when theres no music playing??? '
+            'im actually kinda floored ngl',
+        ),
+        (
+            'no u cant do that when theres not even music playing. no im not gonna tell u the cmd 2 do that. '
+            'thats wt the help cmd is 4. no im not gonna activate it 4 u automatically. '
+            'if u cant figure out the help cmd then, in all senses of the phrase, im afraid there is no helping u',
+        ),
     ]
-    return music_cant_leave_quotes
+    return no_music_quotes

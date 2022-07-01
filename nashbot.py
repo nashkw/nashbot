@@ -57,7 +57,7 @@ async def shutdown(ctx):
     await read_quote(ctx, random.choice(await get_shutdown_quotes(ctx)))
     if ctx.voice_client is not None:
         await ctx.invoke(bot.get_command('qclear'))
-    await read_quote(ctx, ':zzz: ...shutting down... :zzz:')
+    await read_official(ctx, '...shutting down...', 'zzz')
     await bot.close()
 
 

@@ -4,13 +4,17 @@
 import asyncio
 
 
-async def read_quote(ctx, quote) :
+async def read_quote(ctx, quote):
     if isinstance(quote, tuple):
         for line in quote:
             await ctx.send(line)
             await asyncio.sleep(1)
     else:
         await ctx.send(quote)
+
+
+async def read_official(ctx, quote, emoji):
+    await ctx.send(f':{emoji}: {quote} :{emoji}:')
 
 
 async def get_hi_quotes(ctx):

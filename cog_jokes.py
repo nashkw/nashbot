@@ -32,12 +32,12 @@ class Jokes(commands.Cog, name='jokes'):
                     return True  # successful progression
                 elif content in welcome_responses:
                     await read_quote(ctx, random.choice(welcome_quotes))
-                    await read_quote(ctx, ':no_entry_sign: joke cancelled :no_entry_sign:')
+                    await read_official(ctx, 'joke cancelled', 'no_entry_sign')
                     return False  # cancel joke
                 elif content in cancel_responses:
                     if random.choice([True, False]):
                         await read_quote(ctx, random.choice(cancel_obedient))
-                        await read_quote(ctx, ':no_entry_sign: joke cancelled :no_entry_sign:')
+                        await read_official(ctx, 'joke cancelled', 'no_entry_sign')
                         return False  # cancel joke
                     else:
                         await read_quote(ctx, random.choice(cancel_disobedient))

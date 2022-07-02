@@ -5,16 +5,20 @@ import asyncio
 
 
 async def read_quote(ctx, quote):
+    await ctx.trigger_typing()
     if isinstance(quote, tuple):
-        for line in quote:
-            await ctx.send(line)
+        await ctx.send(quote[0])
+        for line in quote[1:]:
+            await ctx.trigger_typing()
             await asyncio.sleep(1)
+            await ctx.send(line)
     else:
         await ctx.send(quote)
 
 
 async def read_official(ctx, quote, emoji):
-    await ctx.send(f':{emoji}: {quote} :{emoji}:')
+    await ctx.trigger_typing()
+    await ctx.send(f':{emoji}:  {quote}  :{emoji}:')
 
 
 async def get_hi_quotes(ctx):
@@ -263,7 +267,7 @@ async def get_joke_quotes(ctx):
         ),
         (
             'man goes 2 the doctor. says "doctor! u gotta help me! im addicted 2 twitter!"',
-            '2 which the doctor replies "i dont follow u',
+            '2 which the doctor replies "i dont follow u"',
         ),
         (
             'wt do u get if u cross a sheep w/ a kangaroo?',

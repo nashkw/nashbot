@@ -64,23 +64,23 @@ class Music(commands.Cog, name='music'):
 
     @commands.command(name='play', help='tell the bot play music from youtube')
     async def play(self, ctx, *, search: str):
-        await ctx.trigger_typing()
-        if not ctx.author.voice:
-            raise NotInVChannel
+        async with ctx.typing():
+            if not ctx.author.voice:
+                raise NotInVChannel
 
-        info = self.ydl.extract_info(f"ytsearch:{search}", download=False)
-        if not info['entries']:
-            raise FailedSearch
-        else:
-            info = info['entries'][0]
+            info = self.ydl.extract_info(f"ytsearch:{search}", download=False)
+            if not info['entries']:
+                raise FailedSearch
+            else:
+                info = info['entries'][0]
 
-        if not ctx.voice_client:
-            await ctx.author.voice.channel.connect()
-        else:
-            await ctx.voice_client.move_to(ctx.author.voice.channel)
+            if not ctx.voice_client:
+                await ctx.author.voice.channel.connect()
+            else:
+                await ctx.voice_client.move_to(ctx.author.voice.channel)
 
-        await self.queue_sources.put(await discord.FFmpegOpusAudio.from_probe(info['formats'][0]['url'], **FFMPEG_OPTS))
-        self.queue_titles.append(info['title'])
+            await self.queue_sources.put(await discord.FFmpegOpusAudio.from_probe(info['formats'][0]['url'], **FFMPEG_OPTS))
+            self.queue_titles.append(info['title'])
         await read_official(ctx, f'added to music queue: "{info["title"]}"', 'white_check_mark')
         if not self.looping:
             await self.music_loop(ctx)

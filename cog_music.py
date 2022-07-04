@@ -37,6 +37,12 @@ class Music(commands.Cog, name='music'):
         self.nowplaying = ''
         self.looping = False
 
+    def np_emoji(self):
+        return 'repeat' if self.repeating is not None else 'notes'
+
+    def np_msg(self):
+        return f'now {"looping" if self.repeating is not None else "playing"}: "{self.nowplaying}"'
+
     async def end_music(self, ctx):
         ctx.voice_client.stop()
         await ctx.voice_client.disconnect()
@@ -53,11 +59,13 @@ class Music(commands.Cog, name='music'):
         while not self.bot.is_closed() and self.looping:
             self.next.clear()
             
-            if self.repeating is None:
+            if not self.repeating:
+                if self.repeating is not None:
+                    self.repeating = True  # loop on new song if skip cmd was called while loop is toggled
                 try:
                     pre_source = self.q_sources.get_nowait()
                     self.nowplaying = self.q_titles.pop(0)
-                    await read_official(ctx, f'now playing: "{self.nowplaying}"', 'notes')
+                    await read_official(ctx, self.np_msg(), self.np_emoji())
                 except asyncio.QueueEmpty:
                     self.looping = False
                     await self.end_music(ctx)
@@ -69,7 +77,7 @@ class Music(commands.Cog, name='music'):
             source = await discord.FFmpegOpusAudio.from_probe(pre_source, **FFMPEG_OPTS)
             ctx.voice_client.play(source, after=lambda _: self.bot.loop.call_soon_threadsafe(self.next.set))
             await self.next.wait()
-            if self.repeating is not None:
+            if self.repeating:
                 self.repeating = pre_source
 
     @commands.command(name='play', help='play music from youtube')
@@ -108,16 +116,18 @@ class Music(commands.Cog, name='music'):
     @commands.command(name='loop', aliases=['unloop'], help='set the currently playing song to loop')
     @is_v_client()
     async def loop(self, ctx):
-        if self.repeating is not None:
+        if self.repeating:
             self.repeating = None
-            await read_official(ctx, f'stopped looping: "{self.nowplaying}"', 'notes')
+            await read_official(ctx, f'stopped looping: "{self.nowplaying}"', self.np_emoji())
         else:
             self.repeating = True
-            await read_official(ctx, f'now looping: "{self.nowplaying}"', 'repeat')
+            await read_official(ctx, self.np_msg(), self.np_emoji())
 
     @commands.command(name='skip', help='skip the currently playing song')
     @is_v_client()
     async def skip(self, ctx):
+        if self.repeating is not None:
+            self.repeating = False
         ctx.voice_client.stop()
         await read_official(ctx, f'skipped: "{self.nowplaying}"', 'track_next')
 
@@ -125,8 +135,8 @@ class Music(commands.Cog, name='music'):
     @is_v_client()
     async def dequeue(self, ctx, index: int):
         if index == 0:
-            ctx.voice_client.stop()
-        elif 0 < index - 1 < len(self.q_titles):
+            await ctx.invoke(self.bot.get_command('skip'))
+        elif 0 <= index - 1 < len(self.q_titles):
             newq = asyncio.Queue()
             i = 0
             while not self.q_sources.empty():
@@ -146,17 +156,12 @@ class Music(commands.Cog, name='music'):
         await self.end_music(ctx)
         await read_official(ctx, 'music queue cleared', 'x')
 
-    @commands.command(name='showqueue', aliases=['showq', 'qshow'], help='show the current music queue')
+    @commands.command(name='showqueue', aliases=['showq', 'qshow', 'q'], help='show the current music queue')
     @is_v_client()
     async def showqueue(self, ctx):
-        np = 'repeat' if self.repeating is not None else 'notes'
-        np = f'**:{np}: 0: "{self.nowplaying}" :{np}:**'
-        embed = discord.Embed(title=':musical_note: music queue :musical_note:')
-        if self.q_titles:
-            v = '\n'.join([f'> {index + 1}: "{item}"' for index, item in enumerate(self.q_titles)])
-            embed.add_field(name=np, value=v, inline=False)
-        else:
-            embed.description = np
+        np = f'**:{self.np_emoji()}: 0: "{self.nowplaying}" :{self.np_emoji()}:**'
+        v = '\n'.join([f'> {index + 1}: "{item}"' for index, item in enumerate(self.q_titles)])
+        embed = discord.Embed(title=':musical_note: music queue :musical_note:', description=f'{np}\n{v}')
         await read_embed(ctx.channel, embed)
 
     async def cog_command_error(self, ctx, error):

@@ -57,7 +57,7 @@ class Music(commands.Cog, name='music'):
                 try:
                     pre_source = self.q_sources.get_nowait()
                     self.nowplaying = self.q_titles.pop(0)
-                    await read_official(ctx, f'now playing: "{self.nowplaying}"', 'musical_note')
+                    await read_official(ctx, f'now playing: "{self.nowplaying}"', 'notes')
                 except asyncio.QueueEmpty:
                     self.looping = False
                     await self.end_music(ctx)
@@ -110,7 +110,7 @@ class Music(commands.Cog, name='music'):
     async def loop(self, ctx):
         if self.repeating is not None:
             self.repeating = None
-            await read_official(ctx, f'stopped looping: "{self.nowplaying}"', 'musical_note')
+            await read_official(ctx, f'stopped looping: "{self.nowplaying}"', 'notes')
         else:
             self.repeating = True
             await read_official(ctx, f'now looping: "{self.nowplaying}"', 'repeat')
@@ -149,13 +149,17 @@ class Music(commands.Cog, name='music'):
     @commands.command(name='showqueue', aliases=['showq', 'qshow'], help='show the current music queue')
     @is_v_client()
     async def showqueue(self, ctx):
-        embed = discord.Embed(title='music queue')
-        v = '\n'.join([f'> {index + 1}: "{item}"' for index, item in enumerate(self.q_titles)])
-        emoji = 'repeat' if self.repeating is not None else 'musical_note'
-        embed.add_field(name=f':{emoji}: 0: "{self.nowplaying}" :{emoji}:', value=v, inline=False)
+        np = 'repeat' if self.repeating is not None else 'notes'
+        np = f'**:{np}: 0: "{self.nowplaying}" :{np}:**'
+        embed = discord.Embed(title=':musical_note: music queue :musical_note:')
+        if self.q_titles:
+            v = '\n'.join([f'> {index + 1}: "{item}"' for index, item in enumerate(self.q_titles)])
+            embed.add_field(name=np, value=v, inline=False)
+        else:
+            embed.description = np
         await read_embed(ctx.channel, embed)
 
-    """async def cog_command_error(self, ctx, error):
+    async def cog_command_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
             await read_quote(ctx, random.choice(await get_no_music_quotes(ctx)))
         elif isinstance(error, NotInVChannel):
@@ -173,7 +177,7 @@ class Music(commands.Cog, name='music'):
         elif isinstance(error, commands.MissingRequiredArgument) and ctx.command == self.bot.get_command('play'):
             await read_official(ctx, '2 use this cmd u gotta give the name of the song u wanna play bud', 'warning')
         else:
-            await read_official(ctx, f'unknown music error: {str(error).lower()}', 'warning')"""
+            await read_official(ctx, f'unknown music error: {str(error).lower()}', 'warning')
 
 
 def setup(bot):

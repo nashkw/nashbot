@@ -91,51 +91,47 @@ class Music(commands.Cog, name='music'):
             if self.repeating:
                 self.repeating = pre_source
 
-    @commands.command(name='play', help='play music from youtube')
-    async def play(self, ctx, *, search: str):
+    async def music_play(self, ctx, arg, is_search=True):
         async with ctx.typing():
             if not ctx.author.voice:
                 raise NotInVChannel
 
-            info = YoutubeDL(YDL_OPTS).extract_info(f"ytsearch:{search}", download=False)
-            if not info['entries']:
-                raise FailedSearch
+            if is_search:
+                info = YoutubeDL(YDL_OPTS).extract_info(f"ytsearch:{arg}", download=False)
+                if not info['entries']:
+                    raise FailedSearch
+                else:
+                    info = info['entries'][0]
+                    await self.q_sources.put(info['formats'][0]['url'])
+                    self.q_titles.append(info['title'])
             else:
-                info = info['entries'][0]
-                await self.q_sources.put(info['formats'][0]['url'])
-                self.q_titles.append(info['title'])
+                songs = glob.glob(f'E:\BACKUPS\Music Backup\Music\{arg}\*.mp3')
+                if not songs:
+                    raise FailedSearch
+                else:
+                    for song in songs:
+                        await self.q_sources.put(song)
+                        self.q_titles.append(song.split(arg)[1][1:-4])
 
             if not ctx.voice_client:
                 await ctx.author.voice.channel.connect()
             else:
                 await ctx.voice_client.move_to(ctx.author.voice.channel)
-        await read_official(ctx, f'added to music queue: "{info["title"]}"', 'white_check_mark')
+
+        added = f'"{info["title"]}"' if is_search else f'local album "{arg}"'
+        await read_official(ctx, f'added to music queue: {added}', 'white_check_mark')
+
         if not self.looping:
             await self.music_loop(ctx)
+
+    @commands.command(name='play', help='play music from youtube')
+    async def play(self, ctx, *, search: str):
+        await self.music_play(ctx, search)
 
     @commands.command(name='nashplay', aliases=['nplay'], help='add an album from local files to the music queue')
     @is_nash()
     async def nashplay(self, ctx, *, album: str):
-        async with ctx.typing():
-            if not ctx.author.voice:
-                raise NotInVChannel
-
-            songs = glob.glob(f'E:\BACKUPS\Music Backup\Music\{album}\*.mp3')
-            if not songs:
-                raise FailedSearch
-            else:
-                for song in songs:
-                    await self.q_sources.put(song)
-                    self.q_titles.append(song.split(album)[1][1:-4])
-
-            if not ctx.voice_client:
-                await ctx.author.voice.channel.connect()
-            else:
-                await ctx.voice_client.move_to(ctx.author.voice.channel)
-        await read_official(ctx, f'added album to music queue: "{album}"', 'white_check_mark')
-
-        if not self.looping:
-            await self.music_loop(ctx)
+        await self.music_play(ctx, album, is_search=False)
 
     @commands.command(name='pause', aliases=['unpause'], help='pause or unpause the currently playing song')
     @is_v_client()

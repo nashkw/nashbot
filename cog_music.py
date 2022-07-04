@@ -38,12 +38,12 @@ class Music(commands.Cog, name='music'):
 
     async def end_music(self, ctx):
         ctx.voice_client.stop()
+        await ctx.voice_client.disconnect()
         self.q_sources = asyncio.Queue()
         self.q_titles = []
         self.next = asyncio.Event()
         self.nowplaying = ''
         self.looping = False
-        await ctx.voice_client.disconnect()
 
     async def music_loop(self, ctx):
         await self.bot.wait_until_ready()
@@ -102,7 +102,7 @@ class Music(commands.Cog, name='music'):
         ctx.voice_client.stop()
         await read_official(ctx, f'skipped: "{self.nowplaying}"', 'track_next')
 
-    @commands.command(name='dequeue', aliases=['dq'], help='remove a song from the music queue')
+    @commands.command(name='dequeue', aliases=['dq', 'qremove'], help='remove a song from the music queue')
     @is_v_client()
     async def dequeue(self, ctx, index: int):
         if index == 0:
@@ -121,18 +121,19 @@ class Music(commands.Cog, name='music'):
         else:
             raise IndexError
 
-    @commands.command(name='clearqueue', aliases=['clearq'], help='clear the music queue')
+    @commands.command(name='clearqueue', aliases=['clearq', 'qclear'], help='clear the music queue')
     @is_v_client()
     async def clearqueue(self, ctx):
         await self.end_music(ctx)
         await read_official(ctx, 'music queue cleared', 'x')
 
-    @commands.command(name='showqueue', aliases=['showq'], help='show the current music queue')
+    @commands.command(name='showqueue', aliases=['showq', 'qshow'], help='show the current music queue')
     @is_v_client()
     async def showqueue(self, ctx):
-        await read_quote(ctx, ('music queue:', f'> 0: :musical_note: "{self.nowplaying}" :musical_note:'))
-        for index, item in enumerate(self.q_titles):
-            await read_quote(ctx, f'> {index + 1}: "{item}"')
+        embed = discord.Embed(title='music queue')
+        v = '\n'.join([f'> {index + 1}: "{item}"' for index, item in enumerate(self.q_titles)])
+        embed.add_field(name=f':musical_note: 0: "{self.nowplaying}" :musical_note:', value=v, inline=False)
+        await read_embed(ctx.channel, embed)
 
     async def cog_command_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):

@@ -34,7 +34,7 @@ class CustomHelp(commands.HelpCommand):
                 embed.add_field(name=map_cog.qualified_name, value=v, inline=False)
             else:
                 embed.add_field(name='misc', value=v, inline=False)
-        await channel.send(embed=embed)
+        await read_embed(channel, embed)
 
 
 bot = commands.Bot(

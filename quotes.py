@@ -4,6 +4,8 @@
 import asyncio
 
 
+# quote reading functions
+
 async def read_quote(ctx, quote):
     await ctx.trigger_typing()
     if isinstance(quote, tuple):
@@ -20,6 +22,13 @@ async def read_official(ctx, quote, emoji):
     await ctx.trigger_typing()
     await ctx.send(f':{emoji}:  {quote}  :{emoji}:')
 
+
+async def read_embed(channel, embed):
+    await channel.trigger_typing()
+    await channel.send(embed=embed)
+
+
+# for misc commands
 
 async def get_hi_quotes(ctx):
     hi_quotes = [
@@ -118,6 +127,8 @@ async def get_shutdown_quotes(ctx):
     ]
     return shutdown_quotes
 
+
+# for joke commands
 
 async def get_joke_quotes(ctx):
     joke_quotes = [
@@ -380,8 +391,6 @@ async def get_joke_quotes(ctx):
     ]
     return joke_quotes
 
-
-# knock knock jokes
 
 async def get_kkjoke_quotes(ctx):
     kkjoke_quotes = [
@@ -873,7 +882,7 @@ welcome_quotes = [
 ]
 
 
-# music
+# for music commands
 
 async def get_no_music_quotes(ctx):
     no_music_quotes = [

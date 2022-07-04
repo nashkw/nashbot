@@ -5,6 +5,7 @@ import random
 import discord
 from discord.ext import commands
 from youtube_dl import YoutubeDL
+from _collections import deque
 from quotes import *
 
 
@@ -131,6 +132,19 @@ class Music(commands.Cog, name='music'):
         ctx.voice_client.stop()
         await read_official(ctx, f'skipped: "{self.nowplaying}"', 'track_next')
 
+    @commands.command(name='shuffle', aliases=['reshuffle', 'qmix', 'mixq'], help='shuffle the current music queue')
+    @is_v_client()
+    async def shuffle(self, ctx):
+        if self.q_titles:
+            shuffling = list(zip(self.q_titles, self.q_sources._queue))
+            random.shuffle(shuffling)
+            qtemp1, qtemp2 = zip(*shuffling)
+            self.q_titles, self.q_sources._queue = list(qtemp1), deque(qtemp2)
+            await read_official(ctx, 'shuffled music queue', 'twisted_rightwards_arrows')
+            await ctx.invoke(self.bot.get_command('showqueue'))
+        else:
+            raise IndexError
+
     @commands.command(name='dequeue', aliases=['dq', 'qremove'], help='remove a song from the music queue')
     @is_v_client()
     async def dequeue(self, ctx, index: int):
@@ -171,11 +185,13 @@ class Music(commands.Cog, name='music'):
             await read_official(ctx, 'yo u gotta b in a voice channel 2 play shit. i need audience yk?', 'warning')
         elif isinstance(error, FailedSearch):
             await read_official(ctx, 'ur search got no results srry, u sure thats the songs name??', 'warning')
-        elif isinstance(error, commands.BadArgument) and ctx.command == self.bot.get_command('dequeue'):
-            await read_official(ctx, 'oof thats not how u use this cmd m8. try smth like "dequeue 1"', 'warning')
+        elif isinstance(error.__cause__, IndexError) and ctx.command == self.bot.get_command('shuffle'):
+            await read_official(ctx, 'but,, wheres the queue?? beef up the queue a bit b4 tryin that lmao', 'warning')
         elif isinstance(error.__cause__, IndexError) and ctx.command == self.bot.get_command('dequeue'):
             await read_official(ctx, 'invalid index buddy. here, find the index w/ this list & try again', 'warning')
             await ctx.invoke(self.bot.get_command('showqueue'))
+        elif isinstance(error, commands.BadArgument) and ctx.command == self.bot.get_command('dequeue'):
+            await read_official(ctx, 'oof thats not how u use this cmd m8. try smth like "dequeue 1"', 'warning')
         elif isinstance(error, commands.MissingRequiredArgument) and ctx.command == self.bot.get_command('dequeue'):
             await read_official(ctx, '2 use this cmd u gotta give the index of the song u want gone', 'warning')
             await ctx.invoke(self.bot.get_command('showqueue'))

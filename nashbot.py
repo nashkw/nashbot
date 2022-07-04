@@ -24,7 +24,7 @@ class CustomHelp(commands.HelpCommand):
         )
         for map_cog, map_cmds in mapping.items():
             v = t2a(
-                body=[[cmd, cmd.help] for cmd in map_cmds],
+                body=[[cmd, cmd.help] for cmd in map_cmds if not cmd.hidden],
                 alignments=[Alignment.LEFT] + [Alignment.LEFT],
                 style=PresetStyle.thin_compact_rounded,
                 first_col_heading=True,

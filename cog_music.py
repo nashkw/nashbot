@@ -124,11 +124,11 @@ class Music(commands.Cog, name='music'):
         if not self.looping:
             await self.music_loop(ctx)
 
-    @commands.command(name='play', help='play music from youtube')
+    @commands.command(name='play', help='play a song from youtube')
     async def play(self, ctx, *, search: str):
         await self.music_play(ctx, search)
 
-    @commands.command(name='nashplay', aliases=['nplay'], help='add an album from local files to the music queue')
+    @commands.command(name='nashplay', aliases=['nplay'], help='add a local album to the music queue', hidden=True)
     @is_nash()
     async def nashplay(self, ctx, *, album: str):
         await self.music_play(ctx, album, is_search=False)
@@ -174,6 +174,14 @@ class Music(commands.Cog, name='music'):
         else:
             raise IndexError
 
+    @commands.command(name='showqueue', aliases=['showq', 'qshow', 'q'], help='show the current music queue')
+    @is_v_client()
+    async def showqueue(self, ctx):
+        np = f'**:{self.np_emoji()}: 0: "{self.nowplaying}" :{self.np_emoji()}:**'
+        v = '\n'.join([f'> {index + 1}: "{item}"' for index, item in enumerate(self.q_titles)])
+        embed = discord.Embed(title=':musical_note: music queue :musical_note:', description=f'{np}\n{v}')
+        await read_embed(ctx.channel, embed)
+
     @commands.command(name='dequeue', aliases=['dq', 'qremove'], help='remove a song from the music queue')
     @is_v_client()
     async def dequeue(self, ctx, index: int):
@@ -198,14 +206,6 @@ class Music(commands.Cog, name='music'):
     async def clearqueue(self, ctx):
         await self.end_music(ctx)
         await read_official(ctx, 'music queue cleared', 'x')
-
-    @commands.command(name='showqueue', aliases=['showq', 'qshow', 'q'], help='show the current music queue')
-    @is_v_client()
-    async def showqueue(self, ctx):
-        np = f'**:{self.np_emoji()}: 0: "{self.nowplaying}" :{self.np_emoji()}:**'
-        v = '\n'.join([f'> {index + 1}: "{item}"' for index, item in enumerate(self.q_titles)])
-        embed = discord.Embed(title=':musical_note: music queue :musical_note:', description=f'{np}\n{v}')
-        await read_embed(ctx.channel, embed)
 
     async def cog_command_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure) and ctx.command == self.bot.get_command('nashplay'):

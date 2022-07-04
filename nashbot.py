@@ -6,6 +6,7 @@ import random
 import discord
 from dotenv import load_dotenv
 from discord.ext import commands
+from table2ascii import table2ascii as t2a, PresetStyle, Alignment
 import cog_jokes
 import cog_music
 from quotes import *
@@ -14,10 +15,32 @@ from quotes import *
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
+
+class CustomHelp(commands.HelpCommand):
+    async def send_bot_help(self, mapping):
+        channel = self.get_destination()
+        embed = discord.Embed(
+            title=':sparkles: nashbot™ commands & curios 4 all ur earthly needs :sparkles:',
+        )
+        for map_cog, map_cmds in mapping.items():
+            v = t2a(
+                body=[[cmd, cmd.help] for cmd in map_cmds],
+                alignments=[Alignment.LEFT] + [Alignment.LEFT],
+                style=PresetStyle.thin_compact_rounded,
+                first_col_heading=True,
+            )
+            v = f"```\n{v}\n```"
+            if map_cog:
+                embed.add_field(name=map_cog.qualified_name, value=v, inline=False)
+            else:
+                embed.add_field(name='misc', value=v, inline=False)
+        await channel.send(embed=embed)
+
+
 bot = commands.Bot(
     command_prefix='',
     intents=discord.Intents.default(),
-    help_command=commands.DefaultHelpCommand(no_category='misc')
+    help_command=CustomHelp()
 )
 
 cogs = [cog_jokes, cog_music]
@@ -56,7 +79,7 @@ async def highfive(ctx):
 async def shutdown(ctx):
     await read_quote(ctx, random.choice(await get_shutdown_quotes(ctx)))
     if ctx.voice_client is not None:
-        await ctx.invoke(bot.get_command('qclear'))
+        await ctx.invoke(bot.get_command('clearqueue'))
     await read_official(ctx, '...shutting down...', 'zzz')
     await bot.close()
 

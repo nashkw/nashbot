@@ -20,8 +20,10 @@ class NotInVChannel(commands.BadArgument):
     pass
 
 
-async def is_v_client(ctx):
-    return ctx.voice_client
+def is_v_client():
+    def predicate(ctx):
+        return ctx.voice_client
+    return commands.check(predicate)
 
 
 class Music(commands.Cog, name='music'):
@@ -62,7 +64,7 @@ class Music(commands.Cog, name='music'):
             await self.next.wait()
             self.nowplaying = ''
 
-    @commands.command(name='play', help='tell the bot play music from youtube')
+    @commands.command(name='play', help='play music from youtube')
     async def play(self, ctx, *, search: str):
         async with ctx.typing():
             if not ctx.author.voice:
@@ -85,9 +87,10 @@ class Music(commands.Cog, name='music'):
         if not self.looping:
             await self.music_loop(ctx)
 
-    @commands.command(name='pause', help='tell the bot to pause or unpause music')
-    @commands.check(is_v_client)
-    async def pause(self, ctx):
+    @commands.command(name='togglepause', aliases=['unpause', 'pause'],
+                      help='pause or unpause the currently playing song')
+    @is_v_client()
+    async def togglepause(self, ctx):
         if ctx.voice_client.is_playing():
             ctx.voice_client.pause()
             await read_official(ctx, f'paused music: "{self.nowplaying}"', 'pause_button')
@@ -95,15 +98,17 @@ class Music(commands.Cog, name='music'):
             ctx.voice_client.resume()
             await read_official(ctx, f'unpaused music: "{self.nowplaying}"', 'arrow_forward')
 
-    @commands.command(name='skip', help='tell the bot to skip the current song')
-    @commands.check(is_v_client)
+    @commands.command(name='skip', aliases=['nextsong', 'next', ],
+                      help='skip the currently playing song')
+    @is_v_client()
     async def skip(self, ctx):
         ctx.voice_client.stop()
         await read_official(ctx, f'skipped: "{self.nowplaying}"', 'track_next')
 
-    @commands.command(name='qremove', help='ask the bot to remove a song from the music queue')
-    @commands.check(is_v_client)
-    async def qremove(self, ctx, index: int):
+    @commands.command(name='dequeue', aliases=['queueremove', 'qremove', 'unqueue', 'dq', ],
+                      help='remove a song from the music queue')
+    @is_v_client()
+    async def dequeue(self, ctx, index: int):
         if index == 0:
             ctx.voice_client.stop()
         elif 0 < index - 1 < len(self.queue_titles):
@@ -120,15 +125,17 @@ class Music(commands.Cog, name='music'):
         else:
             raise IndexError
 
-    @commands.command(name='qclear', help='tell the bot to clear the music queue')
-    @commands.check(is_v_client)
-    async def qclear(self, ctx):
+    @commands.command(name='clearqueue', aliases=['queueclear', 'qclear', 'clearq', ],
+                      help='clear the music queue')
+    @is_v_client()
+    async def clearqueue(self, ctx):
         await self.end_music(ctx)
         await read_official(ctx, 'music queue cleared', 'x')
 
-    @commands.command(name='qshow', help='ask the bot to read out the current music queue')
-    @commands.check(is_v_client)
-    async def qshow(self, ctx):
+    @commands.command(name='showqueue', aliases=['queueshow', 'qshow', 'showq', ],
+                      help='show the current music queue')
+    @is_v_client()
+    async def showqueue(self, ctx):
         await read_quote(ctx, ('music queue:', f'> 0: :musical_note: "{self.nowplaying}" :musical_note:'))
         for index, item in enumerate(self.queue_titles):
             await read_quote(ctx, f'> {index + 1}: "{item}"')
@@ -140,14 +147,14 @@ class Music(commands.Cog, name='music'):
             await read_official(ctx, 'yo u gotta b in a voice channel 2 play shit. i need audience yk?', 'warning')
         elif isinstance(error, FailedSearch):
             await read_official(ctx, 'ur search got no results srry, u sure thats the songs name??', 'warning')
-        elif isinstance(error, commands.BadArgument) and ctx.command == self.bot.get_command('qremove'):
-            await read_official(ctx, 'oof thats not how u use this cmd m8. try smth like "qremove 1"', 'warning')
-        elif isinstance(error.__cause__, IndexError) and ctx.command == self.bot.get_command('qremove'):
+        elif isinstance(error, commands.BadArgument) and ctx.command == self.bot.get_command('dequeue'):
+            await read_official(ctx, 'oof thats not how u use this cmd m8. try smth like "dequeue 1"', 'warning')
+        elif isinstance(error.__cause__, IndexError) and ctx.command == self.bot.get_command('dequeue'):
             await read_official(ctx, 'invalid index buddy. here, find the index w/ this list & try again', 'warning')
-            await ctx.invoke(self.bot.get_command('qshow'))
-        elif isinstance(error, commands.MissingRequiredArgument) and ctx.command == self.bot.get_command('qremove'):
+            await ctx.invoke(self.bot.get_command('showqueue'))
+        elif isinstance(error, commands.MissingRequiredArgument) and ctx.command == self.bot.get_command('dequeue'):
             await read_official(ctx, '2 use this cmd u gotta give the index of the song u want gone', 'warning')
-            await ctx.invoke(self.bot.get_command('qshow'))
+            await ctx.invoke(self.bot.get_command('showqueue'))
         elif isinstance(error, commands.MissingRequiredArgument) and ctx.command == self.bot.get_command('play'):
             await read_official(ctx, '2 use this cmd u gotta give the name of the song u wanna play bud', 'warning')
         else:

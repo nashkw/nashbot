@@ -65,17 +65,17 @@ async def on_error(event, *args, **kwargs):
     print(f'error logged to err.log: {args[0]}\n')
 
 
-@bot.command(name='hi', help='greet the bot')
+@bot.command(name='hi', aliases=['hello', 'howdy', 'greetings', 'salutations'], help='greet the bot')
 async def hi(ctx):
     await read_quote(ctx, random.choice(await get_hi_quotes(ctx)))
 
 
-@bot.command(name='highfive', help='ask the bot to give u a high five')
+@bot.command(name='highfive', aliases=['hifive', 'high5', 'hi5'], help='ask the bot to give u a high five')
 async def highfive(ctx):
     await read_quote(ctx, random.choice(await get_highfive_quotes(ctx)))
 
 
-@bot.command(name='shutdown', help='shut down the bot')
+@bot.command(name='shutdown', aliases=['die', 'kys'], help='shut down the bot')
 async def shutdown(ctx):
     await read_quote(ctx, random.choice(await get_shutdown_quotes(ctx)))
     if ctx.voice_client is not None:

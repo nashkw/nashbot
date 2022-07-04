@@ -15,7 +15,7 @@ class Jokes(commands.Cog, name='jokes'):
     async def joke(self, ctx):
         await read_quote(ctx, random.choice(await get_joke_quotes(ctx)))
 
-    @commands.command(name='kkjoke', help='ask the bot to tell u a knock knock joke')
+    @commands.command(name='kkjoke', aliases=['knockknockjoke'], help='ask the bot to tell u a knock knock joke')
     async def kkjoke(self, ctx):
         quotes = random.choice(await get_kkjoke_quotes(ctx))
 

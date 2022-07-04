@@ -30,17 +30,16 @@ class Music(commands.Cog, name='music'):
 
     def __init__(self, bot):
         self.bot = bot
-        self.ydl = YoutubeDL(YDL_OPTS)
-        self.queue_sources = asyncio.Queue()
-        self.queue_titles = []
+        self.q_sources = asyncio.Queue()
+        self.q_titles = []
         self.next = asyncio.Event()
         self.nowplaying = ''
         self.looping = False
 
     async def end_music(self, ctx):
         ctx.voice_client.stop()
-        self.queue_sources = asyncio.Queue()
-        self.queue_titles = []
+        self.q_sources = asyncio.Queue()
+        self.q_titles = []
         self.next = asyncio.Event()
         self.nowplaying = ''
         self.looping = False
@@ -52,14 +51,14 @@ class Music(commands.Cog, name='music'):
         while not self.bot.is_closed() and self.looping:
             self.next.clear()
             try:
-                source = self.queue_sources.get_nowait()
+                source = self.q_sources.get_nowait()
             except asyncio.QueueEmpty:
                 self.looping = False
                 await self.end_music(ctx)
                 await read_quote(ctx, ':x: end of music queue :x:')
                 break
             ctx.voice_client.play(source, after=lambda _: self.bot.loop.call_soon_threadsafe(self.next.set))
-            self.nowplaying = self.queue_titles.pop(0)
+            self.nowplaying = self.q_titles.pop(0)
             await read_official(ctx, f'now playing: "{self.nowplaying}"', 'musical_note')
             await self.next.wait()
             self.nowplaying = ''
@@ -70,7 +69,7 @@ class Music(commands.Cog, name='music'):
             if not ctx.author.voice:
                 raise NotInVChannel
 
-            info = self.ydl.extract_info(f"ytsearch:{search}", download=False)
+            info = YoutubeDL(YDL_OPTS).extract_info(f"ytsearch:{search}", download=False)
             if not info['entries']:
                 raise FailedSearch
             else:
@@ -81,16 +80,15 @@ class Music(commands.Cog, name='music'):
             else:
                 await ctx.voice_client.move_to(ctx.author.voice.channel)
 
-            await self.queue_sources.put(await discord.FFmpegOpusAudio.from_probe(info['formats'][0]['url'], **FFMPEG_OPTS))
-            self.queue_titles.append(info['title'])
+            await self.q_sources.put(await discord.FFmpegOpusAudio.from_probe(info['formats'][0]['url'], **FFMPEG_OPTS))
+            self.q_titles.append(info['title'])
         await read_official(ctx, f'added to music queue: "{info["title"]}"', 'white_check_mark')
         if not self.looping:
             await self.music_loop(ctx)
 
-    @commands.command(name='togglepause', aliases=['unpause', 'pause'],
-                      help='pause or unpause the currently playing song')
+    @commands.command(name='pause', aliases=['unpause'], help='pause or unpause the currently playing song')
     @is_v_client()
-    async def togglepause(self, ctx):
+    async def pause(self, ctx):
         if ctx.voice_client.is_playing():
             ctx.voice_client.pause()
             await read_official(ctx, f'paused music: "{self.nowplaying}"', 'pause_button')
@@ -98,46 +96,42 @@ class Music(commands.Cog, name='music'):
             ctx.voice_client.resume()
             await read_official(ctx, f'unpaused music: "{self.nowplaying}"', 'arrow_forward')
 
-    @commands.command(name='skip', aliases=['nextsong', 'next', ],
-                      help='skip the currently playing song')
+    @commands.command(name='skip', help='skip the currently playing song')
     @is_v_client()
     async def skip(self, ctx):
         ctx.voice_client.stop()
         await read_official(ctx, f'skipped: "{self.nowplaying}"', 'track_next')
 
-    @commands.command(name='dequeue', aliases=['queueremove', 'qremove', 'unqueue', 'dq', ],
-                      help='remove a song from the music queue')
+    @commands.command(name='dequeue', aliases=['dq'], help='remove a song from the music queue')
     @is_v_client()
     async def dequeue(self, ctx, index: int):
         if index == 0:
             ctx.voice_client.stop()
-        elif 0 < index - 1 < len(self.queue_titles):
+        elif 0 < index - 1 < len(self.q_titles):
             newq = asyncio.Queue()
             i = 0
-            while not self.queue_sources.empty():
-                item = self.queue_sources.get_nowait()
+            while not self.q_sources.empty():
+                item = self.q_sources.get_nowait()
                 if i != index - 1:
                     newq.put_nowait(item)
                 i = i + 1
-            self.queue_sources = newq
-            await read_official(ctx, f'removed from music queue: "{self.queue_titles.pop(index - 1)}"',
+            self.q_sources = newq
+            await read_official(ctx, f'removed from music queue: "{self.q_titles.pop(index - 1)}"',
                                 'negative_squared_cross_mark')
         else:
             raise IndexError
 
-    @commands.command(name='clearqueue', aliases=['queueclear', 'qclear', 'clearq', ],
-                      help='clear the music queue')
+    @commands.command(name='clearqueue', aliases=['clearq'], help='clear the music queue')
     @is_v_client()
     async def clearqueue(self, ctx):
         await self.end_music(ctx)
         await read_official(ctx, 'music queue cleared', 'x')
 
-    @commands.command(name='showqueue', aliases=['queueshow', 'qshow', 'showq', ],
-                      help='show the current music queue')
+    @commands.command(name='showqueue', aliases=['showq'], help='show the current music queue')
     @is_v_client()
     async def showqueue(self, ctx):
         await read_quote(ctx, ('music queue:', f'> 0: :musical_note: "{self.nowplaying}" :musical_note:'))
-        for index, item in enumerate(self.queue_titles):
+        for index, item in enumerate(self.q_titles):
             await read_quote(ctx, f'> {index + 1}: "{item}"')
 
     async def cog_command_error(self, ctx, error):

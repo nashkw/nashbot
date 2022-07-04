@@ -707,6 +707,10 @@ step_1_expected = [
     'who is it',
     'whosit',
     'whossit',
+    'who this',
+    'whothis',
+    'who dis',
+    'whodis',
 ]
 
 cancel_responses = [
@@ -808,11 +812,14 @@ cancel_obedient = [
 
 welcome_responses = [
     'come in',
+    'come in then',
     'come in nashbot',
     'ok come in',
+    'ok come in then',
     'ok well come in then',
     'ok in that case come in',
     'okay come in',
+    'okay come in then',
     'okay well come in then',
     'okay in that case come in',
     'cool come in',

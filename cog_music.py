@@ -1,6 +1,7 @@
 # cog_music.py
 
 
+import glob
 import random
 import discord
 from discord.ext import commands
@@ -24,6 +25,12 @@ class NotInVChannel(commands.BadArgument):
 def is_v_client():
     def predicate(ctx):
         return ctx.voice_client
+    return commands.check(predicate)
+
+
+def is_nash():
+    def predicate(ctx):
+        return ctx.message.author.id in [386921492601896961, 727183720628486306]
     return commands.check(predicate)
 
 
@@ -95,31 +102,38 @@ class Music(commands.Cog, name='music'):
                 raise FailedSearch
             else:
                 info = info['entries'][0]
+                await self.q_sources.put(info['formats'][0]['url'])
+                self.q_titles.append(info['title'])
 
             if not ctx.voice_client:
                 await ctx.author.voice.channel.connect()
             else:
                 await ctx.voice_client.move_to(ctx.author.voice.channel)
-
-            await self.q_sources.put(info['formats'][0]['url'])
-            self.q_titles.append(info['title'])
         await read_official(ctx, f'added to music queue: "{info["title"]}"', 'white_check_mark')
         if not self.looping:
             await self.music_loop(ctx)
 
-    @commands.command(name='nashplay', help='play music from local files')
-    async def nashplay(self, ctx):
+    @commands.command(name='nashplay', aliases=['nplay'], help='add an album from local files to the music queue')
+    @is_nash()
+    async def nashplay(self, ctx, *, album: str):
         async with ctx.typing():
             if not ctx.author.voice:
                 raise NotInVChannel
+
+            songs = glob.glob(f'E:\BACKUPS\Music Backup\Music\{album}\*.mp3')
+            if not songs:
+                raise FailedSearch
+            else:
+                for song in songs:
+                    await self.q_sources.put(song)
+                    self.q_titles.append(song.split(album)[1][1:-4])
+
             if not ctx.voice_client:
                 await ctx.author.voice.channel.connect()
             else:
                 await ctx.voice_client.move_to(ctx.author.voice.channel)
+        await read_official(ctx, f'added album to music queue: "{album}"', 'white_check_mark')
 
-            await self.q_sources.put('E:\BACKUPS\Music Backup\Music\Radiohead\Let Down.mp3')
-            self.q_titles.append('Let Down')
-        await read_official(ctx, f'added to music queue: "Let Down"', 'white_check_mark')
         if not self.looping:
             await self.music_loop(ctx)
 
@@ -198,12 +212,17 @@ class Music(commands.Cog, name='music'):
         await read_embed(ctx.channel, embed)
 
     async def cog_command_error(self, ctx, error):
-        if isinstance(error, commands.CheckFailure):
+        if isinstance(error, commands.CheckFailure) and ctx.command == self.bot.get_command('nashplay'):
+            print(ctx.message.author.id)
+            await read_official(ctx, 'afraid this is a nash only cmd buddy. ur only hope is identity theft', 'warning')
+        elif isinstance(error, commands.CheckFailure):
             await read_quote(ctx, random.choice(await get_no_music_quotes(ctx)))
         elif isinstance(error, NotInVChannel):
             await read_official(ctx, 'yo u gotta b in a voice channel 2 play shit. i need audience yk?', 'warning')
-        elif isinstance(error, FailedSearch):
+        elif isinstance(error, FailedSearch) and ctx.command == self.bot.get_command('play'):
             await read_official(ctx, 'ur search got no results srry, u sure thats the songs name??', 'warning')
+        elif isinstance(error, FailedSearch) and ctx.command == self.bot.get_command('nashplay'):
+            await read_official(ctx, 'ur search got no results srry, u sure thats the albums name??', 'warning')
         elif isinstance(error.__cause__, IndexError) and ctx.command == self.bot.get_command('shuffle'):
             await read_official(ctx, 'but,, wheres the queue?? beef up the queue a bit b4 tryin that lmao', 'warning')
         elif isinstance(error.__cause__, IndexError) and ctx.command == self.bot.get_command('dequeue'):
@@ -216,6 +235,8 @@ class Music(commands.Cog, name='music'):
             await ctx.invoke(self.bot.get_command('showqueue'))
         elif isinstance(error, commands.MissingRequiredArgument) and ctx.command == self.bot.get_command('play'):
             await read_official(ctx, '2 use this cmd u gotta give the name of the song u wanna play bud', 'warning')
+        elif isinstance(error, commands.MissingRequiredArgument) and ctx.command == self.bot.get_command('nashplay'):
+            await read_official(ctx, '2 use this cmd u gotta give the name of the album u wanna play bud', 'warning')
         else:
             await read_official(ctx, f'unknown music error: {str(error).lower()}', 'warning')
 

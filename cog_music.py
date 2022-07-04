@@ -75,7 +75,10 @@ class Music(commands.Cog, name='music'):
             else:
                 pre_source = self.repeating
 
-            source = await discord.FFmpegOpusAudio.from_probe(pre_source, **FFMPEG_OPTS)
+            if pre_source[:4] == 'http':
+                source = await discord.FFmpegOpusAudio.from_probe(pre_source, **FFMPEG_OPTS)
+            else:
+                source = discord.FFmpegPCMAudio(source=pre_source)
             ctx.voice_client.play(source, after=lambda _: self.bot.loop.call_soon_threadsafe(self.next.set))
             await self.next.wait()
             if self.repeating:
@@ -104,6 +107,22 @@ class Music(commands.Cog, name='music'):
         if not self.looping:
             await self.music_loop(ctx)
 
+    @commands.command(name='nashplay', help='play music from local files')
+    async def nashplay(self, ctx):
+        async with ctx.typing():
+            if not ctx.author.voice:
+                raise NotInVChannel
+            if not ctx.voice_client:
+                await ctx.author.voice.channel.connect()
+            else:
+                await ctx.voice_client.move_to(ctx.author.voice.channel)
+
+            await self.q_sources.put('E:\BACKUPS\Music Backup\Music\Radiohead\Let Down.mp3')
+            self.q_titles.append('Let Down')
+        await read_official(ctx, f'added to music queue: "Let Down"', 'white_check_mark')
+        if not self.looping:
+            await self.music_loop(ctx)
+
     @commands.command(name='pause', aliases=['unpause'], help='pause or unpause the currently playing song')
     @is_v_client()
     async def pause(self, ctx):
@@ -114,6 +133,14 @@ class Music(commands.Cog, name='music'):
             ctx.voice_client.resume()
             await read_official(ctx, f'unpaused music: "{self.nowplaying}"', 'arrow_forward')
 
+    @commands.command(name='skip', help='skip the currently playing song')
+    @is_v_client()
+    async def skip(self, ctx):
+        if self.repeating is not None:
+            self.repeating = False
+        ctx.voice_client.stop()
+        await read_official(ctx, f'skipped: "{self.nowplaying}"', 'track_next')
+
     @commands.command(name='loop', aliases=['unloop'], help='set the currently playing song to loop')
     @is_v_client()
     async def loop(self, ctx):
@@ -123,14 +150,6 @@ class Music(commands.Cog, name='music'):
         else:
             self.repeating = True
             await read_official(ctx, self.np_msg(), self.np_emoji())
-
-    @commands.command(name='skip', help='skip the currently playing song')
-    @is_v_client()
-    async def skip(self, ctx):
-        if self.repeating is not None:
-            self.repeating = False
-        ctx.voice_client.stop()
-        await read_official(ctx, f'skipped: "{self.nowplaying}"', 'track_next')
 
     @commands.command(name='shuffle', aliases=['reshuffle', 'qmix', 'mixq'], help='shuffle the current music queue')
     @is_v_client()

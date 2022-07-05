@@ -12,6 +12,7 @@ from quotes import *
 
 FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn', }
 YDL_OPTS = {'format': 'bestaudio', 'noplaylist': True, }
+M_PATH = 'E:\BACKUPS\Music Backup\Music'
 
 
 class FailedSearch(commands.BadArgument):
@@ -105,7 +106,7 @@ class Music(commands.Cog, name='music'):
                     await self.q_sources.put(info['formats'][0]['url'])
                     self.q_titles.append(info['title'])
             else:
-                songs = glob.glob(f'E:\BACKUPS\Music Backup\Music\{arg}\*.mp3')
+                songs = glob.glob(f'{M_PATH}\{arg}\*.mp3')
                 if not songs:
                     raise FailedSearch
                 else:
@@ -178,8 +179,15 @@ class Music(commands.Cog, name='music'):
     @is_v_client()
     async def showqueue(self, ctx):
         np = f'**:{self.np_emoji()}: 0: "{self.nowplaying}" :{self.np_emoji()}:**'
-        v = '\n'.join([f'> {index + 1}: "{item}"' for index, item in enumerate(self.q_titles)])
+        v = '\n'.join([f'> {i + 1}: "{item}"' for i, item in enumerate(self.q_titles)])
         embed = discord.Embed(title=':musical_note: music queue :musical_note:', description=f'{np}\n{v}')
+        await read_embed(ctx.channel, embed)
+
+    @commands.command(name='shownash', aliases=['shown', 'nshow'], help='show the available local music albums')
+    @is_nash()
+    async def shownash(self, ctx):
+        v = '\n'.join([f'{i+1}: {album.split(M_PATH)[1][1:]}' for i, album in enumerate(glob.glob(f'{M_PATH}\*'))])
+        embed = discord.Embed(title=':eyes: forbidden & secret local albums :eyes:', description=v)
         await read_embed(ctx.channel, embed)
 
     @commands.command(name='dequeue', aliases=['dq', 'qremove'], help='remove a song from the music queue')

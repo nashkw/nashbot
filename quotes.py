@@ -2,9 +2,8 @@
 
 
 import asyncio
+from table2ascii import table2ascii as t2a, PresetStyle, Alignment
 
-
-# quote reading functions
 
 async def read_quote(ctx, quote):
     await ctx.trigger_typing()
@@ -27,6 +26,15 @@ async def read_embed(channel, embed):
     await channel.trigger_typing()
     await channel.send(embed=embed)
 
+
+def get_table(list):
+    table = t2a(
+        body=list,
+        alignments=[Alignment.LEFT] + [Alignment.LEFT],
+        style=PresetStyle.thin_compact_rounded,
+        first_col_heading=True,
+    )
+    return table
 
 # for misc commands
 

@@ -6,7 +6,6 @@ import random
 import discord
 from dotenv import load_dotenv
 from discord.ext import commands
-from table2ascii import table2ascii as t2a, PresetStyle, Alignment
 import cog_jokes
 import cog_music
 from quotes import *
@@ -19,16 +18,9 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 class CustomHelp(commands.HelpCommand):
     async def send_bot_help(self, mapping):
         channel = self.get_destination()
-        embed = discord.Embed(
-            title=':sparkles: nashbot™ commands & curios 4 all ur earthly needs :sparkles:',
-        )
+        embed = discord.Embed(title=':sparkles: nashbot™ commands & curios 4 all ur earthly needs :sparkles:')
         for map_cog, map_cmds in mapping.items():
-            v = t2a(
-                body=[[cmd, cmd.help] for cmd in map_cmds if not cmd.hidden],
-                alignments=[Alignment.LEFT] + [Alignment.LEFT],
-                style=PresetStyle.thin_compact_rounded,
-                first_col_heading=True,
-            )
+            v = get_table([[cmd, cmd.help] for cmd in map_cmds if not cmd.hidden])
             v = f"```\n{v}\n```"
             if map_cog:
                 embed.add_field(name=map_cog.qualified_name, value=v, inline=False)

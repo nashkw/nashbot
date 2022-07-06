@@ -2,7 +2,6 @@
 
 
 import random
-from discord.ext import commands
 from quotes import *
 
 
@@ -61,6 +60,8 @@ class Jokes(commands.Cog, name='jokes'):
         await read_quote(ctx, quotes[1:])
         frozen_users.remove(ctx.message.author.id)
 
+    async def error_handling(self, ctx, error):
+        return False
 
 def setup(bot):
     bot.add_cog(Jokes(bot))

@@ -25,7 +25,7 @@ def is_v_client():
 
 def is_nash():
     def predicate(ctx):
-        if not ctx.message.author.id in [1, 2]:  #[386921492601896961, 727183720628486306]:
+        if not ctx.message.author.id in [386921492601896961, 727183720628486306]:
             raise NotNash
         return True
     return commands.check(predicate)
@@ -211,10 +211,8 @@ class Music(commands.Cog, name='music'):
         await self.end_music(ctx)
         await read_official(ctx, 'music queue cleared', 'x')
 
-    async def cog_command_error(self, ctx, error):
-        if isinstance(error, GlobalCheckFailure):
-            pass
-        elif isinstance(error, NotNash):
+    async def error_handling(self, ctx, error):
+        if isinstance(error, NotNash):
             await read_official(ctx, 'afraid this is a nash only cmd buddy. ur only hope is identity theft', 'warning')
         elif isinstance(error, NoVClient):
             await read_quote(ctx, random.choice(await get_no_music_quotes(ctx)))
@@ -239,7 +237,8 @@ class Music(commands.Cog, name='music'):
         elif isinstance(error, commands.MissingRequiredArgument) and ctx.command == self.bot.get_command('nashplay'):
             await read_official(ctx, '2 use this cmd u gotta give the name of the album u wanna play bud', 'warning')
         else:
-            await read_official(ctx, f'unknown music error: {str(error).lower()}', 'warning')
+            return False
+        return True
 
 
 def setup(bot):

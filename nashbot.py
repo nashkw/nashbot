@@ -6,7 +6,6 @@ import sys
 import random
 import discord
 from dotenv import load_dotenv
-from discord.ext import commands
 import cog_jokes
 import cog_music
 from quotes import *
@@ -51,10 +50,16 @@ async def on_disconnect():
 
 
 @bot.event
-async def on_error(event, *args, **kwargs):
-    with open('err.log', 'a') as f:
-        f.write(f'unhandled error: {args[0]}\n\n')
-    print(f'error logged to err.log: {args[0]}\n')
+async def on_command_error(ctx, error):
+    if isinstance(error, GlobalCheckFailure):
+        return
+    elif isinstance(error, commands.errors.CommandNotFound):
+        return
+    elif ctx.cog:
+        if await ctx.cog.error_handling(ctx, error):
+            return
+    print(f'\n\n#####  UNHANDLED ERROR:  {str(error)}  #####\n\n')
+    raise error
 
 
 @bot.check
@@ -67,6 +72,7 @@ def check_commands(ctx):
 @bot.command(name='hi', aliases=['hello', 'howdy', 'greetings', 'salutations'], help='greet the bot')
 async def hi(ctx):
     await read_quote(ctx, random.choice(await get_hi_quotes(ctx)))
+    raise IndexError
 
 
 @bot.command(name='highfive', aliases=['hifive', 'high5', 'hi5'], help='ask the bot to give u a high five')

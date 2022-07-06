@@ -9,6 +9,11 @@ from table2ascii import table2ascii as t2a, PresetStyle, Alignment
 frozen_users = []
 
 
+async def read_embed(channel, embed):
+    await channel.trigger_typing()
+    await channel.send(embed=embed)
+
+
 async def read_quote(ctx, quote):
     await ctx.trigger_typing()
     if isinstance(quote, tuple):
@@ -26,9 +31,8 @@ async def read_official(ctx, quote, emoji):
     await ctx.send(f':{emoji}:  {quote}  :{emoji}:')
 
 
-async def read_embed(channel, embed):
-    await channel.trigger_typing()
-    await channel.send(embed=embed)
+async def read_error(ctx, quote):
+    await read_official(ctx, quote, 'warning')
 
 
 def get_table(list):
@@ -38,7 +42,7 @@ def get_table(list):
         style=PresetStyle.thin_compact_rounded,
         first_col_heading=True,
     )
-    return
+    return table
 
 
 def get_commands(bot):
@@ -77,6 +81,24 @@ class BadDQIndex(IndexError):
 
 class GlobalCheckFailure(commands.CommandError):
     pass
+
+
+# custom checks
+
+def is_nash():
+    def predicate(ctx):
+        if not ctx.message.author.id in [386921492601896961, 727183720628486306]:
+            raise NotNash
+        return True
+    return commands.check(predicate)
+
+
+def is_v_client():
+    def predicate(ctx):
+        if not ctx.voice_client:
+            raise NoVClient
+        return True
+    return commands.check(predicate)
 
 
 # for misc commands

@@ -55,6 +55,8 @@ async def on_command_error(ctx, error):
         return
     elif isinstance(error, commands.errors.CommandNotFound):
         return
+    elif isinstance(error, NotNash):
+        await read_error(ctx, 'afraid this is a nash only cmd buddy. ur only hope is identity theft')
     elif ctx.cog:
         if await ctx.cog.error_handling(ctx, error):
             return

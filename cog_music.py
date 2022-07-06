@@ -4,7 +4,6 @@
 import glob
 import random
 import discord
-from discord.ext import commands
 from youtube_dl import YoutubeDL
 from _collections import deque
 from quotes import *
@@ -13,22 +12,6 @@ from quotes import *
 FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn', }
 YDL_OPTS = {'format': 'bestaudio', 'noplaylist': True, }
 M_PATH = 'E:\BACKUPS\Music Backup\Music'
-
-
-def is_v_client():
-    def predicate(ctx):
-        if not ctx.voice_client:
-            raise NoVClient
-        return True
-    return commands.check(predicate)
-
-
-def is_nash():
-    def predicate(ctx):
-        if not ctx.message.author.id in [386921492601896961, 727183720628486306]:
-            raise NotNash
-        return True
-    return commands.check(predicate)
 
 
 class Music(commands.Cog, name='music'):
@@ -212,30 +195,28 @@ class Music(commands.Cog, name='music'):
         await read_official(ctx, 'music queue cleared', 'x')
 
     async def error_handling(self, ctx, error):
-        if isinstance(error, NotNash):
-            await read_official(ctx, 'afraid this is a nash only cmd buddy. ur only hope is identity theft', 'warning')
-        elif isinstance(error, NoVClient):
+        if isinstance(error, NoVClient):
             await read_quote(ctx, random.choice(await get_no_music_quotes(ctx)))
         elif isinstance(error, NotInVChannel):
-            await read_official(ctx, 'yo u gotta b in a voice channel 2 play shit. i need audience yk?', 'warning')
+            await read_error(ctx, 'yo u gotta b in a voice channel 2 play shit. i need audience yk?')
         elif isinstance(error, QueuelessShuffle):
-            await read_official(ctx, 'but,, wheres the queue?? beef up the queue a bit b4 tryin that lmao', 'warning')
+            await read_error(ctx, 'but,, wheres the queue?? beef up the queue a bit b4 tryin that lmao')
         elif isinstance(error, BadDQIndex):
-            await read_official(ctx, 'invalid index buddy. here, find the index w/ this list & try again', 'warning')
+            await read_error(ctx, 'invalid index buddy. here, find the index w/ this list & try again')
             await ctx.invoke(self.bot.get_command('showqueue'))
         elif isinstance(error, commands.MissingRequiredArgument) and ctx.command == self.bot.get_command('dequeue'):
-            await read_official(ctx, '2 use this cmd u gotta give the index of the song u want gone', 'warning')
+            await read_error(ctx, '2 use this cmd u gotta give the index of the song u want gone')
             await ctx.invoke(self.bot.get_command('showqueue'))
         elif isinstance(error, commands.BadArgument) and ctx.command == self.bot.get_command('dequeue'):
-            await read_official(ctx, 'oof thats not how u use this cmd m8. try smth like "dequeue 1"', 'warning')
+            await read_error(ctx, 'oof thats not how u use this cmd m8. try smth like "dequeue 1"')
         elif isinstance(error, FailedSearch) and ctx.command == self.bot.get_command('play'):
-            await read_official(ctx, 'ur search got no results srry, u sure thats the songs name??', 'warning')
+            await read_error(ctx, 'ur search got no results srry, u sure thats the songs name??')
         elif isinstance(error, commands.MissingRequiredArgument) and ctx.command == self.bot.get_command('play'):
-            await read_official(ctx, '2 use this cmd u gotta give the name of the song u wanna play bud', 'warning')
+            await read_error(ctx, '2 use this cmd u gotta give the name of the song u wanna play bud')
         elif isinstance(error, FailedSearch) and ctx.command == self.bot.get_command('nashplay'):
-            await read_official(ctx, 'ur search got no results srry, u sure thats the albums name??', 'warning')
+            await read_error(ctx, 'ur search got no results srry, u sure thats the albums name??')
         elif isinstance(error, commands.MissingRequiredArgument) and ctx.command == self.bot.get_command('nashplay'):
-            await read_official(ctx, '2 use this cmd u gotta give the name of the album u wanna play bud', 'warning')
+            await read_error(ctx, '2 use this cmd u gotta give the name of the album u wanna play bud')
         else:
             return False
         return True

@@ -136,6 +136,14 @@ async def get_shutdown_quotes(ctx):
     return shutdown_quotes
 
 
+async def get_restart_quotes(ctx):
+    restart_quotes = [
+        'uuuuh if u say so boss. here i go...? :grimacing:',
+        'yeah ur right, i could do w/ a power nap. see u on the other side bestie <3 :zzz:',
+    ]
+    return restart_quotes
+
+
 # for joke commands
 
 async def get_joke_quotes(ctx):

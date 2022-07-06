@@ -2,6 +2,7 @@
 
 
 import os
+import sys
 import random
 import discord
 from dotenv import load_dotenv
@@ -20,8 +21,7 @@ class CustomHelp(commands.HelpCommand):
         channel = self.get_destination()
         embed = discord.Embed(title=':sparkles: nashbot™ commands & curios 4 all ur earthly needs :sparkles:')
         for map_cog, map_cmds in mapping.items():
-            v = get_table([[cmd, cmd.help] for cmd in map_cmds if not cmd.hidden])
-            v = f"```\n{v}\n```"
+            v = f"```\n{get_table([[cmd, cmd.help] for cmd in map_cmds if not cmd.hidden])}\n```"
             if map_cog:
                 embed.add_field(name=map_cog.qualified_name, value=v, inline=False)
             else:
@@ -42,12 +42,12 @@ for cog in cogs:
 
 @bot.event
 async def on_ready():
-    print(f'{bot.user.name} has connected to discord')
+    print('nashbot™ has connected to discord')
 
 
 @bot.event
 async def on_disconnect():
-    print(f'{bot.user.name} has disconnected from discord')
+    print('nashbot™ has disconnected from discord')
 
 
 @bot.event
@@ -74,6 +74,15 @@ async def shutdown(ctx):
         await ctx.invoke(bot.get_command('clearqueue'))
     await read_official(ctx, '...shutting down...', 'zzz')
     await bot.close()
+
+
+@bot.command(name='restart', aliases=['reboot', 'refresh'], help='restart the bot')
+async def restart(ctx):
+    await read_quote(ctx, random.choice(await get_restart_quotes(ctx)))
+    if ctx.voice_client is not None:
+        await ctx.invoke(bot.get_command('clearqueue'))
+    await read_official(ctx, '...restarting...', 'zap')
+    os.execv(sys.executable, ['python'] + sys.argv)
 
 
 bot.run(TOKEN)

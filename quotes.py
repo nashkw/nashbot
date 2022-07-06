@@ -2,6 +2,7 @@
 
 
 import asyncio
+from discord.ext import commands
 from table2ascii import table2ascii as t2a, PresetStyle, Alignment
 
 
@@ -46,6 +47,36 @@ def get_commands(bot):
 
 def clean_msg(m):
     return m.content.lower().replace('?', '').replace('...', '').replace(' :)', '').strip()
+
+
+# custom errors
+
+class FailedSearch(commands.BadArgument):
+    pass
+
+
+class NotInVChannel(commands.BadArgument):
+    pass
+
+
+class NotNash(commands.CommandError):
+    pass
+
+
+class NoVClient(commands.CommandError):
+    pass
+
+
+class QueuelessShuffle(IndexError):
+    pass
+
+
+class BadDQIndex(IndexError):
+    pass
+
+
+class GlobalCheckFailure(commands.CommandError):
+    pass
 
 
 # for misc commands

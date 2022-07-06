@@ -59,7 +59,9 @@ async def on_error(event, *args, **kwargs):
 
 @bot.check
 def check_commands(ctx):
-    return ctx.message.author.id not in frozen_users
+    if ctx.message.author.id in frozen_users:
+        raise GlobalCheckFailure
+    return True
 
 
 @bot.command(name='hi', aliases=['hello', 'howdy', 'greetings', 'salutations'], help='greet the bot')

@@ -15,23 +15,19 @@ YDL_OPTS = {'format': 'bestaudio', 'noplaylist': True, }
 M_PATH = 'E:\BACKUPS\Music Backup\Music'
 
 
-class FailedSearch(commands.BadArgument):
-    pass
-
-
-class NotInVChannel(commands.BadArgument):
-    pass
-
-
 def is_v_client():
     def predicate(ctx):
-        return ctx.voice_client
+        if not ctx.voice_client:
+            raise NoVClient
+        return True
     return commands.check(predicate)
 
 
 def is_nash():
     def predicate(ctx):
-        return ctx.message.author.id in [386921492601896961, 727183720628486306]
+        if not ctx.message.author.id in [1, 2]:  #[386921492601896961, 727183720628486306]:
+            raise NotNash
+        return True
     return commands.check(predicate)
 
 
@@ -173,7 +169,7 @@ class Music(commands.Cog, name='music'):
             await read_official(ctx, 'shuffled music queue', 'twisted_rightwards_arrows')
             await ctx.invoke(self.bot.get_command('showqueue'))
         else:
-            raise IndexError
+            raise QueuelessShuffle
 
     @commands.command(name='showqueue', aliases=['showq', 'qshow', 'q'], help='show the current music queue')
     @is_v_client()
@@ -207,7 +203,7 @@ class Music(commands.Cog, name='music'):
             await read_official(ctx, f'removed from music queue: "{self.q_titles.pop(index - 1)}"',
                                 'negative_squared_cross_mark')
         else:
-            raise IndexError
+            raise BadDQIndex
 
     @commands.command(name='clearqueue', aliases=['clearq', 'qclear'], help='clear the music queue')
     @is_v_client()
@@ -216,29 +212,30 @@ class Music(commands.Cog, name='music'):
         await read_official(ctx, 'music queue cleared', 'x')
 
     async def cog_command_error(self, ctx, error):
-        if isinstance(error, commands.CheckFailure) and ctx.command == self.bot.get_command('nashplay'):
-            print(ctx.message.author.id)
+        if isinstance(error, GlobalCheckFailure):
+            pass
+        elif isinstance(error, NotNash):
             await read_official(ctx, 'afraid this is a nash only cmd buddy. ur only hope is identity theft', 'warning')
-        elif isinstance(error, commands.CheckFailure):
+        elif isinstance(error, NoVClient):
             await read_quote(ctx, random.choice(await get_no_music_quotes(ctx)))
         elif isinstance(error, NotInVChannel):
             await read_official(ctx, 'yo u gotta b in a voice channel 2 play shit. i need audience yk?', 'warning')
-        elif isinstance(error, FailedSearch) and ctx.command == self.bot.get_command('play'):
-            await read_official(ctx, 'ur search got no results srry, u sure thats the songs name??', 'warning')
-        elif isinstance(error, FailedSearch) and ctx.command == self.bot.get_command('nashplay'):
-            await read_official(ctx, 'ur search got no results srry, u sure thats the albums name??', 'warning')
-        elif isinstance(error.__cause__, IndexError) and ctx.command == self.bot.get_command('shuffle'):
+        elif isinstance(error, QueuelessShuffle):
             await read_official(ctx, 'but,, wheres the queue?? beef up the queue a bit b4 tryin that lmao', 'warning')
-        elif isinstance(error.__cause__, IndexError) and ctx.command == self.bot.get_command('dequeue'):
+        elif isinstance(error, BadDQIndex):
             await read_official(ctx, 'invalid index buddy. here, find the index w/ this list & try again', 'warning')
             await ctx.invoke(self.bot.get_command('showqueue'))
-        elif isinstance(error, commands.BadArgument) and ctx.command == self.bot.get_command('dequeue'):
-            await read_official(ctx, 'oof thats not how u use this cmd m8. try smth like "dequeue 1"', 'warning')
         elif isinstance(error, commands.MissingRequiredArgument) and ctx.command == self.bot.get_command('dequeue'):
             await read_official(ctx, '2 use this cmd u gotta give the index of the song u want gone', 'warning')
             await ctx.invoke(self.bot.get_command('showqueue'))
+        elif isinstance(error, commands.BadArgument) and ctx.command == self.bot.get_command('dequeue'):
+            await read_official(ctx, 'oof thats not how u use this cmd m8. try smth like "dequeue 1"', 'warning')
+        elif isinstance(error, FailedSearch) and ctx.command == self.bot.get_command('play'):
+            await read_official(ctx, 'ur search got no results srry, u sure thats the songs name??', 'warning')
         elif isinstance(error, commands.MissingRequiredArgument) and ctx.command == self.bot.get_command('play'):
             await read_official(ctx, '2 use this cmd u gotta give the name of the song u wanna play bud', 'warning')
+        elif isinstance(error, FailedSearch) and ctx.command == self.bot.get_command('nashplay'):
+            await read_official(ctx, 'ur search got no results srry, u sure thats the albums name??', 'warning')
         elif isinstance(error, commands.MissingRequiredArgument) and ctx.command == self.bot.get_command('nashplay'):
             await read_official(ctx, '2 use this cmd u gotta give the name of the album u wanna play bud', 'warning')
         else:

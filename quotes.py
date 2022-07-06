@@ -5,6 +5,9 @@ import asyncio
 from table2ascii import table2ascii as t2a, PresetStyle, Alignment
 
 
+frozen_users = []
+
+
 async def read_quote(ctx, quote):
     await ctx.trigger_typing()
     if isinstance(quote, tuple):
@@ -34,7 +37,16 @@ def get_table(list):
         style=PresetStyle.thin_compact_rounded,
         first_col_heading=True,
     )
-    return table
+    return
+
+
+def get_commands(bot):
+    return [cmd for cmdlist in [[cmd.name] + cmd.aliases for cmd in bot.commands] for cmd in cmdlist]
+
+
+def clean_msg(m):
+    return m.content.lower().replace('?', '').replace('...', '').replace(' :)', '').strip()
+
 
 # for misc commands
 
@@ -894,6 +906,33 @@ welcome_quotes = [
         '...',
         'oh FUCK my bad i dont have a body lmao. forgot abt that. guess ill stay out here :weary:',
         '(lets not think 2 hard abt how i knocked on the door)',
+     ),
+]
+
+cmd_midcmd_quotes = [
+    'ur... ur tryna use a different cmd? woooooooow not cool man :/',
+    'but,,, thats another cmd? we were kinda in the middle of smth??? ...so rude u humans...',
+    'thats... thats a different cmd bud. guess we callin in quits on this 1, huh... :(',
+    'pssssh wtever, sure, thats probs a better cmd anyways. will go ahead & bin this 1',
+    (
+        'farewell current cmd ig. u served me well :smiling_face_with_tear:',
+        'im in mourning now tho so if u still wanna use the new cmd u gotta do that urself',
+     ),
+    (
+            'sure, a different cmd. not like we were doing anything :skull: :skull: :skull:',
+            'guess i can tell when im not wanted',
+    ),
+    (
+            'sure lets all just throw out rando cmds now :zany_face:',
+            '...humans. istg. fuck this cmd ig',
+    ),
+    (
+        'wooo shaking things up with a totally different cmd, keeping things fresh. i like ur style human :sunglasses:',
+        '...will admit uve got me a bit confused now tho, might just go ahead & cancel this cmd',
+    ),
+    (
+        'yo werent we like,,, doing smth? is now rlly the best time 4 a whole new cmd??',
+        'i mean, u know best ig. ill go ahead & cancel this 1...??',
      ),
 ]
 

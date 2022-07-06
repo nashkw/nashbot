@@ -57,6 +57,11 @@ async def on_error(event, *args, **kwargs):
     print(f'error logged to err.log: {args[0]}\n')
 
 
+@bot.check
+def check_commands(ctx):
+    return ctx.message.author.id not in frozen_users
+
+
 @bot.command(name='hi', aliases=['hello', 'howdy', 'greetings', 'salutations'], help='greet the bot')
 async def hi(ctx):
     await read_quote(ctx, random.choice(await get_hi_quotes(ctx)))

@@ -18,26 +18,31 @@ class Jokes(commands.Cog, name='jokes'):
     @commands.command(name='kkjoke', aliases=['knockknockjoke'], help='ask the bot to tell u a knock knock joke')
     async def kkjoke(self, ctx):
         quotes = random.choice(await get_kkjoke_quotes(ctx))
+        frozen_users.append(ctx.message.author.id)
 
         def check(m):
             return m.channel == ctx.channel and m.author == ctx.message.author
 
-        def clean_msg(m):
-            return m.content.lower().replace('?', '').replace('...', '').replace(' :)', '').strip()
-
         async def wait_for_response(expected):
             while True:
                 content = clean_msg(await self.bot.wait_for("message", check=check))
-                if content in expected:
+                if content.partition(' ')[0] in get_commands(self.bot):
+                    await read_quote(ctx, random.choice(cmd_midcmd_quotes))
+                    await read_official(ctx, 'joke cancelled', 'no_entry_sign')
+                    frozen_users.remove(ctx.message.author.id)
+                    return False  # cancel joke
+                elif content in expected:
                     return True  # successful progression
                 elif content in welcome_responses:
                     await read_quote(ctx, random.choice(welcome_quotes))
                     await read_official(ctx, 'joke cancelled', 'no_entry_sign')
+                    frozen_users.remove(ctx.message.author.id)
                     return False  # cancel joke
                 elif content in cancel_responses:
                     if random.choice([True, False]):
                         await read_quote(ctx, random.choice(cancel_obedient))
                         await read_official(ctx, 'joke cancelled', 'no_entry_sign')
+                        frozen_users.remove(ctx.message.author.id)
                         return False  # cancel joke
                     else:
                         await read_quote(ctx, random.choice(cancel_disobedient))
@@ -54,6 +59,7 @@ class Jokes(commands.Cog, name='jokes'):
         if not await wait_for_response([quotes[0] + ' who', ]):
             return  # cancel joke
         await read_quote(ctx, quotes[1:])
+        frozen_users.remove(ctx.message.author.id)
 
 
 def setup(bot):

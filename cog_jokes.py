@@ -3,6 +3,7 @@
 
 import random
 from quotes import *
+from resources import *
 
 
 class Jokes(commands.Cog, name='jokes'):

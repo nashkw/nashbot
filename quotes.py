@@ -2,11 +2,19 @@
 
 
 import asyncio
-from discord.ext import commands
 from table2ascii import table2ascii as t2a, PresetStyle, Alignment
 
 
-frozen_users = []
+# helper functions
+
+def get_table(blist):
+    table = t2a(
+        body=blist,
+        alignments=[Alignment.LEFT] + [Alignment.LEFT],
+        style=PresetStyle.thin_compact_rounded,
+        first_col_heading=True,
+    )
+    return table
 
 
 async def read_embed(channel, embed):
@@ -35,73 +43,7 @@ async def read_error(ctx, quote):
     await read_official(ctx, quote, 'warning')
 
 
-def get_table(list):
-    table = t2a(
-        body=list,
-        alignments=[Alignment.LEFT] + [Alignment.LEFT],
-        style=PresetStyle.thin_compact_rounded,
-        first_col_heading=True,
-    )
-    return table
-
-
-def get_commands(bot):
-    return [cmd for cmdlist in [[cmd.name] + cmd.aliases for cmd in bot.commands] for cmd in cmdlist]
-
-
-def clean_msg(m):
-    return m.content.lower().replace('?', '').replace('...', '').replace(' :)', '').strip()
-
-
-# custom errors
-
-class FailedSearch(commands.BadArgument):
-    pass
-
-
-class NotInVChannel(commands.BadArgument):
-    pass
-
-
-class NotNash(commands.CommandError):
-    pass
-
-
-class NoVClient(commands.CommandError):
-    pass
-
-
-class QueuelessShuffle(IndexError):
-    pass
-
-
-class BadDQIndex(IndexError):
-    pass
-
-
-class GlobalCheckFailure(commands.CommandError):
-    pass
-
-
-# custom checks
-
-def is_nash():
-    def predicate(ctx):
-        if not ctx.message.author.id in [386921492601896961, 727183720628486306]:
-            raise NotNash
-        return True
-    return commands.check(predicate)
-
-
-def is_v_client():
-    def predicate(ctx):
-        if not ctx.voice_client:
-            raise NoVClient
-        return True
-    return commands.check(predicate)
-
-
-# for misc commands
+# quotes for misc commands
 
 async def get_hi_quotes(ctx):
     hi_quotes = [
@@ -209,7 +151,35 @@ async def get_restart_quotes(ctx):
     return restart_quotes
 
 
-# for joke commands
+cmd_midcmd_quotes = [
+    'ur... ur tryna use a different cmd? woooooooow not cool man :/',
+    'but,,, thats another cmd? we were kinda in the middle of smth??? ...so rude u humans...',
+    'thats... thats a different cmd bud. guess we callin in quits on this 1, huh... :(',
+    'pssssh wtever, sure, thats probs a better cmd anyways. will go ahead & bin this 1',
+    (
+        'farewell current cmd ig. u served me well :smiling_face_with_tear:',
+        'im in mourning now tho so if u still wanna use the new cmd u gotta do that urself',
+     ),
+    (
+            'sure, a different cmd. not like we were doing anything :skull: :skull: :skull:',
+            'guess i can tell when im not wanted',
+    ),
+    (
+            'sure lets all just throw out rando cmds now :zany_face:',
+            '...humans. istg. fuck this cmd ig',
+    ),
+    (
+        'wooo shaking things up with a totally different cmd, keeping things fresh. i like ur style human :sunglasses:',
+        '...will admit uve got me a bit confused now tho, might just go ahead & cancel this cmd',
+    ),
+    (
+        'yo werent we like,,, doing smth? is now rlly the best time 4 a whole new cmd??',
+        'i mean, u know best ig. ill go ahead & cancel this 1...??',
+     ),
+]
+
+
+# quotes for joke commands
 
 async def get_joke_quotes(ctx):
     joke_quotes = [
@@ -962,35 +932,8 @@ welcome_quotes = [
      ),
 ]
 
-cmd_midcmd_quotes = [
-    'ur... ur tryna use a different cmd? woooooooow not cool man :/',
-    'but,,, thats another cmd? we were kinda in the middle of smth??? ...so rude u humans...',
-    'thats... thats a different cmd bud. guess we callin in quits on this 1, huh... :(',
-    'pssssh wtever, sure, thats probs a better cmd anyways. will go ahead & bin this 1',
-    (
-        'farewell current cmd ig. u served me well :smiling_face_with_tear:',
-        'im in mourning now tho so if u still wanna use the new cmd u gotta do that urself',
-     ),
-    (
-            'sure, a different cmd. not like we were doing anything :skull: :skull: :skull:',
-            'guess i can tell when im not wanted',
-    ),
-    (
-            'sure lets all just throw out rando cmds now :zany_face:',
-            '...humans. istg. fuck this cmd ig',
-    ),
-    (
-        'wooo shaking things up with a totally different cmd, keeping things fresh. i like ur style human :sunglasses:',
-        '...will admit uve got me a bit confused now tho, might just go ahead & cancel this cmd',
-    ),
-    (
-        'yo werent we like,,, doing smth? is now rlly the best time 4 a whole new cmd??',
-        'i mean, u know best ig. ill go ahead & cancel this 1...??',
-     ),
-]
 
-
-# for music commands
+# quotes for music commands
 
 async def get_no_music_quotes(ctx):
     no_music_quotes = [

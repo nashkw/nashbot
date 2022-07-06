@@ -7,6 +7,7 @@ import discord
 from youtube_dl import YoutubeDL
 from _collections import deque
 from quotes import *
+from resources import *
 
 
 FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn', }
@@ -175,16 +176,16 @@ class Music(commands.Cog, name='music'):
         if index == 0:
             await ctx.invoke(self.bot.get_command('skip'))
         elif 0 <= index - 1 < len(self.q_titles):
-            newq = asyncio.Queue()
+            new_q = asyncio.Queue()
             i = 0
             while not self.q_sources.empty():
                 item = self.q_sources.get_nowait()
                 if i != index - 1:
-                    newq.put_nowait(item)
+                    new_q.put_nowait(item)
                 i = i + 1
-            self.q_sources = newq
-            await read_official(ctx, f'removed from music queue: "{self.q_titles.pop(index - 1)}"',
-                                'negative_squared_cross_mark')
+            self.q_sources = new_q
+            removed = self.q_titles.pop(index - 1)
+            await read_official(ctx, f'removed from music queue: "{removed}"', 'negative_squared_cross_mark')
         else:
             raise BadDQIndex
 

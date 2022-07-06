@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 import cog_jokes
 import cog_music
 from quotes import *
+from resources import *
 
 
 load_dotenv()
@@ -74,7 +75,6 @@ def check_commands(ctx):
 @bot.command(name='hi', aliases=['hello', 'howdy', 'greetings', 'salutations'], help='greet the bot')
 async def hi(ctx):
     await read_quote(ctx, random.choice(await get_hi_quotes(ctx)))
-    raise IndexError
 
 
 @bot.command(name='highfive', aliases=['hifive', 'high5', 'hi5'], help='ask the bot to give u a high five')

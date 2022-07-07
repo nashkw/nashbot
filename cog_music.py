@@ -2,6 +2,7 @@
 
 
 import glob
+import eyed3
 import random
 import discord
 from youtube_dl import YoutubeDL
@@ -95,7 +96,10 @@ class Music(commands.Cog, name='music'):
                 else:
                     for song in songs:
                         await self.q_sources.put(song)
-                        self.q_titles.append(song.split(arg)[1][1:-4])
+                        if eyed3.load(song).tag.title:
+                            self.q_titles.append(eyed3.load(song).tag.title)
+                        else:
+                            self.q_titles.append(song.split(arg)[1][1:-4])
 
             if not ctx.voice_client:
                 await ctx.author.voice.channel.connect()

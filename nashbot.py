@@ -43,6 +43,9 @@ for cog in cogs:
 @bot.event
 async def on_ready():
     print('nashbot™ has connected to discord')
+    if 'restart' in os.environ:
+        await bot.get_channel(int(os.environ['restart'])).send(':zap:    ...powering up...    :zap:')
+        os.environ.pop('restart')
 
 
 @bot.event
@@ -73,6 +76,27 @@ def check_commands(ctx):
     return True
 
 
+async def safe_shutdown(ctx):
+    if ctx.voice_client is not None:
+        await ctx.invoke(bot.get_command('clearqueue'))
+    await read_official(ctx, '...shutting down...', 'zzz')
+
+
+@bot.command(name='shutdown', aliases=['die', 'kys'], help='shut down the bot')
+async def shutdown(ctx):
+    await read_quote(ctx, random.choice(await get_shutdown_quotes(ctx)))
+    await safe_shutdown(ctx)
+    await bot.close()
+
+
+@bot.command(name='restart', aliases=['reboot', 'refresh'], help='restart the bot')
+async def restart(ctx):
+    await read_quote(ctx, random.choice(await get_restart_quotes(ctx)))
+    await safe_shutdown(ctx)
+    os.environ['restart'] = str(ctx.channel.id)
+    os.execv(sys.executable, ['python'] + sys.argv)
+
+
 @bot.command(name='hi', aliases=['hello', 'howdy', 'greetings', 'salutations'], help='greet the bot')
 async def hi(ctx):
     await read_quote(ctx, random.choice(await get_hi_quotes(ctx)))
@@ -81,24 +105,6 @@ async def hi(ctx):
 @bot.command(name='highfive', aliases=['hifive', 'high5', 'hi5'], help='ask the bot to give u a high five')
 async def highfive(ctx):
     await read_quote(ctx, random.choice(await get_highfive_quotes(ctx)))
-
-
-@bot.command(name='shutdown', aliases=['die', 'kys'], help='shut down the bot')
-async def shutdown(ctx):
-    await read_quote(ctx, random.choice(await get_shutdown_quotes(ctx)))
-    if ctx.voice_client is not None:
-        await ctx.invoke(bot.get_command('clearqueue'))
-    await read_official(ctx, '...shutting down...', 'zzz')
-    await bot.close()
-
-
-@bot.command(name='restart', aliases=['reboot', 'refresh'], help='restart the bot')
-async def restart(ctx):
-    await read_quote(ctx, random.choice(await get_restart_quotes(ctx)))
-    if ctx.voice_client is not None:
-        await ctx.invoke(bot.get_command('clearqueue'))
-    await read_official(ctx, '...restarting...', 'zap')
-    os.execv(sys.executable, ['python'] + sys.argv)
 
 
 bot.run(TOKEN)

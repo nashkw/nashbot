@@ -1101,4 +1101,5 @@ meme_songs = [
     'star wars cantina',
     'take a closer look at that snout (phantom of the opera)',
     '"Danny Phantom" Theme Song (HQ) | Episode Opening Credits | Nick Animation',
+    'Naruto Theme Song - Bad Flute Cover',
 ]

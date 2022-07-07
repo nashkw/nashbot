@@ -114,6 +114,8 @@ class Music(commands.Cog, name='music'):
 
     @commands.command(name='play', help='play a song from youtube')
     async def play(self, ctx, *, search: str):
+        if search.lower() == 'meme':
+            search = random.choice(meme_songs)
         await self.music_play(ctx, search)
 
     @commands.command(name='nashplay', aliases=['nplay'], help='add a local album to the music queue', hidden=True)

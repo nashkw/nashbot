@@ -114,7 +114,7 @@ class Music(commands.Cog, name='music'):
 
     @commands.command(name='play', help='play a song from youtube')
     async def play(self, ctx, *, search: str):
-        if search.lower() == 'meme':
+        if search.lower().replace(',', '').strip() in meme_activators:
             search = random.choice(meme_songs)
         await self.music_play(ctx, search)
 

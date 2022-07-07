@@ -61,6 +61,7 @@ async def on_command_error(ctx, error):
     elif ctx.cog:
         if await ctx.cog.error_handling(ctx, error):
             return
+    await read_error(ctx, f'unhandled error: {str(error)}')
     print(f'\n\n#####  UNHANDLED ERROR:  {str(error)}  #####\n\n')
     raise error
 

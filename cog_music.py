@@ -32,6 +32,9 @@ class Music(commands.Cog, name='music'):
     def np_msg(self):
         return f'now {"looping" if self.repeating is not None else "playing"}: "{self.nowplaying}"'
 
+    def get_albums(self):
+        return [[i+1, album.split(M_PATH)[1][1:]] for i, album in enumerate(glob.glob(f'{M_PATH}\*'))]
+
     async def end_music(self, ctx):
         ctx.voice_client.stop()
         await ctx.voice_client.disconnect()
@@ -111,7 +114,13 @@ class Music(commands.Cog, name='music'):
 
     @commands.command(name='nashplay', aliases=['nplay'], help='add a local album to the music queue', hidden=True)
     @is_nash()
-    async def nashplay(self, ctx, *, album: str):
+    async def nashplay(self, ctx, *, album):
+        if album.isdigit():
+            indexes = [album[0] for album in self.get_albums()]
+            if int(album) in indexes:
+                album = self.get_albums().pop(indexes.index(int(album)))[1]
+            else:
+                raise BadIndex
         await self.music_play(ctx, album, is_search=False)
 
     @commands.command(name='pause', aliases=['unpause'], help='pause or unpause the currently playing song')
@@ -166,7 +175,7 @@ class Music(commands.Cog, name='music'):
     @commands.command(name='shownash', aliases=['shown', 'nshow'], help='show the available local music albums')
     @is_nash()
     async def shownash(self, ctx):
-        v = '\n'.join([f'{i+1}: {album.split(M_PATH)[1][1:]}' for i, album in enumerate(glob.glob(f'{M_PATH}\*'))])
+        v = '\n'.join([f'{album[0]}: {album[1]}' for album in self.get_albums()])
         embed = discord.Embed(title=':eyes: forbidden & secret local albums :eyes:', description=v)
         await read_embed(ctx.channel, embed)
 
@@ -187,7 +196,7 @@ class Music(commands.Cog, name='music'):
             removed = self.q_titles.pop(index - 1)
             await read_official(ctx, f'removed from music queue: "{removed}"', 'negative_squared_cross_mark')
         else:
-            raise BadDQIndex
+            raise BadIndex
 
     @commands.command(name='clearqueue', aliases=['clearq', 'qclear'], help='clear the music queue')
     @is_v_client()
@@ -200,24 +209,33 @@ class Music(commands.Cog, name='music'):
             await read_quote(ctx, random.choice(await get_no_music_quotes(ctx)))
         elif isinstance(error, NotInVChannel):
             await read_error(ctx, 'yo u gotta b in a voice channel 2 play shit. i need audience yk?')
+        elif isinstance(error, FailedSearch):
+            await read_error(ctx, 'ur search got no results srry, u sure thats the right name??')
         elif isinstance(error, QueuelessShuffle):
             await read_error(ctx, 'but,, wheres the queue?? beef up the queue a bit b4 tryin that lmao')
-        elif isinstance(error, BadDQIndex):
+        elif isinstance(error, BadIndex):
             await read_error(ctx, 'invalid index buddy. here, find the index w/ this list & try again')
-            await ctx.invoke(self.bot.get_command('showqueue'))
-        elif isinstance(error, commands.MissingRequiredArgument) and ctx.command == self.bot.get_command('dequeue'):
-            await read_error(ctx, '2 use this cmd u gotta give the index of the song u want gone')
-            await ctx.invoke(self.bot.get_command('showqueue'))
-        elif isinstance(error, commands.BadArgument) and ctx.command == self.bot.get_command('dequeue'):
-            await read_error(ctx, 'oof thats not how u use this cmd m8. try smth like "dequeue 1"')
-        elif isinstance(error, FailedSearch) and ctx.command == self.bot.get_command('play'):
-            await read_error(ctx, 'ur search got no results srry, u sure thats the songs name??')
-        elif isinstance(error, commands.MissingRequiredArgument) and ctx.command == self.bot.get_command('play'):
-            await read_error(ctx, '2 use this cmd u gotta give the name of the song u wanna play bud')
-        elif isinstance(error, FailedSearch) and ctx.command == self.bot.get_command('nashplay'):
-            await read_error(ctx, 'ur search got no results srry, u sure thats the albums name??')
-        elif isinstance(error, commands.MissingRequiredArgument) and ctx.command == self.bot.get_command('nashplay'):
-            await read_error(ctx, '2 use this cmd u gotta give the name of the album u wanna play bud')
+            if ctx.command == self.bot.get_command('dequeue'):
+                await ctx.invoke(self.bot.get_command('showqueue'))
+            elif ctx.command == self.bot.get_command('nashplay'):
+                await ctx.invoke(self.bot.get_command('shownash'))
+            else:
+                return False
+        elif isinstance(error, commands.MissingRequiredArgument):
+            if ctx.command == self.bot.get_command('nashplay'):
+                await read_error(ctx, '2 use this cmd u gotta give the albums name or index or, idk, at least *smth*')
+            elif ctx.command == self.bot.get_command('play'):
+                await read_error(ctx, '2 use this cmd u gotta give the name of the song u wanna play bud')
+            elif ctx.command == self.bot.get_command('dequeue'):
+                await read_error(ctx, '2 use this cmd u gotta give the index of the song u want gone')
+                await ctx.invoke(self.bot.get_command('showqueue'))
+            else:
+                return False
+        elif isinstance(error, commands.BadArgument):
+            if ctx.command == self.bot.get_command('dequeue'):
+                await read_error(ctx, 'oof thats not how u use this cmd m8. try smth like "dequeue 1"')
+            else:
+                return False
         else:
             return False
         return True

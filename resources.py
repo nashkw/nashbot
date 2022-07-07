@@ -19,11 +19,11 @@ def clean_msg(m):
 
 # custom errors
 
-class FailedSearch(commands.BadArgument):
+class FailedSearch(commands.CommandError):
     pass
 
 
-class NotInVChannel(commands.BadArgument):
+class NotInVChannel(commands.CommandError):
     pass
 
 
@@ -35,11 +35,11 @@ class NoVClient(commands.CommandError):
     pass
 
 
-class QueuelessShuffle(IndexError):
+class QueuelessShuffle(commands.CommandError):
     pass
 
 
-class BadDQIndex(IndexError):
+class BadIndex(commands.CommandError):
     pass
 
 

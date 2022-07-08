@@ -44,8 +44,7 @@ for cog in cogs:
 async def on_ready():
     print('nashbot™ has connected to discord')
     if 'restart' in os.environ:
-        await bot.get_channel(int(os.environ['restart'])).send(':zap:    ...powering up...    :zap:')
-        os.environ.pop('restart')
+        await bot.get_channel(int(os.environ.pop('restart'))).send(':zap:    ...powering up...    :zap:')
 
 
 @bot.event

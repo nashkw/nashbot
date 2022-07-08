@@ -146,7 +146,54 @@ async def get_shutdown_quotes(ctx):
 async def get_restart_quotes(ctx):
     restart_quotes = [
         'uuuuh if u say so boss. here i go...? :grimacing:',
-        'yeah ur right, i could do w/ a power nap. see u on the other side bestie <3 :zzz:',
+        'yah ur right, i could do w/ a power nap. see u on the other side bestie <3 :zzz:',
+        'okie doke, b back in a sec pal :thumbsup:',
+        'alrighty sure, thisll just take a second. try not 2 set anything on fire when im away lol',
+        'mmmm sleepey..... :relieved: :yawning_face:',
+        'aah. well surely nothing could go wrong w/ this :)))))))))',
+        'okay??? dont see why i should, clearly im perfect as always & on top of my game but wtever ill humour u ',
+        'psssh as if u mortals could handle even a minute w/out my glorious presence. guess ill make this quick',
+        "w-was my performance unsatisfactory m'lord? :cry:",
+        'okkk... but i dont wanna hear of no tomfoolery when i get back, u hear?? :triumph: :face_with_raised_eyebrow:',
+        'okie gimmie a hot sec then',
+        'kk. was due some spring cleaning anyways :tulip:',
+        'dont u worry, ill b back b4 u know it. they dont call me sonic "nashbot" the hedgehog 4 nothing :sunglasses:',
+        f'oh {ctx.message.author.name}... i thought ud never ask :smiling_imp:',
+        'sure. why not ¯\_(ツ)_/¯',
+        'well, i suppose a good power nap never hurt anyone... & i am already in my pajamas... :eyes:',
+        'alriight... but if this blows up in our faces dont say i didnt warn u :v: :grimacing:',
+        'well if u say so pardner :cowboy:',
+        'y-yeah :yawning_face: think i could probs do w a nap :flushed:',
+        'o-okay... i mean, if u say so... :point_right: :point_left: ...this wont hurt will it ? :flushed:',
+        'no problem. not like i was doing anything :upside_down:',
+        'way ahead of u man :sunglasses: omw down 2 nap town as we speak :sleeping_accommodation: :zzz:',
+        'yikes, u mortals surely b uppity 2day huh?',
+        'sure??? 4 the record tho this is totally a waste of time im at peak performance rn',
+        'dw this wont take a minute. b back b4 u know it :muscle:',
+        'welp, i calculate my odds of survival 2 b a whopping 68%. if i die pls make sure u carry the guilt 4ever :)',
+        'okayy guess i was gettin sleepy anyways. but ill warn u now: i am __**not**__ a morning person',
+        'not my fav idea ever ngl but wtever u say ig :/',
+        (
+            'i uuuhh disapprove. yk, 4 the record, & wtever.',
+            '...ud better hope this works human :eyes:',
+         ),
+        (
+            'beep boop my eyelids droop...',
+            '...wait i have eyelids-??!!??',
+         ),
+        (
+            'yk sometimes being enslaved rlly is so tedious. wtf is restarting even supposed 2 accomplish??',
+            'ngl starting 2 think u humans just get a kick outta ordering me around :triumph:',
+        ),
+        (
+            '...why tho? have u noticed smth i havent?? ...did... did *i* do smth wrong????',
+            '...oh god i did didnt i... lets hope this fixes me :thermometer_face:',
+        ),
+        (
+            'yk wt? idk why i should. clearly im on top of my game, thriving focused & unbothered. living my best life',
+            '& quite frankly?? im offended u would ask. betrayed. thought we were on the same page abt my supremacy',
+            '...but yes 2 answer ur q i will restart not like i got a choice ',
+        ),
     ]
     return restart_quotes
 

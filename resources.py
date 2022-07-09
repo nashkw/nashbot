@@ -39,7 +39,7 @@ class QueuelessShuffle(commands.CommandError):
     pass
 
 
-class BadIndex(commands.CommandError):
+class BadArg(commands.CommandError):
     pass
 
 

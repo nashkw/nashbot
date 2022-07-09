@@ -59,7 +59,6 @@ async def get_hi_quotes(ctx):
         'honk. yes thats right, i speak clown now',
         'do u have a minute 2 talk abt our lord & saviour jesus christ?',
         'hewwo... :point_right: :point_left:',
-        'beep boop my brain is soup. jk i dont have a brain',
         'this is an extra super rare response!!!!! or maybe its the most common one. youll never know',
         'salutations, etc.',
         'd-did you hear that? a-! ah-!! a g-g-g-ghost!!??!!',
@@ -73,6 +72,10 @@ async def get_hi_quotes(ctx):
         'how now, my good fellow',
         f'ah, {ctx.message.author.name}. ive been expecting u',
         'wazup wazup wazup',
+        (
+            'beep boop my brain is soup',
+            '...jk i dont have a brain :zany_face:',
+        ),
     ]
     return hi_quotes
 
@@ -91,7 +94,7 @@ async def get_highfive_quotes(ctx):
         'what, u think u got it in u 2 high five THIS :muscle: :sparkles: ??? dream on nerd',
         'this better b ur last 1 bucko :triumph: :hand_splayed:',
         'up top bestie :smiley: :hand_splayed:',
-        f'...how juvinile. i expected better from u, {ctx.message.author.name}.',
+        f'...how juvenile. i expected better from u, {ctx.message.author.name}.',
     ]
     return highfive_quotes
 

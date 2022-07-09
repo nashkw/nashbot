@@ -16,7 +16,6 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 
 class CustomHelp(commands.HelpCommand):
     async def send_bot_help(self, mapping):
-        channel = self.get_destination()
         embed = discord.Embed(title=':sparkles: nashbot™ commands & curios 4 all ur earthly needs :sparkles:')
         for map_cog, map_cmds in mapping.items():
             v = f"```\n{get_table([[cmd, cmd.help] for cmd in map_cmds if not cmd.hidden])}\n```"
@@ -24,7 +23,7 @@ class CustomHelp(commands.HelpCommand):
                 embed.add_field(name=map_cog.qualified_name, value=v, inline=False)
             else:
                 embed.add_field(name='nashbot™', value=v.lower(), inline=False)
-        await read_embed(channel, embed)
+        await read_embed(self.get_destination(), embed)
 
 
 bot = commands.Bot(

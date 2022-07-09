@@ -126,7 +126,7 @@ class Music(commands.Cog, name='music'):
             if int(album) in indexes:
                 album = self.get_albums().pop(indexes.index(int(album)))[1]
             else:
-                raise BadIndex
+                raise BadArg
         await self.music_play(ctx, album, is_search=False)
 
     @commands.command(name='pause', aliases=['unpause'], help='pause or unpause the currently playing song')
@@ -178,7 +178,7 @@ class Music(commands.Cog, name='music'):
         embed = discord.Embed(title=':musical_note: music queue :musical_note:', description=f'{np}\n{v}')
         await read_embed(ctx.channel, embed)
 
-    @commands.command(name='shownash', aliases=['shown', 'nshow'], help='show the available local music albums')
+    @commands.command(name='shownash', aliases=['nshow'], help='show the available local music albums', hidden=True)
     @is_nash()
     async def shownash(self, ctx):
         v = '\n'.join([f'{album[0]}: {album[1]}' for album in self.get_albums()])
@@ -202,7 +202,7 @@ class Music(commands.Cog, name='music'):
             removed = self.q_titles.pop(index - 1)
             await read_official(ctx, f'removed from music queue: "{removed}"', 'negative_squared_cross_mark')
         else:
-            raise BadIndex
+            raise BadArg
 
     @commands.command(name='clearqueue', aliases=['clearq', 'qclear'], help='clear the music queue')
     @is_v_client()
@@ -219,7 +219,7 @@ class Music(commands.Cog, name='music'):
             await read_error(ctx, 'ur search got no results srry, u sure thats the right name??')
         elif isinstance(error, QueuelessShuffle):
             await read_error(ctx, 'but,, wheres the queue?? beef up the queue a bit b4 tryin that lmao')
-        elif isinstance(error, BadIndex):
+        elif isinstance(error, BadArg):
             await read_error(ctx, 'invalid index buddy. here, find the index w/ this list & try again')
             if ctx.command == self.bot.get_command('dequeue'):
                 await ctx.invoke(self.bot.get_command('showqueue'))

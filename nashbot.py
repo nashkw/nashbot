@@ -6,9 +6,6 @@ import sys
 import random
 import discord
 from dotenv import load_dotenv
-import cog_jokes
-import cog_music
-import cog_reminders
 from quotes import *
 from resources import *
 
@@ -36,9 +33,9 @@ bot = commands.Bot(
     help_command=CustomHelp()
 )
 
-cogs = [cog_jokes, cog_music, cog_reminders]
+cogs = ['jokes', 'music', 'reminders']
 for cog in cogs:
-    cog.setup(bot)
+    bot.load_extension('cogs.' + cog)
 
 
 @bot.event

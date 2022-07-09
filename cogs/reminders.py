@@ -1,7 +1,6 @@
-# cog_reminders.py
+# reminders.py
 
 
-import random
 from quotes import *
 from resources import *
 

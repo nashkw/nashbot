@@ -1,4 +1,4 @@
-# cog_jokes.py
+# jokes.py
 
 
 import random

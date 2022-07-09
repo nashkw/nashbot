@@ -1,4 +1,4 @@
-# resouces.py
+# resources.py
 
 
 from discord.ext import commands

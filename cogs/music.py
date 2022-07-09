@@ -1,4 +1,4 @@
-# cog_music.py
+# music.py
 
 
 import glob

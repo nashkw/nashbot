@@ -23,7 +23,7 @@ class CustomHelp(commands.HelpCommand):
             if map_cog:
                 embed.add_field(name=map_cog.qualified_name, value=v, inline=False)
             else:
-                embed.add_field(name='misc', value=v, inline=False)
+                embed.add_field(name='nashbot™', value=v.lower(), inline=False)
         await read_embed(channel, embed)
 
 
@@ -33,9 +33,9 @@ bot = commands.Bot(
     help_command=CustomHelp()
 )
 
-cogs = ['jokes', 'music', 'reminders']
-for cog in cogs:
-    bot.load_extension('cogs.' + cog)
+for file in os.listdir('./cogs'):
+    if file.endswith('.py'):
+        bot.load_extension(f'cogs.{file[:-3]}')
 
 
 @bot.event
@@ -58,6 +58,7 @@ async def on_command_error(ctx, error):
         return
     elif isinstance(error, NotNash):
         await read_error(ctx, 'afraid this is a nash only cmd buddy. ur only hope is identity theft')
+        return
     elif ctx.cog:
         if await ctx.cog.error_handling(ctx, error):
             return
@@ -80,6 +81,7 @@ async def safe_shutdown(ctx):
 
 
 @bot.command(name='shutdown', aliases=['die', 'kys'], help='shut down the bot')
+@is_nash()
 async def shutdown(ctx):
     await read_quote(ctx, random.choice(await get_shutdown_quotes(ctx)))
     await safe_shutdown(ctx)
@@ -92,16 +94,6 @@ async def restart(ctx):
     await safe_shutdown(ctx)
     os.environ['restart'] = str(ctx.channel.id)
     os.execv(sys.executable, ['python'] + sys.argv)
-
-
-@bot.command(name='hi', aliases=['hello', 'howdy', 'greetings', 'salutations'], help='greet the bot')
-async def hi(ctx):
-    await read_quote(ctx, random.choice(await get_hi_quotes(ctx)))
-
-
-@bot.command(name='highfive', aliases=['hifive', 'high5', 'hi5'], help='ask the bot to give u a high five')
-async def highfive(ctx):
-    await read_quote(ctx, random.choice(await get_highfive_quotes(ctx)))
 
 
 bot.run(TOKEN)

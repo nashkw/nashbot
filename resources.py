@@ -51,7 +51,7 @@ class GlobalCheckFailure(commands.CommandError):
 
 def is_nash():
     def predicate(ctx):
-        if not ctx.message.author.id in [386921492601896961, 727183720628486306]:
+        if ctx.message.author.id not in [386921492601896961, 727183720628486306]:
             raise NotNash
         return True
     return commands.check(predicate)

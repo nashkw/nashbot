@@ -17,5 +17,6 @@ class Reminders(commands.Cog, name='reminders'):
     async def error_handling(self, ctx, error):
         return False
 
+
 def setup(bot):
     bot.add_cog(Reminders(bot))

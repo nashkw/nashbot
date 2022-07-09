@@ -3,3 +3,5 @@ eyed3==0.9.6
 python-dotenv==0.20.0
 table2ascii==0.3.0
 youtube_dl==2021.12.17
+
+discord~=1.7.3

@@ -64,6 +64,7 @@ class Jokes(commands.Cog, name='jokes'):
     async def error_handling(self, ctx, error):
         return False
 
+
 def setup(bot):
     bot.add_cog(Jokes(bot))
 

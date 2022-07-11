@@ -2,6 +2,7 @@
 
 
 import random
+import discord
 from quotes import *
 from resources import *
 
@@ -35,6 +36,16 @@ class Misc(commands.Cog, name='misc'):
         else:
             raise BadArg
         await read_official(ctx, f'{result[0]} to get...   **{result[1]}**', 'game_die')
+
+    @commands.command(name='vote', aliases=['poll'], help='set up a vote from a list of options')
+    async def vote(self, ctx, subject: str, *, opts: str):
+        embed = discord.Embed(title=subject, description='react with the matching emoji to vote :)')
+        emojis = random.choice(list(emoji_sets.values()))
+        v = [f'{emoji} : {opt}' for opt, emoji in zip(opts.split(', '), emojis)]
+        embed.add_field(name='\u200b', value='\n\u200b\n'.join(v))
+        msg = await read_embed(ctx, embed)
+        for i in range(len(v)):
+            await msg.add_reaction(emojis[i])
 
     async def error_handling(self, ctx, error):
         if isinstance(error, BadArg):

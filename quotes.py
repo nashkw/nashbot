@@ -19,7 +19,7 @@ def get_table(blist):
 
 async def read_embed(channel, embed):
     await channel.trigger_typing()
-    await channel.send(embed=embed)
+    return await channel.send(embed=embed)
 
 
 async def read_quote(ctx, quote):
@@ -227,6 +227,14 @@ cmd_midcmd_quotes = [
         'i mean, u know best ig. ill go ahead & cancel this 1...??',
      ),
 ]
+
+emoji_sets = {
+    'fruit': ['🍉', '🍐', '🍌', '🍊', '🍒', '🍇', '🍍', '🍎', '🥥', '🍋', '\U0001fad0', '🍏', '🍑', '🍓', '🥝'],
+    'weather': ['☀', '🌧', '🌈', '🪁', '☔', '🌩', '❄', '⛅', '☃', '🌪', '☁'],
+    'hearts': ['❤', '🧡', '💛', '💚', '💙', '💜', '🤍', '🤎', '🖤'],
+    'circles': ['🔴', '🟠', '🟡', '🟢', '🔵', '🟣', '⚪', '🟤', '⚫'],
+    'squares': ['🟥', '🟧', '🟨', '🟩', '🟦', '🟪', '⬜', '🟫', '⬛'],
+}
 
 
 # quotes for joke commands
@@ -1152,4 +1160,6 @@ meme_songs = [
     'take a closer look at that snout (phantom of the opera)',
     '"Danny Phantom" Theme Song (HQ) | Episode Opening Credits | Nick Animation',
     'Naruto Theme Song - Bad Flute Cover',
+    'Kitchen Without Gun (Extended Mix)',
+    'Teletubbies Intro and Theme Song Videos For Kids',
 ]

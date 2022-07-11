@@ -42,7 +42,7 @@ class Misc(commands.Cog, name='misc'):
         embed = discord.Embed(title=subject, description='react with the matching emoji to vote :)')
         emojis = random.choice(list(emoji_sets.values()))
         v = [f'{emoji} : {opt}' for opt, emoji in zip(opts.split(', '), emojis)]
-        embed.add_field(name='\u200b', value='\n\u200b\n'.join(v))
+        embed.add_field(name='\u200b', value='\n\u200b\n'.join(v) + '\n\u200b')
         msg = await read_embed(ctx, embed)
         for i in range(len(v)):
             await msg.add_reaction(emojis[i])

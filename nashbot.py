@@ -56,12 +56,12 @@ async def on_command_error(ctx, error):
     elif isinstance(error, commands.errors.CommandNotFound):
         return
     elif isinstance(error, NotNash):
-        await read_error(ctx, 'afraid this is a nash only cmd buddy. ur only hope is identity theft')
+        await read_err(ctx, 'afraid this is a nash only cmd buddy. ur only hope is identity theft')
         return
     elif ctx.cog:
         if await ctx.cog.error_handling(ctx, error):
             return
-    await read_error(ctx, f'unhandled error: {str(error)}')
+    await read_err(ctx, f'unhandled error: {str(error)}')
     print(f'\n\n#####  UNHANDLED ERROR:  {str(error)}  #####\n\n')
     raise error
 

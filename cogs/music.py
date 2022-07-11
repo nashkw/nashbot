@@ -214,13 +214,13 @@ class Music(commands.Cog, name='music'):
         if isinstance(error, NoVClient):
             await read_quote(ctx, random.choice(await get_no_music_quotes(ctx)))
         elif isinstance(error, NotInVChannel):
-            await read_error(ctx, 'yo u gotta b in a voice channel 2 play shit. i need audience yk?')
+            await read_err(ctx, 'yo u gotta b in a voice channel 2 play shit. i need audience yk?')
         elif isinstance(error, FailedSearch):
-            await read_error(ctx, 'ur search got no results srry, u sure thats the right name??')
+            await read_err(ctx, 'ur search got no results srry, u sure thats the right name??')
         elif isinstance(error, QueuelessShuffle):
-            await read_error(ctx, 'but,, wheres the queue?? beef up the queue a bit b4 tryin that lmao')
+            await read_err(ctx, 'but,, wheres the queue?? beef up the queue a bit b4 tryin that lmao')
         elif isinstance(error, BadArg):
-            await read_error(ctx, 'invalid index buddy. here, find the index w/ this list & try again')
+            await read_err(ctx, 'invalid index buddy. here, find the index w/ this list & try again')
             if ctx.command == self.bot.get_command('dequeue'):
                 await ctx.invoke(self.bot.get_command('showqueue'))
             elif ctx.command == self.bot.get_command('nashplay'):
@@ -229,17 +229,17 @@ class Music(commands.Cog, name='music'):
                 return False
         elif isinstance(error, commands.MissingRequiredArgument):
             if ctx.command == self.bot.get_command('nashplay'):
-                await read_error(ctx, '2 use this cmd u gotta give the albums name or index or, idk, at least *smth*')
+                await read_err(ctx, '2 use this cmd u gotta give the albums name or index or, idk, at least *smth*')
             elif ctx.command == self.bot.get_command('play'):
-                await read_error(ctx, '2 use this cmd u gotta give the name of the song u wanna play bud')
+                await read_err(ctx, '2 use this cmd u gotta give the name of the song u wanna play bud')
             elif ctx.command == self.bot.get_command('dequeue'):
-                await read_error(ctx, '2 use this cmd u gotta give the index of the song u want gone')
+                await read_err(ctx, '2 use this cmd u gotta give the index of the song u want gone')
                 await ctx.invoke(self.bot.get_command('showqueue'))
             else:
                 return False
         elif isinstance(error, commands.BadArgument):
             if ctx.command == self.bot.get_command('dequeue'):
-                await read_error(ctx, 'oof thats not how u use this cmd m8. try smth like "dequeue 1"')
+                await read_err(ctx, 'oof thats not how u use this cmd m8. try smth like "dequeue 1"')
             else:
                 return False
         else:

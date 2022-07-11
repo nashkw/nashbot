@@ -37,25 +37,34 @@ class Misc(commands.Cog, name='misc'):
             raise BadArg
         await read_official(ctx, f'{result[0]} to get...   **{result[1]}**', 'game_die')
 
-    @commands.command(name='vote', aliases=['poll'], help='set up a vote from a list of options')
+    @commands.command(name='vote', aliases=['poll'], help='set up a vote with a list of options to choose from')
     async def vote(self, ctx, subject: str, *, opts: str):
-        embed = discord.Embed(title=subject, description='react with the matching emoji to vote :)')
-        emojis = random.choice(list(emoji_sets.values()))
-        v = [f'{emoji} : {opt}' for opt, emoji in zip(opts.split(', '), emojis)]
-        embed.add_field(name='\u200b', value='\n\u200b\n'.join(v) + '\n\u200b')
-        msg = await read_embed(ctx, embed)
-        for i in range(len(v)):
-            await msg.add_reaction(emojis[i])
+        opts = opts.replace(', ', ',').split(',')
+        valid_sets = [eset for eset in emoji_sets.values() if len(eset) >= len(opts)]
+        if valid_sets and len(opts) <= 20:
+            emojis = random.choice(valid_sets)
+            v = [f'{emoji} : {opt}' for opt, emoji in zip(opts, emojis)]
+            embed = discord.Embed(title=subject, description='react with the matching emoji to vote :)')
+            embed.add_field(name='\u200b', value='\n\u200b\n'.join(v) + '\n\u200b')
+            msg = await read_embed(ctx, embed)
+            for i in range(len(v)):
+                await msg.add_reaction(emojis[i])
+        else:
+            raise BadArg
 
     async def error_handling(self, ctx, error):
         if isinstance(error, BadArg):
             if ctx.command == self.bot.get_command('random'):
-                await read_error(ctx, '2 use this cmd u gotta give the range 2 choose from. like "random 2-8" or smth')
+                await read_err(ctx, '2 use this cmd u gotta give the range 2 choose from. like "random 2-8" or smth')
+            elif ctx.command == self.bot.get_command('vote'):
+                await read_err(ctx, 'yo thats 2 many options my guy my fella, max number is 20 :|')
             else:
                 return False
         elif isinstance(error, commands.MissingRequiredArgument):
             if ctx.command == self.bot.get_command('random'):
-                await read_error(ctx, '2 use this cmd u gotta give the range 2 choose from or the type of dice or smth')
+                await read_err(ctx, '2 use this cmd u gotta give the range 2 choose from or the type of dice or smth')
+            elif ctx.command == self.bot.get_command('vote'):
+                await read_err(ctx, '2 use this cmd u gotta give the subject & then a comma seperated list of options')
             else:
                 return False
         else:

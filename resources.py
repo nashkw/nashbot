@@ -7,6 +7,16 @@ from discord.ext import commands
 frozen_users = []
 
 
+# constants
+
+FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn', }
+YDL_OPTS = {'format': 'bestaudio', 'noplaylist': True, }
+
+MUSIC_PATH = 'E:\BACKUPS\Music Backup\Music'
+SKELLY_PATH = './media/skeleton_gifs/'
+COGS_PATH = './cogs'
+
+
 # helper functions
 
 def get_commands(bot):

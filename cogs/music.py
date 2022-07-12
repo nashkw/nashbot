@@ -11,11 +11,6 @@ from quotes import *
 from resources import *
 
 
-FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn', }
-YDL_OPTS = {'format': 'bestaudio', 'noplaylist': True, }
-M_PATH = 'E:\BACKUPS\Music Backup\Music'
-
-
 class Music(commands.Cog, name='music'):
 
     def __init__(self, bot):
@@ -34,7 +29,7 @@ class Music(commands.Cog, name='music'):
         return f'now {"looping" if self.repeating is not None else "playing"}: "{self.nowplaying}"'
 
     def get_albums(self):
-        return [[i+1, album.split(M_PATH)[1][1:]] for i, album in enumerate(glob.glob(f'{M_PATH}\*'))]
+        return [[i + 1, album.split(MUSIC_PATH)[1][1:]] for i, album in enumerate(glob.glob(f'{MUSIC_PATH}\*'))]
 
     async def end_music(self, ctx):
         ctx.voice_client.stop()
@@ -90,7 +85,7 @@ class Music(commands.Cog, name='music'):
                     await self.q_sources.put(info['formats'][0]['url'])
                     self.q_titles.append(info['title'])
             else:
-                songs = glob.glob(f'{M_PATH}\{arg}\*.mp3')
+                songs = glob.glob(f'{MUSIC_PATH}\{arg}\*.mp3')
                 if not songs:
                     raise FailedSearch
                 else:

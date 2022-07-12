@@ -33,7 +33,7 @@ bot = commands.Bot(
     help_command=CustomHelp()
 )
 
-for file in os.listdir('./cogs'):
+for file in os.listdir(COGS_PATH):
     if file.endswith('.py'):
         bot.load_extension(f'cogs.{file[:-3]}')
 

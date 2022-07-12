@@ -2,6 +2,7 @@
 
 
 import asyncio
+import discord
 from table2ascii import table2ascii as t2a, PresetStyle, Alignment
 
 
@@ -41,6 +42,11 @@ async def read_official(ctx, quote, emoji):
 
 async def read_err(ctx, quote):
     await read_official(ctx, quote, 'warning')
+
+
+async def read_file(ctx, filename):
+    await ctx.trigger_typing()
+    await ctx.send(file=discord.File(filename))
 
 
 # quotes for misc commands
@@ -226,6 +232,24 @@ cmd_midcmd_quotes = [
         'yo werent we like,,, doing smth? is now rlly the best time 4 a whole new cmd??',
         'i mean, u know best ig. ill go ahead & cancel this 1...??',
      ),
+]
+
+spam_activators = [
+    'spam',
+    'toggle',
+    'togglespam',
+    'toggle spam',
+    'forever',
+    'loop',
+    'loopforever',
+    'loop forever',
+    'cycle',
+    'cycleforever',
+    'cycle forever',
+    'eternal',
+    'alarm',
+    'togglealarm',
+    'toggle alarm',
 ]
 
 emoji_sets = {
@@ -1061,7 +1085,7 @@ step_1_expected = [
     'whodis',
 ]
 
-cancel_responses = [
+cancel_activators = [
     'cancel',
     'cancel joke',
     'cancel this',
@@ -1158,7 +1182,7 @@ cancel_obedient = [
     '...i see how it is :smiling_face_with_tear:',
 ]
 
-welcome_responses = [
+welcome_activators = [
     'come in',
     'come in then',
     'come in nashbot',

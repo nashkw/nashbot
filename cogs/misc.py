@@ -1,9 +1,11 @@
 # misc.py
 
 
+import os
 import emoji
 import random
 import discord
+from itertools import cycle
 from quotes import *
 from resources import *
 
@@ -12,6 +14,7 @@ class Misc(commands.Cog, name='misc'):
 
     def __init__(self, bot):
         self.bot = bot
+        self.skelly_spam = False
 
     @commands.command(name='hi', aliases=['hello', 'howdy', 'greetings', 'salutations'], help='greet the bot')
     async def hi(self, ctx):
@@ -56,12 +59,31 @@ class Misc(commands.Cog, name='misc'):
         else:
             raise BadArg
 
+    @commands.command(name='skellygif', aliases=['skeleton', 'skelly'], help='ask the bot for a skeleton gif')
+    async def skellygif(self, ctx, spam: str = None):
+        if self.skelly_spam:
+            self.skelly_spam = False
+        elif spam in spam_activators or spam is None:
+            self.skelly_spam = spam
+            skelly_gifs = [SKELLY_PATH + file for file in os.listdir(SKELLY_PATH) if file.endswith('.gif')]
+            random.shuffle(skelly_gifs)
+            for gif in cycle(skelly_gifs):
+                await read_file(ctx, gif)
+                if not self.skelly_spam:
+                    if self.skelly_spam is not None:
+                        await read_official(ctx, 'end of skeleton spam', 'skull_crossbones')
+                    return
+        else:
+            raise BadArg
+
     async def error_handling(self, ctx, error):
         if isinstance(error, BadArg):
             if ctx.command == self.bot.get_command('random'):
                 await read_err(ctx, '2 use this cmd u gotta give the range 2 choose from. like "random 2-8" or smth')
             elif ctx.command == self.bot.get_command('vote'):
                 await read_err(ctx, 'yo thats 2 many options my guy my fella, max number is 20 :|')
+            elif ctx.command == self.bot.get_command('skellygif'):
+                await read_err(ctx, 'uh... whaa? try "skellygif spam" if thats wt u were aiming 4. or just "skellygif"')
             else:
                 return False
         elif isinstance(error, commands.MissingRequiredArgument):

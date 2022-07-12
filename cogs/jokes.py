@@ -33,12 +33,12 @@ class Jokes(commands.Cog, name='jokes'):
                     return False  # cancel joke
                 elif content in expected:
                     return True  # successful progression
-                elif content in welcome_responses:
+                elif content in welcome_activators:
                     await read_quote(ctx, random.choice(welcome_quotes))
                     await read_official(ctx, 'joke cancelled', 'no_entry_sign')
                     frozen_users.remove(ctx.message.author.id)
                     return False  # cancel joke
-                elif content in cancel_responses:
+                elif content in cancel_activators:
                     if random.choice([True, False]):
                         await read_quote(ctx, random.choice(cancel_obedient))
                         await read_official(ctx, 'joke cancelled', 'no_entry_sign')

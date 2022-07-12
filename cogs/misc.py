@@ -37,7 +37,7 @@ class Misc(commands.Cog, name='misc'):
             raise BadArg
         await read_official(ctx, f'{result[0]} to get...   **{result[1]}**', 'game_die')
 
-    @commands.command(name='vote', aliases=['poll'], help='set up a vote with a list of options to choose from')
+    @commands.command(name='vote', aliases=['poll'], help='set up a vote with a list of possible choices')
     async def vote(self, ctx, subject: str, *, opts: str):
         opts = opts.replace(', ', ',').split(',')
         valid_sets = [eset for eset in emoji_sets.values() if len(eset) >= len(opts)]
@@ -51,16 +51,6 @@ class Misc(commands.Cog, name='misc'):
                 await msg.add_reaction(emojis[i])
         else:
             raise BadArg
-
-    @commands.command(name='emojisets', help='test emoji sets')
-    async def emojisets(self, ctx):
-        for k, eset in emoji_sets.items():
-            egroups = [eset[i:i+20] for i in range(0, len(eset), 20)]
-            for group in egroups:
-                embed = discord.Embed(title=k, description='testing testing')
-                msg = await read_embed(ctx, embed)
-                for emoji in group:
-                    await msg.add_reaction(emoji)
 
     async def error_handling(self, ctx, error):
         if isinstance(error, BadArg):

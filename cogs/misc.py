@@ -1,6 +1,7 @@
 # misc.py
 
 
+import emoji
 import random
 import discord
 from quotes import *
@@ -43,12 +44,15 @@ class Misc(commands.Cog, name='misc'):
         valid_sets = [eset for eset in emoji_sets.values() if len(eset) >= len(opts)]
         if valid_sets and len(opts) <= 20:
             emojis = random.choice(valid_sets)
-            v = [f'{emoji} : {opt}' for opt, emoji in zip(opts, emojis)]
+            v = [f'{e} : {opt}' for opt, e in zip(opts, emojis)]
             embed = discord.Embed(title=subject, description='react with the matching emoji to vote :)')
             embed.add_field(name='\u200b', value='\n\u200b\n'.join(v) + '\n\u200b')
             msg = await read_embed(ctx, embed)
             for i in range(len(v)):
-                await msg.add_reaction(emojis[i])
+                try:
+                    await msg.add_reaction(emoji.emojize(emojis[i], language='alias'))
+                except discord.HTTPException:
+                    await read_err(ctx, f'warning: the emoji "{emojis[i]}" is not reaction safe')
         else:
             raise BadArg
 

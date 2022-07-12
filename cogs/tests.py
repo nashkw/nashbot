@@ -1,6 +1,7 @@
 # tests.py
 
 
+import emoji
 import discord
 from quotes import *
 from resources import *
@@ -20,8 +21,11 @@ class Tests(commands.Cog, name='tests'):
             for group in egroups:
                 embed = discord.Embed(title=name, description='testing testing')
                 msg = await read_embed(ctx, embed)
-                for emoji in group:
-                    await msg.add_reaction(emoji)
+                for e in group:
+                    try:
+                        await msg.add_reaction(emoji.emojize(e, language='alias'))
+                    except discord.HTTPException:
+                        await read_quote(ctx, f'warning: the emoji "{e}" is not reaction safe')
 
         if eset_n:
             if eset_n in emoji_sets:

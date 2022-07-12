@@ -52,6 +52,16 @@ class Misc(commands.Cog, name='misc'):
         else:
             raise BadArg
 
+    @commands.command(name='emojisets', help='test emoji sets')
+    async def emojisets(self, ctx):
+        for k, eset in emoji_sets.items():
+            egroups = [eset[i:i+20] for i in range(0, len(eset), 20)]
+            for group in egroups:
+                embed = discord.Embed(title=k, description='testing testing')
+                msg = await read_embed(ctx, embed)
+                for emoji in group:
+                    await msg.add_reaction(emoji)
+
     async def error_handling(self, ctx, error):
         if isinstance(error, BadArg):
             if ctx.command == self.bot.get_command('random'):

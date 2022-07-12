@@ -29,7 +29,7 @@ class Music(commands.Cog, name='music'):
         return f'now {"looping" if self.repeating is not None else "playing"}: "{self.nowplaying}"'
 
     def get_albums(self):
-        return [[i + 1, album.split(MUSIC_PATH)[1][1:]] for i, album in enumerate(glob.glob(f'{MUSIC_PATH}\*'))]
+        return [[i + 1, album.split(MUSIC_PATH)[1][1:]] for i, album in enumerate(glob.glob(f'{MUSIC_PATH}/*'))]
 
     async def end_music(self, ctx):
         ctx.voice_client.stop()
@@ -85,7 +85,7 @@ class Music(commands.Cog, name='music'):
                     await self.q_sources.put(info['formats'][0]['url'])
                     self.q_titles.append(info['title'])
             else:
-                songs = glob.glob(f'{MUSIC_PATH}\{arg}\*.mp3')
+                songs = glob.glob(f'{MUSIC_PATH}/{arg}/*.mp3')
                 if not songs:
                     raise FailedSearch
                 else:

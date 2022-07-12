@@ -12,9 +12,10 @@ frozen_users = []
 FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn', }
 YDL_OPTS = {'format': 'bestaudio', 'noplaylist': True, }
 
-MUSIC_PATH = 'E:\BACKUPS\Music Backup\Music'
-SKELLY_PATH = './media/skeleton_gifs/'
+MUSIC_PATH = 'E:/BACKUPS/Music Backup/Music'
 COGS_PATH = './cogs'
+MEDIA_PATH = './media/'
+SKELLY_PATH = MEDIA_PATH + 'skeleton_gifs/'
 
 
 # helper functions

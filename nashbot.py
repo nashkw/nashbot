@@ -4,7 +4,6 @@
 import os
 import sys
 import random
-import discord
 from dotenv import load_dotenv
 from quotes import *
 from resources import *
@@ -33,9 +32,8 @@ bot = commands.Bot(
     help_command=CustomHelp()
 )
 
-for file in os.listdir(COGS_PATH):
-    if file.endswith('.py'):
-        bot.load_extension(f'cogs.{file[:-3]}')
+for cog in [path.stem for path in COGS_PATH.glob('*.py')]:
+    bot.load_extension(f'cogs.{cog}')
 
 
 @bot.event

@@ -1,10 +1,8 @@
 # music.py
 
 
-import glob
 import eyed3
 import random
-import discord
 from youtube_dl import YoutubeDL
 from _collections import deque
 from quotes import *
@@ -27,9 +25,6 @@ class Music(commands.Cog, name='music'):
 
     def np_msg(self):
         return f'now {"looping" if self.repeating is not None else "playing"}: "{self.nowplaying}"'
-
-    def get_albums(self):
-        return [[i + 1, album.split(MUSIC_PATH)[1][1:]] for i, album in enumerate(glob.glob(f'{MUSIC_PATH}/*'))]
 
     async def end_music(self, ctx):
         ctx.voice_client.stop()
@@ -62,10 +57,10 @@ class Music(commands.Cog, name='music'):
             else:
                 pre_source = self.repeating
 
-            if pre_source[:4] == 'http':
-                source = await discord.FFmpegOpusAudio.from_probe(pre_source, **FFMPEG_OPTS)
-            else:
+            if isinstance(pre_source, Path):
                 source = discord.FFmpegPCMAudio(source=pre_source)
+            else:
+                source = await discord.FFmpegOpusAudio.from_probe(pre_source, **FFMPEG_OPTS)
             ctx.voice_client.play(source, after=lambda _: self.bot.loop.call_soon_threadsafe(self.next.set))
             await self.next.wait()
             if self.repeating:
@@ -85,7 +80,7 @@ class Music(commands.Cog, name='music'):
                     await self.q_sources.put(info['formats'][0]['url'])
                     self.q_titles.append(info['title'])
             else:
-                songs = glob.glob(f'{MUSIC_PATH}/{arg}/*.mp3')
+                songs = list((MUSIC_PATH / arg).glob('*.mp3'))
                 if not songs:
                     raise FailedSearch
                 else:
@@ -94,7 +89,7 @@ class Music(commands.Cog, name='music'):
                         if eyed3.load(song).tag.title:
                             self.q_titles.append(eyed3.load(song).tag.title)
                         else:
-                            self.q_titles.append(song.split(arg)[1][1:-4])
+                            self.q_titles.append(song.stem)
 
             if not ctx.voice_client:
                 await ctx.author.voice.channel.connect()
@@ -117,9 +112,9 @@ class Music(commands.Cog, name='music'):
     @is_nash()
     async def nashplay(self, ctx, *, album):
         if album.isdigit():
-            indexes = [album[0] for album in self.get_albums()]
+            indexes = [al[0] for al in get_albums()]
             if int(album) in indexes:
-                album = self.get_albums().pop(indexes.index(int(album)))[1]
+                album = get_albums().pop(indexes.index(int(album)))[1]
             else:
                 raise BadArg
         await self.music_play(ctx, album, is_search=False)
@@ -176,7 +171,7 @@ class Music(commands.Cog, name='music'):
     @commands.command(name='shownash', aliases=['nshow'], help='show the available local music albums', hidden=True)
     @is_nash()
     async def shownash(self, ctx):
-        v = '\n'.join([f'{album[0]}: {album[1]}' for album in self.get_albums()])
+        v = '\n'.join([f'{album[0]}: {album[1]}' for album in get_albums()])
         embed = discord.Embed(title=':eyes: forbidden & secret local albums :eyes:', description=v)
         await read_embed(ctx.channel, embed)
 

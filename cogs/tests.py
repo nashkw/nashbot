@@ -2,7 +2,6 @@
 
 
 import emoji
-import discord
 from quotes import *
 from resources import *
 

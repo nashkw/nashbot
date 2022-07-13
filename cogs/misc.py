@@ -1,10 +1,8 @@
 # misc.py
 
 
-import os
 import emoji
 import random
-import discord
 from itertools import cycle
 from quotes import *
 from resources import *
@@ -65,7 +63,7 @@ class Misc(commands.Cog, name='misc'):
             self.skelly_spam = False
         elif spam in spam_activators or spam is None:
             self.skelly_spam = spam
-            skelly_gifs = [SKELLY_PATH + file for file in os.listdir(SKELLY_PATH) if file.endswith('.gif')]
+            skelly_gifs = [sgif for sgif in SKELLY_PATH.glob('*.gif')]
             random.shuffle(skelly_gifs)
             for gif in cycle(skelly_gifs):
                 await read_file(ctx, gif)

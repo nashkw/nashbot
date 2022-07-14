@@ -80,7 +80,7 @@ class Music(commands.Cog, name='music'):
                     await self.q_sources.put(info['formats'][0]['url'])
                     self.q_titles.append(info['title'])
             else:
-                songs = list((MUSIC_PATH / arg).glob('*.mp3'))
+                songs = sorted(list((MUSIC_PATH / arg).glob('*.mp3')), key=lambda s: eyed3.load(s).tag.track_num)
                 if not songs:
                     raise FailedSearch
                 else:

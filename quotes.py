@@ -3,6 +3,7 @@
 
 import asyncio
 import discord
+import DiscordUtils
 from table2ascii import table2ascii as t2a, PresetStyle, Alignment
 
 
@@ -21,6 +22,17 @@ def get_table(blist):
 async def read_embed(channel, embed):
     await channel.trigger_typing()
     return await channel.send(embed=embed)
+
+
+async def read_paginated(ctx, title, pages):
+    await ctx.trigger_typing()
+    embeds = [discord.Embed().add_field(name=title, value=page) for page in pages]
+    paginator = DiscordUtils.Pagination.CustomEmbedPaginator(ctx)
+    paginator.add_reaction('⏮️', "first")
+    paginator.add_reaction('⏪', "back")
+    paginator.add_reaction('⏩', "next")
+    paginator.add_reaction('⏭️', "last")
+    await paginator.run(embeds)
 
 
 async def read_quote(ctx, quote):

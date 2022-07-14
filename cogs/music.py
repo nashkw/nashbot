@@ -171,9 +171,9 @@ class Music(commands.Cog, name='music'):
     @commands.command(name='shownash', aliases=['nshow'], help='show the available local music albums', hidden=True)
     @is_nash()
     async def shownash(self, ctx):
-        v = '\n'.join([f'{album[0]}: {album[1]}' for album in get_albums()])
-        embed = discord.Embed(title=':eyes: forbidden & secret local albums :eyes:', description=v)
-        await read_embed(ctx.channel, embed)
+        v = get_albums()
+        v = [f'```{get_table(albums)}```' for albums in [v[i:i + 10] for i in range(0, len(v), 10)]]
+        await read_paginated(ctx, ':eyes: forbidden & secret local albums :eyes:', v)
 
     @commands.command(name='dequeue', aliases=['dq', 'qremove'], help='remove a song from the music queue')
     @is_v_client()

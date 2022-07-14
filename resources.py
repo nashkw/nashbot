@@ -26,7 +26,8 @@ def get_commands(bot):
 
 
 def get_albums():
-    return [[i + 1, album.stem] for i, album in enumerate(MUSIC_PATH.iterdir()) if album.stem != 'Album Art']
+    albums = [album for album in MUSIC_PATH.iterdir() if album.stem != 'Album Art']
+    return [[i + 1, album.stem] for i, album in enumerate(albums)]
 
 
 def clean_msg(m):

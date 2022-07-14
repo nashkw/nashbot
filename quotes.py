@@ -5,6 +5,7 @@ import asyncio
 import discord
 from discord.ext import menus
 from table2ascii import table2ascii as t2a, PresetStyle, Alignment
+from resources import *
 
 
 # helper functions
@@ -25,22 +26,42 @@ async def read_embed(channel, embed):
     return await channel.send(embed=embed)
 
 
-async def read_paginated(ctx, name, pagelist, subhead=None):
-    class MySource(menus.ListPageSource):
-        def __init__(self, pages, title, heading=None):
-            self.title = title
-            self.heading = heading
-            super().__init__(pages, per_page=1)
+class MySource(menus.ListPageSource):
+    def __init__(self, pages, title, header=None, footer=None):
+        self.title = title
+        self.head = header
+        self.foot = '(use the reaction emojis to navigate)' if footer is None else footer
+        super().__init__(pages, per_page=1)
 
-        async def format_page(self, menu, page):
-            if self.heading:
-                e = discord.Embed(title=self.title).add_field(name=subhead, value=page)
-            else:
-                e = discord.Embed(title=self.title, description=page)
-            return e.set_footer(text='(use the reaction emojis to navigate)')
+    async def format_page(self, menu, page):
+        if self.head:
+            embed = discord.Embed(title=self.title).add_field(name=self.head, value=page)
+        else:
+            embed = discord.Embed(title=self.title, description=page)
+        return embed.set_footer(text=self.foot)
 
-    paginated = menus.MenuPages(source=MySource(pagelist, name, heading=subhead), clear_reactions_after=True)
-    await paginated.start(ctx)
+
+class MyMenuPages(menus.MenuPages):
+    def __init__(self, bot_id, source, **kwargs):
+        active_menus.append(self)
+        self.bot_id = bot_id
+        super().__init__(source, **kwargs)
+
+    def reaction_check(self, payload):
+        if payload.user_id == self.bot_id and payload.event_type == 'REACTION_REMOVE':
+            return True
+        return super().reaction_check(payload)
+
+    async def finalize(self, timed_out):
+        foot = f'(this embed has {"timed out" if timed_out else "been deactivated"})'
+        await self.change_source(MySource(self.source.entries, self.source.title, header=self.source.head, footer=foot))
+        active_menus.remove(self)
+
+
+async def read_paginated(ctx, title, pages, header=None, footer=None):
+    await ctx.trigger_typing()
+    m = MyMenuPages(ctx.bot.user.id, MySource(pages, title, header=header, footer=footer), clear_reactions_after=True)
+    await m.start(ctx)
 
 
 async def read_quote(ctx, quote):

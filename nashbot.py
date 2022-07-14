@@ -38,9 +38,10 @@ for cog in [path.stem for path in COGS_PATH.glob('*.py')]:
 
 @bot.event
 async def on_ready():
-    print('nashbot™ has connected to discord')
     if 'restart' in os.environ:
+        print('\nnashbot™ restarted successfully')
         await bot.get_channel(int(os.environ.pop('restart'))).send(':zap:    ...powering up...    :zap:')
+    print('nashbot™ has connected to discord')
 
 
 @bot.event
@@ -73,6 +74,12 @@ def check_commands(ctx):
 
 
 async def safe_shutdown(ctx):
+    if active_menus:
+        async with ctx.typing():
+            while active_menus:
+                active_menus[0].stop()
+                await active_menus[0].message.remove_reaction('\N{BLACK SQUARE FOR STOP}\ufe0f', bot.user)
+        await read_official(ctx, 'embeds deactivated', 'x')
     if ctx.voice_client is not None:
         await ctx.invoke(bot.get_command('clearqueue'))
     await read_official(ctx, '...shutting down...', 'zzz')

@@ -166,7 +166,7 @@ class Music(commands.Cog, name='music'):
         np = f'**:{self.np_emoji()}:　now playing: "{self.nowplaying}"　:{self.np_emoji()}:**'
         v = [[i+1, item] for i, item in enumerate(self.q_titles)]
         v = [f'```{get_table(item)}```' for item in [v[i:i + 10] for i in range(0, len(v), 10)]]
-        await read_paginated(ctx, ':musical_note:　music queue　:musical_note:', v, subhead=np)
+        await read_paginated(ctx, ':musical_note:　music queue　:musical_note:', v, header=np)
 
     @commands.command(name='shownash', aliases=['nshow'], help='show the available local music albums', hidden=True)
     @is_nash()

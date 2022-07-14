@@ -6,6 +6,7 @@ from discord.ext import commands
 
 
 frozen_users = []
+active_menus = []
 
 
 # constants

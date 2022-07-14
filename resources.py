@@ -26,7 +26,7 @@ def get_commands(bot):
 
 
 def get_albums():
-    albums = [album for album in MUSIC_PATH.iterdir() if album.stem != 'Album Art']
+    albums = [album for album in MUSIC_PATH.iterdir() if album.stem != 'Album Art' and album.stem[0] != '.']
     return [[i + 1, album.stem] for i, album in enumerate(albums)]
 
 

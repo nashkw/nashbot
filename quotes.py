@@ -3,7 +3,7 @@
 
 import asyncio
 import discord
-import DiscordUtils
+from discord.ext import menus
 from table2ascii import table2ascii as t2a, PresetStyle, Alignment
 
 
@@ -24,15 +24,17 @@ async def read_embed(channel, embed):
     return await channel.send(embed=embed)
 
 
-async def read_paginated(ctx, title, pages):
-    await ctx.trigger_typing()
-    embeds = [discord.Embed().add_field(name=title, value=page) for page in pages]
-    paginator = DiscordUtils.Pagination.CustomEmbedPaginator(ctx)
-    paginator.add_reaction('⏮️', "first")
-    paginator.add_reaction('⏪', "back")
-    paginator.add_reaction('⏩', "next")
-    paginator.add_reaction('⏭️', "last")
-    await paginator.run(embeds)
+async def read_paginated(ctx, name, pagelist):
+    class MySource(menus.ListPageSource):
+        def __init__(self, pages, title):
+            self.title = title
+            super().__init__(pages, per_page=1)
+
+        async def format_page(self, menu, page):
+            return discord.Embed().add_field(name=self.title, value=page)
+
+    paginated = menus.MenuPages(source=MySource(pagelist, name), clear_reactions_after=True)
+    await paginated.start(ctx)
 
 
 async def read_quote(ctx, quote):

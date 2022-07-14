@@ -15,7 +15,7 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 
 class CustomHelp(commands.HelpCommand):
     async def send_bot_help(self, mapping):
-        embed = discord.Embed(title=':sparkles: nashbot™ commands & curios 4 all ur earthly needs :sparkles:')
+        embed = discord.Embed(title=':sparkles:　nashbot™ commands & curios 4 all ur earthly needs　:sparkles:')
         for map_cog, map_cmds in mapping.items():
             if not (map_cog and map_cog.qualified_name == 'tests'):
                 v = f"```\n{get_table([[cmd, cmd.help] for cmd in map_cmds if not cmd.hidden])}\n```"
@@ -61,7 +61,7 @@ async def on_command_error(ctx, error):
         if await ctx.cog.error_handling(ctx, error):
             return
     await read_err(ctx, f'unhandled error: {str(error)}')
-    print(f'\n\n#####  UNHANDLED ERROR:  {str(error)}  #####\n\n')
+    print(f'\n\n#####　UNHANDLED ERROR:　{str(error)}　#####\n\n')
     raise error
 
 

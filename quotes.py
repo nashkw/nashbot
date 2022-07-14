@@ -9,8 +9,9 @@ from table2ascii import table2ascii as t2a, PresetStyle, Alignment
 
 # helper functions
 
-def get_table(blist):
+def get_table(blist, head=None):
     table = t2a(
+        header=head,
         body=blist,
         alignments=[Alignment.LEFT] + [Alignment.LEFT],
         style=PresetStyle.thin_compact_rounded,
@@ -24,16 +25,21 @@ async def read_embed(channel, embed):
     return await channel.send(embed=embed)
 
 
-async def read_paginated(ctx, name, pagelist):
+async def read_paginated(ctx, name, pagelist, subhead=None):
     class MySource(menus.ListPageSource):
-        def __init__(self, pages, title):
+        def __init__(self, pages, title, heading=None):
             self.title = title
+            self.heading = heading
             super().__init__(pages, per_page=1)
 
         async def format_page(self, menu, page):
-            return discord.Embed().add_field(name=self.title, value=page)
+            if self.heading:
+                e = discord.Embed(title=self.title).add_field(name=subhead, value=page)
+            else:
+                e = discord.Embed(title=self.title, description=page)
+            return e.set_footer(text='(use the reaction emojis to navigate)')
 
-    paginated = menus.MenuPages(source=MySource(pagelist, name), clear_reactions_after=True)
+    paginated = menus.MenuPages(source=MySource(pagelist, name, heading=subhead), clear_reactions_after=True)
     await paginated.start(ctx)
 
 
@@ -51,7 +57,7 @@ async def read_quote(ctx, quote):
 
 async def read_official(ctx, quote, emoji):
     await ctx.trigger_typing()
-    await ctx.send(f':{emoji}:  {quote}  :{emoji}:')
+    await ctx.send(f':{emoji}:　{quote}　:{emoji}:')
 
 
 async def read_err(ctx, quote):

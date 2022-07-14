@@ -37,7 +37,7 @@ class Misc(commands.Cog, name='misc'):
             result = [f'rolling {arg}', ', '.join([str(random.randint(1, params[1])) for i in range(params[0])])]
         else:
             raise BadArg
-        await read_official(ctx, f'{result[0]} to get...   **{result[1]}**', 'game_die')
+        await read_official(ctx, f'{result[0]} to get...　**{result[1]}**', 'game_die')
 
     @commands.command(name='vote', aliases=['poll'], help='set up a vote with a list of possible choices')
     async def vote(self, ctx, subject: str, *, opts: str):

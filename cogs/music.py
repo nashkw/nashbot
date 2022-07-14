@@ -52,7 +52,7 @@ class Music(commands.Cog, name='music'):
                 except asyncio.QueueEmpty:
                     self.looping = False
                     await self.end_music(ctx)
-                    await read_quote(ctx, ':x: end of music queue :x:')
+                    await read_quote(ctx, ':x:　end of music queue　:x:')
                     return
             else:
                 pre_source = self.repeating
@@ -163,17 +163,17 @@ class Music(commands.Cog, name='music'):
     @commands.command(name='showqueue', aliases=['showq', 'qshow', 'q'], help='show the current music queue')
     @is_v_client()
     async def showqueue(self, ctx):
-        np = f'**:{self.np_emoji()}: 0: "{self.nowplaying}" :{self.np_emoji()}:**'
-        v = '\n'.join([f'> {i + 1}: "{item}"' for i, item in enumerate(self.q_titles)])
-        embed = discord.Embed(title=':musical_note: music queue :musical_note:', description=f'{np}\n{v}')
-        await read_embed(ctx.channel, embed)
+        np = f'**:{self.np_emoji()}:　now playing: "{self.nowplaying}"　:{self.np_emoji()}:**'
+        v = [[i+1, item] for i, item in enumerate(self.q_titles)]
+        v = [f'```{get_table(item)}```' for item in [v[i:i + 10] for i in range(0, len(v), 10)]]
+        await read_paginated(ctx, ':musical_note:　music queue　:musical_note:', v, subhead=np)
 
     @commands.command(name='shownash', aliases=['nshow'], help='show the available local music albums', hidden=True)
     @is_nash()
     async def shownash(self, ctx):
         v = get_albums()
         v = [f'```{get_table(albums)}```' for albums in [v[i:i + 10] for i in range(0, len(v), 10)]]
-        await read_paginated(ctx, ':eyes: forbidden & secret local albums :eyes:', v)
+        await read_paginated(ctx, ':eyes:　forbidden & secret local albums　:eyes:', v)
 
     @commands.command(name='dequeue', aliases=['dq', 'qremove'], help='remove a song from the music queue')
     @is_v_client()

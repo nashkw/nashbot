@@ -1,25 +1,25 @@
 # music.py
 
 
-import asyncio
-import discord
-import eyed3
-import random
+from eyed3 import load
+from random import choice, shuffle
 from pathlib import Path
-from youtube_dl import YoutubeDL
-from _collections import deque
-from discord.ext import commands
+from asyncio import Queue, Event, QueueEmpty
+from discord import FFmpegPCMAudio, FFmpegOpusAudio
 from nashbot import errs, quotes, read, resources, vars
+from youtube_dl import YoutubeDL
+from discord.ext import commands
+from _collections import deque
 
 
 class Music(commands.Cog, name='music'):
 
     def __init__(self, bot):
         self.bot = bot
-        self.q_sources = asyncio.Queue()
+        self.q_sources = Queue()
         self.q_titles = []
         self.repeating = None
-        self.next = asyncio.Event()
+        self.next = Event()
         self.nowplaying = ''
         self.looping = False
 
@@ -32,10 +32,10 @@ class Music(commands.Cog, name='music'):
     async def end_music(self, ctx):
         ctx.voice_client.stop()
         await ctx.voice_client.disconnect()
-        self.q_sources = asyncio.Queue()
+        self.q_sources = Queue()
         self.q_titles = []
         self.repeating = None
-        self.next = asyncio.Event()
+        self.next = Event()
         self.nowplaying = ''
         self.looping = False
 
@@ -52,7 +52,7 @@ class Music(commands.Cog, name='music'):
                     pre_source = self.q_sources.get_nowait()
                     self.nowplaying = self.q_titles.pop(0)
                     await read.official(ctx, self.np_msg(), self.np_emoji())
-                except asyncio.QueueEmpty:
+                except QueueEmpty:
                     self.looping = False
                     await self.end_music(ctx)
                     await read.quote(ctx, ':x:　end of music queue　:x:')
@@ -61,9 +61,9 @@ class Music(commands.Cog, name='music'):
                 pre_source = self.repeating
 
             if isinstance(pre_source, Path):
-                source = discord.FFmpegPCMAudio(source=pre_source)
+                source = FFmpegPCMAudio(source=pre_source)
             else:
-                source = await discord.FFmpegOpusAudio.from_probe(pre_source, **vars.FFMPEG_OPTS)
+                source = await FFmpegOpusAudio.from_probe(pre_source, **vars.FFMPEG_OPTS)
             ctx.voice_client.play(source, after=lambda _: self.bot.loop.call_soon_threadsafe(self.next.set))
             await self.next.wait()
             if self.repeating:
@@ -83,14 +83,14 @@ class Music(commands.Cog, name='music'):
                     await self.q_sources.put(info['formats'][0]['url'])
                     self.q_titles.append(info['title'])
             else:
-                songs = sorted(list((vars.ALBUMS_PATH / arg).glob('*.mp3')), key=lambda s: eyed3.load(s).tag.track_num)
+                songs = sorted(list((vars.ALBUMS_PATH / arg).glob('*.mp3')), key=lambda s: load(s).tag.track_num)
                 if not songs:
                     raise errs.FailedSearch
                 else:
                     for song in songs:
                         await self.q_sources.put(song)
-                        if eyed3.load(song).tag.title:
-                            self.q_titles.append(eyed3.load(song).tag.title)
+                        if load(song).tag.title:
+                            self.q_titles.append(load(song).tag.title)
                         else:
                             self.q_titles.append(song.stem)
 
@@ -108,7 +108,7 @@ class Music(commands.Cog, name='music'):
     @commands.command(name='play', help='play a song from youtube')
     async def play(self, ctx, *, search: str):
         if search.lower().replace(',', '').strip() in quotes.meme_activators:
-            search = random.choice(quotes.meme_songs)
+            search = choice(quotes.meme_songs)
         await self.music_play(ctx, search)
 
     @commands.command(name='nashplay', aliases=['nplay'], help='add a local album to the music queue', hidden=True)
@@ -155,7 +155,7 @@ class Music(commands.Cog, name='music'):
     async def shuffle(self, ctx):
         if self.q_titles:
             shuffling = list(zip(self.q_titles, self.q_sources._queue))
-            random.shuffle(shuffling)
+            shuffle(shuffling)
             qtemp1, qtemp2 = zip(*shuffling)
             self.q_titles, self.q_sources._queue = list(qtemp1), deque(qtemp2)
             await read.official(ctx, 'shuffled music queue', 'twisted_rightwards_arrows')
@@ -184,7 +184,7 @@ class Music(commands.Cog, name='music'):
         if index == 0:
             await ctx.invoke(self.bot.get_command('skip'))
         elif 0 <= index - 1 < len(self.q_titles):
-            new_q = asyncio.Queue()
+            new_q = Queue()
             i = 0
             while not self.q_sources.empty():
                 item = self.q_sources.get_nowait()
@@ -205,7 +205,7 @@ class Music(commands.Cog, name='music'):
 
     async def error_handling(self, ctx, error):
         if isinstance(error, errs.NoVClient):
-            await read.quote(ctx, random.choice(await quotes.get_no_music_quotes(ctx)))
+            await read.quote(ctx, choice(await quotes.get_no_music_quotes(ctx)))
         elif isinstance(error, errs.NotInVChannel):
             await read.err(ctx, 'yo u gotta b in a voice channel 2 play shit. i need audience yk?')
         elif isinstance(error, errs.FailedSearch):

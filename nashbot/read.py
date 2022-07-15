@@ -1,7 +1,8 @@
 # read.py
 
 
-import asyncio
+from discord import File
+from asyncio import sleep
 from nashbot.menus import *
 from nashbot.quotes import wrap
 
@@ -23,7 +24,7 @@ async def quote(ctx, quo):
         await ctx.send(quo[0])
         for line in quo[1:]:
             await ctx.trigger_typing()
-            await asyncio.sleep(1)
+            await sleep(1)
             await ctx.send(line)
     else:
         await ctx.send(quo)
@@ -40,4 +41,4 @@ async def err(ctx, quo):
 
 async def file(ctx, filename):
     await ctx.trigger_typing()
-    await ctx.send(file=discord.File(filename))
+    await ctx.send(file=File(filename))

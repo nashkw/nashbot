@@ -1,21 +1,22 @@
 # main.py
 
-import os
-import sys
-import random
-import discord
+
+from os import getenv, environ, execv
+from sys import argv, executable
+from random import choice
 from dotenv import load_dotenv
-from discord.ext import commands
+from discord import Embed, Intents
 from nashbot import errs, quotes, read, resources, vars
+from discord.ext import commands
 
 
 load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
+TOKEN = getenv('DISCORD_TOKEN')
 
 
 class CustomHelp(commands.HelpCommand):
     async def send_bot_help(self, mapping):
-        embed = discord.Embed(title=quotes.wrap('nashbot™ commands & curios 4 all ur earthly needs', 'sparkles'))
+        embed = Embed(title=quotes.wrap('nashbot™ commands & curios 4 all ur earthly needs', 'sparkles'))
         for map_cog, map_cmds in mapping.items():
             if not (map_cog and map_cog.qualified_name == 'tests'):
                 v = f"```\n{quotes.get_table([[cmd, cmd.help] for cmd in map_cmds if not cmd.hidden])}\n```"
@@ -28,7 +29,7 @@ class CustomHelp(commands.HelpCommand):
 
 bot = commands.Bot(
     command_prefix='',
-    intents=discord.Intents.default(),
+    intents=Intents.default(),
     help_command=CustomHelp()
 )
 
@@ -38,9 +39,9 @@ for cog in [path.stem for path in vars.COGS_PATH.glob('*.py')]:
 
 @bot.event
 async def on_ready():
-    if 'restart' in os.environ:
+    if 'restart' in environ:
         print('\nnashbot™ restarted successfully')
-        await bot.get_channel(int(os.environ.pop('restart'))).send(quotes.wrap('...powering up...', 'zap'))
+        await bot.get_channel(int(environ.pop('restart'))).send(quotes.wrap('...powering up...', 'zap'))
     print('nashbot™ has connected to discord')
 
 
@@ -88,17 +89,17 @@ async def safe_shutdown(ctx):
 @bot.command(name='shutdown', aliases=['die', 'kys'], help='shut down the bot')
 @resources.is_nash()
 async def shutdown(ctx):
-    await read.quote(ctx, random.choice(await quotes.get_shutdown_quotes(ctx)))
+    await read.quote(ctx, choice(await quotes.get_shutdown_quotes(ctx)))
     await safe_shutdown(ctx)
     await bot.close()
 
 
 @bot.command(name='restart', aliases=['reboot', 'refresh'], help='restart the bot')
 async def restart(ctx):
-    await read.quote(ctx, random.choice(await quotes.get_restart_quotes(ctx)))
+    await read.quote(ctx, choice(await quotes.get_restart_quotes(ctx)))
     await safe_shutdown(ctx)
-    os.environ['restart'] = str(ctx.channel.id)
-    os.execv(sys.executable, ['python'] + sys.argv)
+    environ['restart'] = str(ctx.channel.id)
+    execv(executable, ['python'] + argv)
 
 
 bot.run(TOKEN)

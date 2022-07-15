@@ -1,8 +1,8 @@
 # reminders.py
 
 
-from discord.ext import commands
 from nashbot import read
+from discord.ext import commands
 
 
 class Reminders(commands.Cog, name='reminders'):

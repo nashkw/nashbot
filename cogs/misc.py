@@ -2,11 +2,11 @@
 
 
 from emoji import emojize
+from random import choice, randint, shuffle
+from discord import Embed, HTTPException
+from nashbot import errs, quotes, read, vars
 from itertools import cycle
 from discord.ext import commands
-from discord import Embed, HTTPException
-from random import choice, randint, shuffle
-from nashbot import errs, quotes, read, vars
 
 
 class Misc(commands.Cog, name='misc'):

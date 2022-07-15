@@ -1,10 +1,10 @@
 # tests.py
 
 
-import emoji
-import discord
-from discord.ext import commands
+from emoji import emojize
+from discord import Embed, HTTPException
 from nashbot import errs, quotes, read, resources
+from discord.ext import commands
 
 
 class Tests(commands.Cog, name='tests'):
@@ -19,12 +19,12 @@ class Tests(commands.Cog, name='tests'):
         async def test_eset(emoji_set, name):
             egroups = [emoji_set[i:i + 20] for i in range(0, len(emoji_set), 20)]
             for group in egroups:
-                embed = discord.Embed(title=name, description='testing testing')
+                embed = Embed(title=name, description='testing testing')
                 msg = await read.embed(ctx, embed)
                 for e in group:
                     try:
-                        await msg.add_reaction(emoji.emojize(e, language='alias'))
-                    except discord.HTTPException:
+                        await msg.add_reaction(emojize(e, language='alias'))
+                    except HTTPException:
                         await read.quote(ctx, f'warning: the emoji "{e}" is not reaction safe')
 
         if eset_n:

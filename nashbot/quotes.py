@@ -1,13 +1,13 @@
 # quotes.py
 
 
-from table2ascii import table2ascii as t2a, PresetStyle, Alignment
+from table2ascii import table2ascii, PresetStyle, Alignment
 
 
 # helper functions
 
 def get_table(blist, head=None):
-    table = t2a(
+    table = table2ascii(
         header=head,
         body=blist,
         alignments=[Alignment.LEFT] + [Alignment.LEFT],

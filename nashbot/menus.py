@@ -1,7 +1,7 @@
 # menus.py
 
 
-import discord
+from discord import Embed
 from discord.ext import menus
 from nashbot.vars import active_menus
 
@@ -18,9 +18,9 @@ class MySource(menus.ListPageSource):
 
     async def format_page(self, menu, page):
         if self.head:
-            embed = discord.Embed(title=self.title).add_field(name=self.head, value=page)
+            embed = Embed(title=self.title).add_field(name=self.head, value=page)
         else:
-            embed = discord.Embed(title=self.title, description=page)
+            embed = Embed(title=self.title, description=page)
         if self.foot:
             embed.set_footer(text=self.foot)
         return embed

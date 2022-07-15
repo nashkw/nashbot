@@ -166,17 +166,17 @@ class Music(commands.Cog, name='music'):
     @commands.command(name='showqueue', aliases=['showq', 'qshow', 'q'], help='show the current music queue')
     @resources.is_v_client()
     async def showqueue(self, ctx):
-        np = f'**:{self.np_emoji()}:　now playing: "{self.nowplaying}"　:{self.np_emoji()}:**'
+        np = quotes.wrap(f'**now playing: "{self.nowplaying}"**', self.np_emoji())
         v = [[i+1, item] for i, item in enumerate(self.q_titles)]
         v = [f'```{quotes.get_table(item)}```' for item in [v[i:i + 10] for i in range(0, len(v), 10)]]
-        await read.paginated(ctx, ':musical_note:　music queue　:musical_note:', v, header=np)
+        await read.paginated(ctx, quotes.wrap('music queue', 'musical_note'), v, header=np)
 
     @commands.command(name='shownash', aliases=['nshow'], help='show the available local music albums', hidden=True)
     @resources.is_nash()
     async def shownash(self, ctx):
         v = resources.get_albums()
         v = [f'```{quotes.get_table(albums)}```' for albums in [v[i:i + 10] for i in range(0, len(v), 10)]]
-        await read.paginated(ctx, ':eyes:　forbidden & secret local albums　:eyes:', v)
+        await read.paginated(ctx, quotes.wrap('forbidden & secret local albums', 'eyes'), v)
 
     @commands.command(name='dequeue', aliases=['dq', 'qremove'], help='remove a song from the music queue')
     @resources.is_v_client()

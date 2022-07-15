@@ -1,11 +1,11 @@
 # misc.py
 
 
-import discord
-import emoji
-import random
+from emoji import emojize
 from itertools import cycle
 from discord.ext import commands
+from discord import Embed, HTTPException
+from random import choice, randint, shuffle
 from nashbot import errs, quotes, read, vars
 
 
@@ -17,25 +17,25 @@ class Misc(commands.Cog, name='misc'):
 
     @commands.command(name='hi', aliases=['hello', 'howdy', 'greetings', 'salutations'], help='greet the bot')
     async def hi(self, ctx):
-        await read.quote(ctx, random.choice(await quotes.get_hi_quotes(ctx)))
+        await read.quote(ctx, choice(await quotes.get_hi_quotes(ctx)))
 
     @commands.command(name='highfive', aliases=['hifive', 'high5', 'hi5'], help='ask the bot to give u a high five')
     async def highfive(self, ctx):
-        await read.quote(ctx, random.choice(await quotes.get_highfive_quotes(ctx)))
+        await read.quote(ctx, choice(await quotes.get_highfive_quotes(ctx)))
 
     @commands.command(name='random', aliases=['dice', 'rolldice'], help='ask the bot to pick a random number')
     async def random(self, ctx, *, arg: str):
         if arg.isdigit():
-            result = [f'randomly selecting in range 1-{arg}', random.randint(1, int(arg))]
+            result = [f'randomly selecting in range 1-{arg}', randint(1, int(arg))]
         elif len(arg.split('-')) == 2 and arg.split('-')[0].isdigit() and arg.split('-')[1].isdigit():
             params = [int(s) for s in arg.split('-')]
-            result = [f'randomly selecting in range {arg}', random.randint(params[0], params[1])]
+            result = [f'randomly selecting in range {arg}', randint(params[0], params[1])]
         elif arg.replace('1 d', 'd').replace('d', '').isdigit():
             arg = arg.replace('1 d', 'd')
-            result = [f'rolling a {arg}', random.randint(1, int(arg.replace('d', '')))]
+            result = [f'rolling a {arg}', randint(1, int(arg.replace('d', '')))]
         elif arg.split(' d')[0].isdigit() and arg.split(' d')[1].isdigit():
             params = [int(arg.split(' d')[0]), int(arg.split(' d')[1])]
-            result = [f'rolling {arg}', ', '.join([str(random.randint(1, params[1])) for i in range(params[0])])]
+            result = [f'rolling {arg}', ', '.join([str(randint(1, params[1])) for i in range(params[0])])]
         else:
             raise errs.BadArg
         await read.official(ctx, f'{result[0]} to get...　**{result[1]}**', 'game_die')
@@ -45,15 +45,15 @@ class Misc(commands.Cog, name='misc'):
         opts = opts.replace(', ', ',').split(',')
         valid_sets = [eset for eset in quotes.emoji_sets.values() if len(eset) >= len(opts)]
         if valid_sets and len(opts) <= 20:
-            emojis = random.choice(valid_sets)
-            v = [f'{e} : {opt}' for opt, e in zip(opts, emojis)]
-            embed = discord.Embed(title=subject, description='react with the matching emoji to vote :)')
-            embed.add_field(name='\u200b', value='\n\u200b\n'.join(v) + '\n\u200b')
-            msg = await read.embed(ctx, embed)
+            emojis = choice(valid_sets)
+            v = [f'{em} : {opt}' for opt, em in zip(opts, emojis)]
+            e = Embed(title=quotes.wrap(subject, 'grey_question'), description='(click the matching emoji to vote)')
+            e.add_field(name='\u200b', value='\n\u200b\n'.join(v) + '\n\u200b')
+            msg = await read.embed(ctx, e)
             for i in range(len(v)):
                 try:
-                    await msg.add_reaction(emoji.emojize(emojis[i], language='alias'))
-                except discord.HTTPException:
+                    await msg.add_reaction(emojize(emojis[i], language='alias'))
+                except HTTPException:
                     await read.err(ctx, f'warning: the emoji "{emojis[i]}" is not reaction safe')
         else:
             raise errs.BadArg
@@ -65,7 +65,7 @@ class Misc(commands.Cog, name='misc'):
         elif spam in quotes.spam_activators or spam is None:
             self.skelly_spam = spam
             skelly_gifs = [sgif for sgif in vars.SKELLY_PATH.glob('*.gif')]
-            random.shuffle(skelly_gifs)
+            shuffle(skelly_gifs)
             for gif in cycle(skelly_gifs):
                 await read.file(ctx, gif)
                 if not self.skelly_spam:

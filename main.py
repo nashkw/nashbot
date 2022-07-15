@@ -15,7 +15,7 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 
 class CustomHelp(commands.HelpCommand):
     async def send_bot_help(self, mapping):
-        embed = discord.Embed(title=':sparkles:　nashbot™ commands & curios 4 all ur earthly needs　:sparkles:')
+        embed = discord.Embed(title=quotes.wrap('nashbot™ commands & curios 4 all ur earthly needs', 'sparkles'))
         for map_cog, map_cmds in mapping.items():
             if not (map_cog and map_cog.qualified_name == 'tests'):
                 v = f"```\n{quotes.get_table([[cmd, cmd.help] for cmd in map_cmds if not cmd.hidden])}\n```"
@@ -40,7 +40,7 @@ for cog in [path.stem for path in vars.COGS_PATH.glob('*.py')]:
 async def on_ready():
     if 'restart' in os.environ:
         print('\nnashbot™ restarted successfully')
-        await bot.get_channel(int(os.environ.pop('restart'))).send(':zap:    ...powering up...    :zap:')
+        await bot.get_channel(int(os.environ.pop('restart'))).send(quotes.wrap('...powering up...', 'zap'))
     print('nashbot™ has connected to discord')
 
 

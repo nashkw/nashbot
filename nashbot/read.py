@@ -3,6 +3,7 @@
 
 import asyncio
 from nashbot.menus import *
+from nashbot.quotes import wrap
 
 
 async def embed(channel, emb):
@@ -30,7 +31,7 @@ async def quote(ctx, quo):
 
 async def official(ctx, quo, emoji):
     await ctx.trigger_typing()
-    await ctx.send(f':{emoji}:　{quo}　:{emoji}:')
+    await ctx.send(wrap(quo, emoji))
 
 
 async def err(ctx, quo):

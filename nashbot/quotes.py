@@ -17,6 +17,10 @@ def get_table(blist, head=None):
     return table
 
 
+def wrap(m, emoji):
+    return f':{emoji}:　{m}　:{emoji}:'
+
+
 # quotes for misc commands
 
 async def get_hi_quotes(ctx):

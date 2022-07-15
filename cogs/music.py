@@ -2,20 +2,14 @@
 
 
 import asyncio
-from pathlib import Path
-
 import discord
 import eyed3
 import random
+from pathlib import Path
 from youtube_dl import YoutubeDL
 from _collections import deque
 from discord.ext import commands
-from nashbot import errs
-from nashbot import vars
-from nashbot import read
-from nashbot import menus
-from nashbot import quotes
-from nashbot import resources
+from nashbot import errs, quotes, read, resources, vars
 
 
 class Music(commands.Cog, name='music'):

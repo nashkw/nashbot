@@ -3,12 +3,7 @@
 
 import random
 from discord.ext import commands
-from nashbot import errs
-from nashbot import vars
-from nashbot import read
-from nashbot import menus
-from nashbot import quotes
-from nashbot import resources
+from nashbot import quotes, read, resources, vars
 
 
 class Jokes(commands.Cog, name='jokes'):

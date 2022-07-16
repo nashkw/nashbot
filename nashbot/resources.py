@@ -22,13 +22,6 @@ def clean_msg(m):
 
 # custom checks
 
-def is_nash():
-    def predicate(ctx):
-        if ctx.message.author.id not in [386921492601896961, 727183720628486306]:
-            raise NotNash
-        return True
-    return commands.check(predicate)
-
 
 def is_v_client():
     def predicate(ctx):

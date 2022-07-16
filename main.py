@@ -6,15 +6,15 @@ from sys import argv, executable
 from random import choice
 from dotenv import load_dotenv
 from discord import Embed, Intents
-from nashbot import errs, quotes, read, resources, vars
-from discord.ext import commands
+from nashbot import errs, quotes, read, vars
+from discord.ext.commands import is_owner, errors, Bot, HelpCommand
 
 
 load_dotenv()
 TOKEN = getenv('DISCORD_TOKEN')
 
 
-class CustomHelp(commands.HelpCommand):
+class CustomHelp(HelpCommand):
     async def send_bot_help(self, mapping):
         embed = Embed(title=quotes.wrap('nashbot™ commands & curios 4 all ur earthly needs', 'sparkles'))
         for map_cog, map_cmds in mapping.items():
@@ -27,10 +27,11 @@ class CustomHelp(commands.HelpCommand):
         await read.embed(self.get_destination(), embed)
 
 
-bot = commands.Bot(
+bot = Bot(
     command_prefix='',
     intents=Intents.default(),
-    help_command=CustomHelp()
+    help_command=CustomHelp(),
+    owner_ids={386921492601896961, 727183720628486306, 757917569058603066}
 )
 
 for cog in [path.stem for path in vars.COGS_PATH.glob('*.py')]:
@@ -54,9 +55,9 @@ async def on_disconnect():
 async def on_command_error(ctx, error):
     if isinstance(error, errs.GlobalCheckFailure):
         return
-    elif isinstance(error, commands.errors.CommandNotFound):
+    elif isinstance(error, errors.CommandNotFound):
         return
-    elif isinstance(error, errs.NotNash):
+    elif isinstance(error, errors.NotOwner):
         await read.err(ctx, 'afraid this is a nash only cmd buddy. ur only hope is identity theft')
         return
     elif ctx.cog:
@@ -87,7 +88,7 @@ async def safe_shutdown(ctx):
 
 
 @bot.command(name='shutdown', aliases=['die', 'kys'], help='shut down the bot')
-@resources.is_nash()
+@is_owner()
 async def shutdown(ctx):
     await read.quote(ctx, choice(await quotes.get_shutdown_quotes(ctx)))
     await safe_shutdown(ctx)

@@ -8,11 +8,11 @@ from asyncio import Queue, Event, QueueEmpty
 from discord import FFmpegPCMAudio, FFmpegOpusAudio
 from nashbot import errs, quotes, read, resources, vars
 from youtube_dl import YoutubeDL
-from discord.ext import commands
 from _collections import deque
+from discord.ext.commands import is_owner, Cog, command, MissingRequiredArgument, BadArgument
 
 
-class Music(commands.Cog, name='music'):
+class Music(Cog, name='music'):
 
     def __init__(self, bot):
         self.bot = bot
@@ -105,14 +105,14 @@ class Music(commands.Cog, name='music'):
         if not self.looping:
             await self.music_loop(ctx)
 
-    @commands.command(name='play', help='play a song from youtube')
+    @command(name='play', help='play a song from youtube')
     async def play(self, ctx, *, search: str):
         if search.lower().replace(',', '').strip() in quotes.meme_activators:
             search = choice(quotes.meme_songs)
         await self.music_play(ctx, search)
 
-    @commands.command(name='nashplay', aliases=['nplay'], help='add a local album to the music queue', hidden=True)
-    @resources.is_nash()
+    @command(name='nashplay', aliases=['nplay'], help='add a local album to the music queue', hidden=True)
+    @is_owner()
     async def nashplay(self, ctx, *, album):
         if album.isdigit():
             indexes = [al[0] for al in resources.get_albums()]
@@ -122,7 +122,7 @@ class Music(commands.Cog, name='music'):
                 raise errs.BadArg
         await self.music_play(ctx, album, is_search=False)
 
-    @commands.command(name='pause', aliases=['unpause'], help='pause or unpause the currently playing song')
+    @command(name='pause', aliases=['unpause'], help='pause or unpause the currently playing song')
     @resources.is_v_client()
     async def pause(self, ctx):
         if ctx.voice_client.is_playing():
@@ -132,7 +132,7 @@ class Music(commands.Cog, name='music'):
             ctx.voice_client.resume()
             await read.official(ctx, f'unpaused music: "{self.nowplaying}"', 'arrow_forward')
 
-    @commands.command(name='skip', help='skip the currently playing song')
+    @command(name='skip', help='skip the currently playing song')
     @resources.is_v_client()
     async def skip(self, ctx):
         if self.repeating is not None:
@@ -140,7 +140,7 @@ class Music(commands.Cog, name='music'):
         ctx.voice_client.stop()
         await read.official(ctx, f'skipped: "{self.nowplaying}"', 'track_next')
 
-    @commands.command(name='loop', aliases=['unloop'], help='set the currently playing song to loop')
+    @command(name='loop', aliases=['unloop'], help='set the currently playing song to loop')
     @resources.is_v_client()
     async def loop(self, ctx):
         if self.repeating:
@@ -150,7 +150,7 @@ class Music(commands.Cog, name='music'):
             self.repeating = True
             await read.official(ctx, self.np_msg(), self.np_emoji())
 
-    @commands.command(name='shuffle', aliases=['reshuffle', 'qmix', 'mixq'], help='shuffle the current music queue')
+    @command(name='shuffle', aliases=['reshuffle', 'qmix', 'mixq'], help='shuffle the current music queue')
     @resources.is_v_client()
     async def shuffle(self, ctx):
         if self.q_titles:
@@ -163,7 +163,7 @@ class Music(commands.Cog, name='music'):
         else:
             raise errs.QueuelessShuffle
 
-    @commands.command(name='showqueue', aliases=['showq', 'qshow', 'q'], help='show the current music queue')
+    @command(name='showqueue', aliases=['showq', 'qshow', 'q'], help='show the current music queue')
     @resources.is_v_client()
     async def showqueue(self, ctx):
         np = quotes.wrap(f'**now playing: "{self.nowplaying}"**', self.np_emoji())
@@ -171,14 +171,14 @@ class Music(commands.Cog, name='music'):
         v = [f'```{quotes.get_table(item)}```' for item in [v[i:i + 10] for i in range(0, len(v), 10)]]
         await read.paginated(ctx, quotes.wrap('music queue', 'musical_note'), v, header=np)
 
-    @commands.command(name='shownash', aliases=['nshow'], help='show the available local music albums', hidden=True)
-    @resources.is_nash()
+    @command(name='shownash', aliases=['nshow'], help='show the available local music albums', hidden=True)
+    @is_owner()
     async def shownash(self, ctx):
         v = resources.get_albums()
         v = [f'```{quotes.get_table(albums)}```' for albums in [v[i:i + 10] for i in range(0, len(v), 10)]]
         await read.paginated(ctx, quotes.wrap('forbidden & secret local albums', 'eyes'), v)
 
-    @commands.command(name='dequeue', aliases=['dq', 'qremove'], help='remove a song from the music queue')
+    @command(name='dequeue', aliases=['dq', 'qremove'], help='remove a song from the music queue')
     @resources.is_v_client()
     async def dequeue(self, ctx, index: int):
         if index == 0:
@@ -197,7 +197,7 @@ class Music(commands.Cog, name='music'):
         else:
             raise errs.BadArg
 
-    @commands.command(name='clearqueue', aliases=['clearq', 'qclear'], help='clear the music queue')
+    @command(name='clearqueue', aliases=['clearq', 'qclear'], help='clear the music queue')
     @resources.is_v_client()
     async def clearqueue(self, ctx):
         await self.end_music(ctx)
@@ -220,7 +220,7 @@ class Music(commands.Cog, name='music'):
                 await ctx.invoke(self.bot.get_command('shownash'))
             else:
                 return False
-        elif isinstance(error, commands.MissingRequiredArgument):
+        elif isinstance(error, MissingRequiredArgument):
             if ctx.command == self.bot.get_command('nashplay'):
                 await read.err(ctx, '2 use this cmd u gotta give the albums name or index or, idk, at least *smth*')
             elif ctx.command == self.bot.get_command('play'):
@@ -230,7 +230,7 @@ class Music(commands.Cog, name='music'):
                 await ctx.invoke(self.bot.get_command('showqueue'))
             else:
                 return False
-        elif isinstance(error, commands.BadArgument):
+        elif isinstance(error, BadArgument):
             if ctx.command == self.bot.get_command('dequeue'):
                 await read.err(ctx, 'oof thats not how u use this cmd m8. try smth like "dequeue 1"')
             else:

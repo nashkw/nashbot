@@ -3,17 +3,17 @@
 
 from emoji import emojize
 from discord import Embed, HTTPException
-from nashbot import errs, quotes, read, resources
-from discord.ext import commands
+from nashbot import errs, quotes, read
+from discord.ext.commands import is_owner, command, MissingRequiredArgument, Cog
 
 
-class Tests(commands.Cog, name='tests'):
+class Tests(Cog, name='tests'):
 
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='emojisets', aliases=['esets', 'eset'], help='test emoji sets in reactions', hidden=True)
-    @resources.is_nash()
+    @command(name='emojisets', aliases=['esets', 'eset'], help='test emoji sets in reactions', hidden=True)
+    @is_owner()
     async def emojisets(self, ctx, eset_n: str = None):
 
         async def test_eset(emoji_set, name):
@@ -36,8 +36,8 @@ class Tests(commands.Cog, name='tests'):
             for k, eset in quotes.emoji_sets.items():
                 await test_eset(eset, k)
 
-    @commands.command(name='emojitruth', aliases=['etruth', 'etrue'], help='test the true form of emojis', hidden=True)
-    @resources.is_nash()
+    @command(name='emojitruth', aliases=['etruth', 'etrue'], help='test the true form of emojis', hidden=True)
+    @is_owner()
     async def emojitruth(self, ctx, *, emojis: str):
         await read.quote(ctx, f"```unaltered: {emojis}\nlist of characters: {list(emojis)}```")
 
@@ -47,7 +47,7 @@ class Tests(commands.Cog, name='tests'):
                 await read.err(ctx, 'uuuh thats not the name of an emoji set, srry man. check for typos maybe ?')
             else:
                 return False
-        elif isinstance(error, commands.MissingRequiredArgument):
+        elif isinstance(error, MissingRequiredArgument):
             if ctx.command == self.bot.get_command('emojitruth'):
                 await read.err(ctx, '2 use this cmd u gotta give some emojis to test my man my jester my fool :)')
             else:

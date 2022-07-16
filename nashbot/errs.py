@@ -12,10 +12,6 @@ class NotInVChannel(commands.CommandError):
     pass
 
 
-class NotNash(commands.CommandError):
-    pass
-
-
 class NoVClient(commands.CommandError):
     pass
 

@@ -4,7 +4,6 @@
 from os import environ, execv
 from sys import argv, executable
 from random import choice
-from discord import Embed
 from nashbot import quotes, read, vars
 from discord.ext.commands import Cog, HelpCommand, command, is_owner
 
@@ -18,7 +17,7 @@ class CustomHelp(HelpCommand):
                 embed.add_field(name=f'{map_cog.emoji}　{map_cog.qualified_name}', value=v, inline=False)
         await read.embed(self.get_destination(), embed)"""
 
-        buttons, pages = [], []
+        buttons, pages, headers = [], [], []
         for i, (map_cog, map_cmds) in enumerate(mapping.items()):
             if map_cmds and map_cog and map_cog.qualified_name != 'tests':
                 def get_action(index):
@@ -26,10 +25,12 @@ class CustomHelp(HelpCommand):
                         await self_menu.show_page(index)
                     return action
                 buttons.append([map_cog.emoji, get_action(i), i])
-                pages.append(map_cog.qualified_name)
+                pages.append(f"```\n{quotes.get_table([[c, c.help.lower()] for c in map_cmds if not c.hidden])}\n```")
+                headers.append(quotes.wrap(map_cog.qualified_name, map_cog.emoji, shorthand=False))
 
         await read.help_paginated(self.context, buttons,
-                                  quotes.wrap('nashbot™ commands & curios 4 all ur earthly needs', 'sparkles'), pages)
+                                  quotes.wrap('nashbot™ commands & curios 4 all ur earthly needs', 'sparkles'), pages,
+                                  headers=headers)
 
 
 class Core(Cog, name='nashbot™'):

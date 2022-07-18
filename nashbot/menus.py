@@ -6,21 +6,24 @@ from nashbot.vars import active_menus
 from discord.ext.menus import MenuPages, Button, button, ListPageSource, Position
 
 
-class MySource(ListPageSource):
-    def __init__(self, pages, title, header=None, footer=None):
-        self.title = title
-        self.head = header
+class PSource(ListPageSource):
+    def __init__(self, pages, title, headers=None, footer=None):
+        self.name = title
+        if headers is None:
+            self.heads = [False for p in pages]
+        else:
+            self.heads = headers
         super().__init__(pages, per_page=1)
         if footer is None:
             self.foot = '(use the reaction emojis to navigate)' if self.is_paginating() else footer
         else:
             self.foot = footer
 
-    async def format_page(self, menu, page):
-        if self.head:
-            embed = Embed(title=self.title).add_field(name=self.head, value=page)
+    async def format_page(self, m, page):
+        if self.heads[m.current_page]:
+            embed = Embed(title=self.name).add_field(name=self.heads[m.current_page], value=page)
         else:
-            embed = Embed(title=self.title, description=page)
+            embed = Embed(title=self.name, description=page)
         if self.foot:
             embed.set_footer(text=self.foot)
         return embed
@@ -43,7 +46,7 @@ class MyMenuPages(MenuPages):
 
     async def finalize(self, timed_out):
         foot = f'(this embed has {"timed out" if timed_out else "been deactivated"})'
-        await self.change_source(MySource(self.source.entries, self.source.title, header=self.source.head, footer=foot))
+        await self.change_source(PSource(self.source.entries, self.source.name, headers=self.source.heads, footer=foot))
         active_menus.remove(self)
 
 

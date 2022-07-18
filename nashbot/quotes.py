@@ -17,8 +17,11 @@ def get_table(blist, head=None):
     return table
 
 
-def wrap(m, emoji):
-    return f':{emoji}:　{m}　:{emoji}:'
+def wrap(m, emoji, shorthand=True):
+    if shorthand:
+        return f':{emoji}:　{m}　:{emoji}:'
+    else:
+        return f'{emoji}　{m}　{emoji}'
 
 
 # quotes for misc commands

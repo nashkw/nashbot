@@ -1,5 +1,5 @@
 # read.py
-
+import asyncio
 
 from discord import File
 from asyncio import sleep
@@ -7,14 +7,20 @@ from nashbot.menus import *
 from nashbot.quotes import wrap
 
 
-async def embed(channel, emb):
-    await channel.trigger_typing()
-    return await channel.send(embed=emb)
+async def embed(ctx, emb):
+    await ctx.trigger_typing()
+    return await ctx.send(embed=emb)
 
 
 async def paginated(ctx, title, pages, header=None, footer=None):
     await ctx.trigger_typing()
-    m = MyMenuPages(ctx.bot.user.id, MySource(pages, title, header=header, footer=footer), clear_reactions_after=True)
+    m = MyMenuPages(MySource(pages, title, header=header, footer=footer), clear_reactions_after=True)
+    await m.start(ctx)
+
+
+async def help_paginated(ctx, b_list, title, pages, header=None, footer=None):
+    await ctx.trigger_typing()
+    m = HelpPages(b_list, MySource(pages, title, header=header, footer=footer), clear_reactions_after=True)
     await m.start(ctx)
 
 

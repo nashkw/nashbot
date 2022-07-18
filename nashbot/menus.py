@@ -2,11 +2,11 @@
 
 
 from discord import Embed
-from discord.ext import menus
 from nashbot.vars import active_menus
+from discord.ext.menus import MenuPages, Button, button, ListPageSource, Position
 
 
-class MySource(menus.ListPageSource):
+class MySource(ListPageSource):
     def __init__(self, pages, title, header=None, footer=None):
         self.title = title
         self.head = header
@@ -26,15 +26,18 @@ class MySource(menus.ListPageSource):
         return embed
 
 
-class MyMenuPages(menus.MenuPages):
-    def __init__(self, bot_id, source, **kwargs):
+class MyMenuPages(MenuPages):
+    def __init__(self, source, **kwargs):
         if source.is_paginating():
             active_menus.append(self)
-        self.bot_id = bot_id
         super().__init__(source, **kwargs)
 
+    @button('\N{BLACK SQUARE FOR STOP}\ufe0f')
+    async def stop_pages(self, payload):
+        self.stop()
+
     def reaction_check(self, payload):
-        if payload.user_id == self.bot_id and payload.event_type == 'REACTION_REMOVE':
+        if payload.user_id == self.bot.user.id and payload.event_type == 'REACTION_REMOVE':
             return True
         return super().reaction_check(payload)
 
@@ -42,3 +45,10 @@ class MyMenuPages(menus.MenuPages):
         foot = f'(this embed has {"timed out" if timed_out else "been deactivated"})'
         await self.change_source(MySource(self.source.entries, self.source.title, header=self.source.head, footer=foot))
         active_menus.remove(self)
+
+
+class HelpPages(MyMenuPages, inherit_buttons=False):
+    def __init__(self, buttons, source, **kwargs):
+        super().__init__(source, **kwargs)
+        for b in buttons:
+            self.add_button(Button(b[0], b[1], position=Position(b[2])))

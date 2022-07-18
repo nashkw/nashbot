@@ -11,6 +11,7 @@ class Fun(Cog, name='fun'):
 
     def __init__(self, bot):
         self.bot = bot
+        self.emoji = '🎉'
         self.skelly_spam = False
 
     @command(name='hi', aliases=['hello', 'howdy', 'greetings', 'salutations'], help='greet the bot')

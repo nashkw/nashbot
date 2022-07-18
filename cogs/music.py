@@ -16,6 +16,7 @@ class Music(Cog, name='music'):
 
     def __init__(self, bot):
         self.bot = bot
+        self.emoji = '🎧'
         self.q_sources = Queue()
         self.q_titles = []
         self.repeating = None

@@ -15,7 +15,7 @@ class CustomHelp(HelpCommand):
         for map_cog, map_cmds in mapping.items():
             if map_cmds and map_cog and map_cog.qualified_name != 'tests':
                 v = f"```\n{quotes.get_table([[cmd, cmd.help.lower()] for cmd in map_cmds if not cmd.hidden])}\n```"
-                embed.add_field(name=map_cog.qualified_name, value=v, inline=False)
+                embed.add_field(name=f'{map_cog.emoji}　{map_cog.qualified_name}', value=v, inline=False)
         await read.embed(self.get_destination(), embed)
 
 
@@ -23,6 +23,7 @@ class Core(Cog, name='nashbot™'):
 
     def __init__(self, bot):
         self.bot = bot
+        self.emoji = '🛠️'
         self.orig_help = bot.help_command
         bot.help_command = CustomHelp()
         bot.help_command.cog = self

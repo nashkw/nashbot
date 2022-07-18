@@ -12,6 +12,7 @@ class Misc(Cog, name='misc'):
 
     def __init__(self, bot):
         self.bot = bot
+        self.emoji = '📜'
 
     @command(name='random', aliases=['dice', 'rolldice'], help='ask the bot to pick a random number')
     async def random(self, ctx, *, arg: str):

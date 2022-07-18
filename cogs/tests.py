@@ -11,6 +11,7 @@ class Tests(Cog, name='tests'):
 
     def __init__(self, bot):
         self.bot = bot
+        self.emoji = '🔬'
 
     @command(name='emojisets', aliases=['esets', 'eset'], help='test emoji sets in reactions', hidden=True)
     @is_owner()

@@ -9,6 +9,7 @@ class Reminders(commands.Cog, name='reminders'):
 
     def __init__(self, bot):
         self.bot = bot
+        self.emoji = '⏰'
 
     @commands.command(name='remindme', help='set a reminder for yourself')
     async def remindme(self, ctx):

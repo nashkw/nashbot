@@ -3,7 +3,13 @@
 
 from discord import Embed
 from nashbot.vars import active_menus
-from discord.ext.menus import MenuPages, Button, button, ListPageSource, Position
+from discord.ext.menus import MenuPages, Button, button, ListPageSource, Position, Last
+
+
+def get_action(index):
+    async def action(self_menu, payload):
+        await self_menu.show_page(index)
+    return action
 
 
 class PSource(ListPageSource):
@@ -53,5 +59,9 @@ class MyMenuPages(MenuPages):
 class HelpPages(MyMenuPages, inherit_buttons=False):
     def __init__(self, buttons, source, **kwargs):
         super().__init__(source, **kwargs)
-        for b in buttons:
-            self.add_button(Button(b[0], b[1], position=Position(b[2])))
+        for i, b in enumerate(buttons):
+            self.add_button(Button(b, get_action(i), position=Position(i)))
+
+    @button('\N{BLACK SQUARE FOR STOP}\ufe0f', position=Last(0))
+    async def stop_pages(self, payload):
+        self.stop()

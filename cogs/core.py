@@ -10,27 +10,16 @@ from discord.ext.commands import Cog, HelpCommand, command, is_owner
 
 class CustomHelp(HelpCommand):
     async def send_bot_help(self, mapping):
-        """embed = Embed(title=quotes.wrap('nashbot™ commands & curios 4 all ur earthly needs', 'sparkles'))
-        for map_cog, map_cmds in mapping.items():
-            if map_cmds and map_cog and map_cog.qualified_name != 'tests':
-                v = f"```\n{quotes.get_table([[cmd, cmd.help.lower()] for cmd in map_cmds if not cmd.hidden])}\n```"
-                embed.add_field(name=f'{map_cog.emoji}　{map_cog.qualified_name}', value=v, inline=False)
-        await read.embed(self.get_destination(), embed)"""
-
-        buttons, pages, headers = [], [], []
+        title = quotes.wrap('nashbot™ commands & curios 4 all ur earthly needs', 'sparkles')
+        buttons, pages, headers = ['⏏️'], [[]], ['command categories:']
         for i, (map_cog, map_cmds) in enumerate(mapping.items()):
             if map_cmds and map_cog and map_cog.qualified_name != 'tests':
-                def get_action(index):
-                    async def action(self_menu, payload):
-                        await self_menu.show_page(index)
-                    return action
-                buttons.append([map_cog.emoji, get_action(i), i])
+                pages[0].append(map_cog.qualified_name)
+                buttons.append(map_cog.emoji)
                 pages.append(f"```\n{quotes.get_table([[c, c.help.lower()] for c in map_cmds if not c.hidden])}\n```")
-                headers.append(quotes.wrap(map_cog.qualified_name, map_cog.emoji, shorthand=False))
-
-        await read.help_paginated(self.context, buttons,
-                                  quotes.wrap('nashbot™ commands & curios 4 all ur earthly needs', 'sparkles'), pages,
-                                  headers=headers)
+                headers.append(quotes.wrap(map_cog.qualified_name, map_cog.emoji, shorthand=False, both=False))
+        pages[0] = '\n\u200b\n' + quotes.opt_list(pages[0], buttons[1:])
+        await read.help_paginated(self.context, buttons, title, pages, headers=headers)
 
 
 class Core(Cog, name='nashbot™'):

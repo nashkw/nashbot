@@ -17,11 +17,19 @@ def get_table(blist, head=None):
     return table
 
 
-def wrap(m, emoji, shorthand=True):
+def wrap(m, emoji, shorthand=True, both=True):
     if shorthand:
-        return f':{emoji}:　{m}　:{emoji}:'
-    else:
+        emoji = f':{emoji}:'
+    if both:
         return f'{emoji}　{m}　{emoji}'
+    else:
+        return f'{emoji}　{m}'
+
+
+def opt_list(opts, emojis):
+    v = [f'{em} : {opt}' for opt, em in zip(opts, emojis)]
+    v = '\n\u200b\n'.join(v) + '\n\u200b'
+    return v
 
 
 # quotes for misc commands

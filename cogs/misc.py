@@ -37,11 +37,10 @@ class Misc(Cog, name='misc'):
         valid_sets = [eset for eset in quotes.emoji_sets.values() if len(eset) >= len(opts)]
         if valid_sets and len(opts) <= 20:
             emojis = choice(valid_sets)
-            v = [f'{em} : {opt}' for opt, em in zip(opts, emojis)]
             e = Embed(title=quotes.wrap(subject, 'grey_question'), description='(click the matching emoji to vote)')
-            e.add_field(name='\u200b', value='\n\u200b\n'.join(v) + '\n\u200b')
+            e.add_field(name='\u200b', value=quotes.opt_list(opts, emojis))
             msg = await read.embed(ctx, e)
-            for i in range(len(v)):
+            for i in range(len(opts)):
                 try:
                     await msg.add_reaction(emojize(emojis[i], language='alias'))
                 except HTTPException:

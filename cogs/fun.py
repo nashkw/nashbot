@@ -1,21 +1,31 @@
-# jokes.py
+# fun.py
 
 
-from random import choice
-from nashbot import quotes, read, resources, vars
-from discord.ext import commands
+from random import choice, shuffle
+from nashbot import errs, quotes, read, vars, resources
+from itertools import cycle
+from discord.ext.commands import command, Cog
 
 
-class Jokes(commands.Cog, name='jokes'):
+class Fun(Cog, name='fun'):
 
     def __init__(self, bot):
         self.bot = bot
+        self.skelly_spam = False
 
-    @commands.command(name='joke', help='ask the bot to tell u a joke')
+    @command(name='hi', aliases=['hello', 'howdy', 'greetings', 'salutations'], help='greet the bot')
+    async def hi(self, ctx):
+        await read.quote(ctx, choice(await quotes.get_hi_quotes(ctx)))
+
+    @command(name='highfive', aliases=['hifive', 'high5', 'hi5'], help='ask the bot to give u a high five')
+    async def highfive(self, ctx):
+        await read.quote(ctx, choice(await quotes.get_highfive_quotes(ctx)))
+
+    @command(name='joke', help='ask the bot to tell u a joke')
     async def joke(self, ctx):
         await read.quote(ctx, choice(await quotes.get_joke_quotes(ctx)))
 
-    @commands.command(name='kkjoke', aliases=['knockknockjoke'], help='ask the bot to tell u a knock knock joke')
+    @command(name='kkjoke', aliases=['knockknockjoke'], help='ask the bot to tell u a knock knock joke')
     async def kkjoke(self, ctx):
         joke = choice(await quotes.get_kkjoke_quotes(ctx))
         vars.frozen_users.append(ctx.message.author.id)
@@ -61,12 +71,36 @@ class Jokes(commands.Cog, name='jokes'):
         await read.quote(ctx, joke[1:])
         vars.frozen_users.remove(ctx.message.author.id)
 
+    @command(name='skellygif', aliases=['skeleton', 'skelly'], help='ask the bot for a skeleton gif')
+    async def skellygif(self, ctx, spam: str = None):
+        if self.skelly_spam:
+            self.skelly_spam = False
+        elif spam in quotes.spam_activators or spam is None:
+            self.skelly_spam = spam
+            skelly_gifs = [sgif for sgif in vars.SKELLY_PATH.glob('*.gif')]
+            shuffle(skelly_gifs)
+            for gif in cycle(skelly_gifs):
+                await read.file(ctx, gif)
+                if not self.skelly_spam:
+                    if self.skelly_spam is not None:
+                        await read.official(ctx, 'end of skeleton spam', 'skull_crossbones')
+                    return
+        else:
+            raise errs.BadArg
+
     async def error_handling(self, ctx, error):
-        return False
+        if isinstance(error, errs.BadArg):
+            if ctx.command == self.bot.get_command('skellygif'):
+                await read.err(ctx, 'uh... whaa? try "skellygif spam" if thats wt u were aiming 4. or just "skellygif"')
+            else:
+                return False
+        else:
+            return False
+        return True
 
 
 def setup(bot):
-    bot.add_cog(Jokes(bot))
+    bot.add_cog(Fun(bot))
 
 
 

@@ -35,7 +35,6 @@ class MyMenuPages(menus.MenuPages):
 
     def reaction_check(self, payload):
         if payload.user_id == self.bot_id and payload.event_type == 'REACTION_REMOVE':
-            print('passed overriden check')
             return True
         return super().reaction_check(payload)
 

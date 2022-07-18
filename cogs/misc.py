@@ -2,28 +2,18 @@
 
 
 from emoji import emojize
-from random import choice, randint, shuffle
+from random import choice, randint
+from nashbot import errs, quotes, read
 from discord import Embed, HTTPException
-from nashbot import errs, quotes, read, vars
-from itertools import cycle
-from discord.ext import commands
+from discord.ext.commands import command, Cog, MissingRequiredArgument
 
 
-class Misc(commands.Cog, name='misc'):
+class Misc(Cog, name='misc'):
 
     def __init__(self, bot):
         self.bot = bot
-        self.skelly_spam = False
 
-    @commands.command(name='hi', aliases=['hello', 'howdy', 'greetings', 'salutations'], help='greet the bot')
-    async def hi(self, ctx):
-        await read.quote(ctx, choice(await quotes.get_hi_quotes(ctx)))
-
-    @commands.command(name='highfive', aliases=['hifive', 'high5', 'hi5'], help='ask the bot to give u a high five')
-    async def highfive(self, ctx):
-        await read.quote(ctx, choice(await quotes.get_highfive_quotes(ctx)))
-
-    @commands.command(name='random', aliases=['dice', 'rolldice'], help='ask the bot to pick a random number')
+    @command(name='random', aliases=['dice', 'rolldice'], help='ask the bot to pick a random number')
     async def random(self, ctx, *, arg: str):
         if arg.isdigit():
             result = [f'randomly selecting in range 1-{arg}', randint(1, int(arg))]
@@ -40,7 +30,7 @@ class Misc(commands.Cog, name='misc'):
             raise errs.BadArg
         await read.official(ctx, f'{result[0]} to get...　**{result[1]}**', 'game_die')
 
-    @commands.command(name='vote', aliases=['poll'], help='set up a vote with a list of possible choices')
+    @command(name='vote', aliases=['poll'], help='set up a vote with a list of possible choices')
     async def vote(self, ctx, subject: str, *, opts: str):
         opts = opts.replace(', ', ',').split(',')
         valid_sets = [eset for eset in quotes.emoji_sets.values() if len(eset) >= len(opts)]
@@ -58,34 +48,15 @@ class Misc(commands.Cog, name='misc'):
         else:
             raise errs.BadArg
 
-    @commands.command(name='skellygif', aliases=['skeleton', 'skelly'], help='ask the bot for a skeleton gif')
-    async def skellygif(self, ctx, spam: str = None):
-        if self.skelly_spam:
-            self.skelly_spam = False
-        elif spam in quotes.spam_activators or spam is None:
-            self.skelly_spam = spam
-            skelly_gifs = [sgif for sgif in vars.SKELLY_PATH.glob('*.gif')]
-            shuffle(skelly_gifs)
-            for gif in cycle(skelly_gifs):
-                await read.file(ctx, gif)
-                if not self.skelly_spam:
-                    if self.skelly_spam is not None:
-                        await read.official(ctx, 'end of skeleton spam', 'skull_crossbones')
-                    return
-        else:
-            raise errs.BadArg
-
     async def error_handling(self, ctx, error):
         if isinstance(error, errs.BadArg):
             if ctx.command == self.bot.get_command('random'):
                 await read.err(ctx, '2 use this cmd u gotta give the range 2 choose from. like "random 2-8" or smth')
             elif ctx.command == self.bot.get_command('vote'):
                 await read.err(ctx, 'yo thats 2 many options my guy my fella, max number is 20 :|')
-            elif ctx.command == self.bot.get_command('skellygif'):
-                await read.err(ctx, 'uh... whaa? try "skellygif spam" if thats wt u were aiming 4. or just "skellygif"')
             else:
                 return False
-        elif isinstance(error, commands.MissingRequiredArgument):
+        elif isinstance(error, MissingRequiredArgument):
             if ctx.command == self.bot.get_command('random'):
                 await read.err(ctx, '2 use this cmd u gotta give the range 2 choose from or the type of dice or smth')
             elif ctx.command == self.bot.get_command('vote'):

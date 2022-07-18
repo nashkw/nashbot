@@ -5,33 +5,19 @@ from os import getenv, environ, execv
 from sys import argv, executable
 from random import choice
 from dotenv import load_dotenv
-from discord import Embed, Intents
+from discord import Intents
 from nashbot import errs, quotes, read, vars
-from discord.ext.commands import is_owner, errors, Bot, HelpCommand
+from discord.ext.commands import is_owner, errors, Bot
 
 
 load_dotenv()
 TOKEN = getenv('DISCORD_TOKEN')
 
 
-class CustomHelp(HelpCommand):
-    async def send_bot_help(self, mapping):
-        embed = Embed(title=quotes.wrap('nashbot™ commands & curios 4 all ur earthly needs', 'sparkles'))
-        for map_cog, map_cmds in mapping.items():
-            if not (map_cog and map_cog.qualified_name == 'tests'):
-                v = f"```\n{quotes.get_table([[cmd, cmd.help] for cmd in map_cmds if not cmd.hidden])}\n```"
-                if map_cog:
-                    embed.add_field(name=map_cog.qualified_name, value=v, inline=False)
-                else:
-                    embed.add_field(name='nashbot™', value=v.lower(), inline=False)
-        await read.embed(self.get_destination(), embed)
-
-
 bot = Bot(
     command_prefix='',
     intents=Intents.default(),
-    help_command=CustomHelp(),
-    owner_ids={386921492601896961, 727183720628486306, 757917569058603066}
+    owner_ids={386921492601896961, 727183720628486306, 757917569058603066},
 )
 
 for cog in [path.stem for path in vars.COGS_PATH.glob('*.py')]:

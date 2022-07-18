@@ -1,13 +1,11 @@
 # main.py
 
 
-from os import getenv, environ, execv
-from sys import argv, executable
-from random import choice
+from os import getenv, environ
 from dotenv import load_dotenv
 from discord import Intents
 from nashbot import errs, quotes, read, vars
-from discord.ext.commands import is_owner, errors, Bot
+from discord.ext.commands import errors, Bot
 
 
 load_dotenv()
@@ -59,34 +57,6 @@ def check_commands(ctx):
     if ctx.message.author.id in vars.frozen_users:
         raise errs.GlobalCheckFailure
     return True
-
-
-async def safe_shutdown(ctx):
-    if vars.active_menus:
-        async with ctx.typing():
-            while vars.active_menus:
-                vars.active_menus[0].stop()
-                await vars.active_menus[0].message.remove_reaction('\N{BLACK SQUARE FOR STOP}\ufe0f', bot.user)
-        await read.official(ctx, 'embeds deactivated', 'x')
-    if ctx.voice_client is not None:
-        await ctx.invoke(bot.get_command('clearqueue'))
-    await read.official(ctx, '...shutting down...', 'zzz')
-
-
-@bot.command(name='shutdown', aliases=['die', 'kys'], help='shut down the bot')
-@is_owner()
-async def shutdown(ctx):
-    await read.quote(ctx, choice(await quotes.get_shutdown_quotes(ctx)))
-    await safe_shutdown(ctx)
-    await bot.close()
-
-
-@bot.command(name='restart', aliases=['reboot', 'refresh'], help='restart the bot')
-async def restart(ctx):
-    await read.quote(ctx, choice(await quotes.get_restart_quotes(ctx)))
-    await safe_shutdown(ctx)
-    environ['restart'] = str(ctx.channel.id)
-    execv(executable, ['python'] + argv)
 
 
 bot.run(TOKEN)

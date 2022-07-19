@@ -16,7 +16,7 @@ class NoVClient(CommandError):
     pass
 
 
-class QueuelessShuffle(CommandError):
+class SmallQueue(CommandError):
     pass
 
 

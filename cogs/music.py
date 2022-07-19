@@ -168,7 +168,7 @@ class Music(Cog, name='music'):
                   'keep in mind youll need 2 have at least 2 songs in the queue b4 tryin this')
     @resources.is_v_client()
     async def shuffle(self, ctx):
-        if self.q_titles:
+        if len(self.q_titles) > 1:
             shuffling = list(zip(self.q_titles, self.q_sources._queue))
             shuffle(shuffling)
             qtemp1, qtemp2 = zip(*shuffling)
@@ -176,7 +176,7 @@ class Music(Cog, name='music'):
             await read.official(ctx, 'shuffled music queue', 'twisted_rightwards_arrows')
             await ctx.invoke(self.bot.get_command('showqueue'))
         else:
-            raise errs.QueuelessShuffle
+            raise errs.SmallQueue
 
     @command(name='showqueue', aliases=['showq', 'qshow', 'q'], brief='show the current music queue',
              help='show all currently queued songs & their index in the current music queue. keep in mind youll need '
@@ -185,8 +185,9 @@ class Music(Cog, name='music'):
     async def showqueue(self, ctx):
         np = quotes.wrap(f'**now playing: "{self.nowplaying}"**', self.np_emoji())
         v = [[i+1, item] for i, item in enumerate(self.q_titles)]
-        v = [quotes.get_table(item) for item in [v[i:i + 10] for i in range(0, len(v), 10)]]
-        await read.paginated(ctx, quotes.wrap('music queue', 'musical_note'), v, headers=np)
+        foot = None if v else '(there are no songs queued after this one - use the "play [songname]" cmd to add more)'
+        v = [quotes.get_table(item) for item in [v[i:i + 10] for i in range(0, len(v), 10)]] if v else [varz.BLANK]
+        await read.paginated(ctx, quotes.wrap('music queue', 'musical_note'), v, headers=np, footers=foot)
 
     @command(name='shownash', aliases=['nshow'], brief='show the available local music albums', hidden=True,
              help='show all avaliable local music albums & their indexes 4 use in the nplay cmd')
@@ -233,7 +234,7 @@ class Music(Cog, name='music'):
             await read.err(ctx, 'yo u gotta b in a voice channel 2 play shit. i need audience yk?')
         elif isinstance(error, errs.FailedSearch):
             await read.err(ctx, 'ur search got no results srry, u sure thats the right name??')
-        elif isinstance(error, errs.QueuelessShuffle):
+        elif isinstance(error, errs.SmallQueue):
             await read.err(ctx, 'but,, wheres the queue?? beef up the queue a bit b4 tryin that lmao')
         elif isinstance(error, errs.BadArg):
             await read.err(ctx, 'invalid index buddy. here, find the index w/ this list & try again')

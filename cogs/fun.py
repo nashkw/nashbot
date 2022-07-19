@@ -93,6 +93,8 @@ class Fun(Cog, name='fun'):
             raise errs.BadArg
 
     async def error_handling(self, ctx, error):
+        if ctx.command == self.bot.get_command('kkjoke') and ctx.message.author.id in varz.frozen_users:
+            varz.frozen_users.remove(ctx.message.author.id)
         if isinstance(error, errs.BadArg):
             if ctx.command == self.bot.get_command('skellygif'):
                 await read.err(ctx, 'uh... whaa? try "skellygif spam" if thats wt u were aiming 4. or just "skellygif"')

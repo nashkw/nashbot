@@ -1,5 +1,4 @@
 # read.py
-import asyncio
 
 from discord import File
 from asyncio import sleep

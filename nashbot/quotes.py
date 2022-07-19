@@ -234,6 +234,7 @@ spam_activators = [
     'alarm',
     'togglealarm',
     'toggle alarm',
+    'start',
 ]
 
 emoji_sets = {

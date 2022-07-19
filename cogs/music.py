@@ -106,13 +106,19 @@ class Music(Cog, name='music'):
         if not self.looping:
             await self.music_loop(ctx)
 
-    @command(name='play', help='play a song from youtube')
+    @command(name='play', brief='play a song from youtube',
+             help='play a song from youtube. the bot will choose the first search result & add it to the music queue. '
+                  'remember 2 make sure ur in a voice channel b4 u try & play music tho',
+             extras={'examples': ['play organgatangabangin b-man', 'play meme']})
     async def play(self, ctx, *, search: str):
         if search.lower().replace(',', '').strip() in quotes.meme_activators:
             search = choice(quotes.meme_songs)
         await self.music_play(ctx, search)
 
-    @command(name='nashplay', aliases=['nplay'], help='add a local album to the music queue', hidden=True)
+    @command(name='nashplay', aliases=['nplay'], brief='add a local album to the music queue', hidden=True,
+             help='play an album from local music files. specify the album by either its name or index (use the nshow '
+                  'cmd 2 find this). remember 2 make sure ur in a voice channel b4 u try & play music tho',
+             extras={'examples': ['nashplay radiohead', 'nplay 83']})
     @is_owner()
     async def nashplay(self, ctx, *, album):
         if album.isdigit():
@@ -123,7 +129,9 @@ class Music(Cog, name='music'):
                 raise errs.BadArg
         await self.music_play(ctx, album, is_search=False)
 
-    @command(name='pause', aliases=['unpause'], help='pause or unpause the currently playing song')
+    @command(name='pause', aliases=['unpause'], brief='pause or unpause the currently playing song',
+             help='toggle the paused effect for the current music queue. keep in mind youll need 2 b playin music b4 '
+                  'tryin this')
     @resources.is_v_client()
     async def pause(self, ctx):
         if ctx.voice_client.is_playing():
@@ -133,7 +141,9 @@ class Music(Cog, name='music'):
             ctx.voice_client.resume()
             await read.official(ctx, f'unpaused music: "{self.nowplaying}"', 'arrow_forward')
 
-    @command(name='skip', help='skip the currently playing song')
+    @command(name='skip', brief='skip the currently playing song',
+             help='skip the currently playing song, even if its looping. keep in mind youll need 2 b playin music b4 '
+                  'tryin this')
     @resources.is_v_client()
     async def skip(self, ctx):
         if self.repeating is not None:
@@ -141,7 +151,9 @@ class Music(Cog, name='music'):
         ctx.voice_client.stop()
         await read.official(ctx, f'skipped: "{self.nowplaying}"', 'track_next')
 
-    @command(name='loop', aliases=['unloop'], help='set the currently playing song to loop')
+    @command(name='loop', aliases=['unloop'], brief='set the currently playing song to loop',
+             help='toggle the loop effect for the currently playing song. if u skip a looping song the next song will '
+                  'start looping instead. keep in mind youll need 2 b playin music b4 tryin this')
     @resources.is_v_client()
     async def loop(self, ctx):
         if self.repeating:
@@ -151,7 +163,9 @@ class Music(Cog, name='music'):
             self.repeating = True
             await read.official(ctx, self.np_msg(), self.np_emoji())
 
-    @command(name='shuffle', aliases=['reshuffle', 'qmix', 'mixq'], help='shuffle the current music queue')
+    @command(name='shuffle', aliases=['reshuffle', 'qmix', 'mixq'], brief='shuffle the current music queue',
+             help='shuffle the current music queue into a different order. wont shuffle the currently playing song. '
+                  'keep in mind youll need 2 have at least 2 songs in the queue b4 tryin this')
     @resources.is_v_client()
     async def shuffle(self, ctx):
         if self.q_titles:
@@ -164,7 +178,9 @@ class Music(Cog, name='music'):
         else:
             raise errs.QueuelessShuffle
 
-    @command(name='showqueue', aliases=['showq', 'qshow', 'q'], help='show the current music queue')
+    @command(name='showqueue', aliases=['showq', 'qshow', 'q'], brief='show the current music queue',
+             help='show all currently queued songs & their index in the current music queue. keep in mind youll need '
+                  '2 b playing music b4 tryin this')
     @resources.is_v_client()
     async def showqueue(self, ctx):
         np = quotes.wrap(f'**now playing: "{self.nowplaying}"**', self.np_emoji())
@@ -172,14 +188,18 @@ class Music(Cog, name='music'):
         v = [f'```{quotes.get_table(item)}```' for item in [v[i:i + 10] for i in range(0, len(v), 10)]]
         await read.paginated(ctx, quotes.wrap('music queue', 'musical_note'), v, headers=np)
 
-    @command(name='shownash', aliases=['nshow'], help='show the available local music albums', hidden=True)
+    @command(name='shownash', aliases=['nshow'], brief='show the available local music albums', hidden=True,
+             help='show all avaliable local music albums & their indexes 4 use in the nplay cmd')
     @is_owner()
     async def shownash(self, ctx):
         v = resources.get_albums()
         v = [f'```{quotes.get_table(albums)}```' for albums in [v[i:i + 10] for i in range(0, len(v), 10)]]
         await read.paginated(ctx, quotes.wrap('forbidden & secret local albums', 'eyes'), v)
 
-    @command(name='dequeue', aliases=['dq', 'qremove'], help='remove a song from the music queue')
+    @command(name='dequeue', aliases=['dq', 'qremove'], brief='remove a song from the music queue',
+             help='remove the song at the specified index from the music queue. index 0 is always the currently '
+                  'playing song. keep in mind youll need 2 b playin music b4 tryin this',
+             extras={'examples': ['dequeue 4', 'dq 0']})
     @resources.is_v_client()
     async def dequeue(self, ctx, index: int):
         if index == 0:
@@ -198,7 +218,9 @@ class Music(Cog, name='music'):
         else:
             raise errs.BadArg
 
-    @command(name='clearqueue', aliases=['clearq', 'qclear'], help='clear the music queue')
+    @command(name='clearqueue', aliases=['clearq', 'qclear'], brief='clear the music queue',
+             help='clear all songs including the currently playing song from the current music queue. keep in mind '
+                  'youll need 2 b playin music b4 tryin this')
     @resources.is_v_client()
     async def clearqueue(self, ctx):
         await self.end_music(ctx)

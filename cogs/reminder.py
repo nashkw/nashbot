@@ -11,9 +11,11 @@ class Reminder(commands.Cog, name='reminder'):
         self.bot = bot
         self.emoji = '⏰'
 
-    @commands.command(name='remindme', help='set a reminder for yourself')
+    @commands.command(name='remindme', brief='set a reminder for yourself',
+                      help='TODO',
+                      extras={'examples': ['TODO']})
     async def remindme(self, ctx):
-        await read.quote(ctx, 'placeholder')
+        await read.quote(ctx, 'TODO')
 
     async def error_handling(self, ctx, error):
         return False

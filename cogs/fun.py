@@ -14,19 +14,23 @@ class Fun(Cog, name='fun'):
         self.emoji = '🎉'
         self.skelly_spam = False
 
-    @command(name='hi', aliases=['hello', 'howdy', 'greetings', 'salutations'], help='greet the bot')
+    @command(name='hi', aliases=['hello', 'howdy', 'greetings', 'salutations'], brief='greet the bot',
+             help='greet the bot! hopefully itll greet u back? wt a nice lil ping pong cmd :)')
     async def hi(self, ctx):
         await read.quote(ctx, choice(await quotes.get_hi_quotes(ctx)))
 
-    @command(name='highfive', aliases=['hifive', 'high5', 'hi5'], help='ask the bot to give u a high five')
+    @command(name='highfive', aliases=['hifive', 'high5', 'hi5'], brief='ask the bot to give u a high five',
+             help='ask the bot 4 a high five! hopefully it wont leave u hangin? wt a nice lil ping pong cmd :)')
     async def highfive(self, ctx):
         await read.quote(ctx, choice(await quotes.get_highfive_quotes(ctx)))
 
-    @command(name='joke', help='ask the bot to tell u a joke')
+    @command(name='joke', brief='ask the bot to tell u a joke',
+             help='ask the bot 2 tell u a joke! warning: those with bad joke allergies should proceed with caution')
     async def joke(self, ctx):
         await read.quote(ctx, choice(await quotes.get_joke_quotes(ctx)))
 
-    @command(name='kkjoke', aliases=['knockknockjoke'], help='ask the bot to tell u a knock knock joke')
+    @command(name='kkjoke', aliases=['knockknockjoke'], brief='ask the bot to tell u a knock knock joke',
+             help='ask the bot 2 tell u a knock knock joke! remember youll have to participate tho, takes 2 2 tango :)')
     async def kkjoke(self, ctx):
         joke = choice(await quotes.get_kkjoke_quotes(ctx))
         vars.frozen_users.append(ctx.message.author.id)
@@ -72,7 +76,9 @@ class Fun(Cog, name='fun'):
         await read.quote(ctx, joke[1:])
         vars.frozen_users.remove(ctx.message.author.id)
 
-    @command(name='skellygif', aliases=['skeleton', 'skelly'], help='ask the bot for a skeleton gif')
+    @command(name='skellygif', aliases=['skelly', 'skeleton'], brief='ask the bot for a skeleton gif',
+             help='ask 4 a skeleton gif. & if u activate the spam theyll just keep comin until u use this cmd again!',
+             extras={'examples': ['skellygif', 'skelly spam', 'skeleton toggle']})
     async def skellygif(self, ctx, spam: str = None):
         if self.skelly_spam:
             self.skelly_spam = False

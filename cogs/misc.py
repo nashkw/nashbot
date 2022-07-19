@@ -14,7 +14,9 @@ class Misc(Cog, name='misc'):
         self.bot = bot
         self.emoji = '📜'
 
-    @command(name='random', aliases=['dice', 'rolldice'], help='ask the bot to pick a random number')
+    @command(name='random', aliases=['dice', 'rolldice'], brief='ask the bot to pick a random number',
+             help='ask the bot 4 a random number, either by picking from a range or by simulating dice rolls',
+             extras={'examples': ['random 8', 'random 3-27', 'dice d6', 'rolldice 4 d8']})
     async def random(self, ctx, *, arg: str):
         if arg.isdigit():
             result = [f'randomly selecting in range 1-{arg}', randint(1, int(arg))]
@@ -31,7 +33,9 @@ class Misc(Cog, name='misc'):
             raise errs.BadArg
         await read.official(ctx, f'{result[0]} to get...　**{result[1]}**', 'game_die')
 
-    @command(name='vote', aliases=['poll'], help='set up a vote with a list of possible choices')
+    @command(name='vote', aliases=['poll'], brief='set up a vote with a list of possible choices',
+             help='set up a vote on a subject of ur choice, listing all the possible options to vote on',
+             extras={'examples': ['vote proceed? yes, no', 'poll "when yall free?" mon,tues,wed,thurs,fri,sat,sun']})
     async def vote(self, ctx, subject: str, *, opts: str):
         opts = opts.replace(', ', ',').split(',')
         valid_sets = [eset for eset in quotes.emoji_sets.values() if len(eset) >= len(opts)]

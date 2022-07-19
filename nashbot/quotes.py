@@ -26,8 +26,8 @@ def wrap(m, emoji, shorthand=True, both=True):
         return f'{emoji}　{m}'
 
 
-def opt_list(opts, emojis):
-    v = [f'{em} : {opt}' for opt, em in zip(opts, emojis)]
+def opt_list(opts, emojis=None):
+    v = [f'{em} : {opt}' for opt, em in zip(opts, emojis)] if emojis else opts
     v = '\n\u200b\n'.join(v) + '\n\u200b'
     return v
 

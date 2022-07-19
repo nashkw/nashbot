@@ -12,13 +12,26 @@ class CustomHelp(HelpCommand):
     async def send_bot_help(self, mapping):
         title = quotes.wrap('nashbot™ commands & curios 4 all ur earthly needs', 'sparkles')
         buttons, pages, headers = ['⏏️'], [[]], ['command categories:']
-        for i, (map_cog, map_cmds) in enumerate(mapping.items()):
-            if map_cmds and map_cog and map_cog.qualified_name != 'tests':
-                pages[0].append(map_cog.qualified_name)
-                buttons.append(map_cog.emoji)
-                pages.append(f"```\n{quotes.get_table([[c, c.help.lower()] for c in map_cmds if not c.hidden])}\n```")
-                headers.append(quotes.wrap(map_cog.qualified_name, map_cog.emoji, shorthand=False, both=False))
-        pages[0] = '\n\u200b\n' + quotes.opt_list(pages[0], buttons[1:])
+        for i, (cog, cmds) in enumerate(mapping.items()):
+            if cmds and cog:
+                cmds = [[c for c in cmds if not c.hidden], [c for c in cmds if c.hidden]]
+                if cmds[0]:
+                    p = f"```\n{quotes.get_table([[c, c.help.lower()] for c in cmds[0]])}\n"
+                    n_cmds = f'{len(cmds[0])} commands' if len(cmds[0]) > 1 else f'{len(cmds[0])} command'
+                else:
+                    p = '```\n'
+                    n_cmds = ''
+                if cmds[1]:
+                    p += f"{quotes.get_table([[c, c.help.lower()] for c in cmds[1]])}\n```"
+                    n_only = f' nash-only commands' if len(cmds[1]) > 1 else f' nash-only command'
+                    n_cmds += f', {len(cmds[1])}{n_only}' if n_cmds else f'{len(cmds[1])}{n_only}'
+                else:
+                    p += '```'
+
+                buttons.append(cog.emoji)
+                pages.append(p)
+                headers.append(f'{cog.emoji}　**{cog.qualified_name}**　({n_cmds})')
+        pages[0] = '\n\u200b\n' + quotes.opt_list(headers[1:])
         await read.help_paginated(self.context, buttons, title, pages, headers=headers)
 
 

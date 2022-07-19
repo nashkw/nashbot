@@ -38,7 +38,7 @@ class Misc(Cog, name='misc'):
         if valid_sets and len(opts) <= 20:
             emojis = choice(valid_sets)
             e = Embed(title=quotes.wrap(subject, 'grey_question'), description='(click the matching emoji to vote)')
-            e.add_field(name='\u200b', value=quotes.opt_list(opts, emojis))
+            e.add_field(name='\u200b', value=quotes.opt_list(opts, emojis=emojis))
             msg = await read.embed(ctx, e)
             for i in range(len(opts)):
                 try:

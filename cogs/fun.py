@@ -38,31 +38,28 @@ class Fun(Cog, name='fun'):
         def check(m):
             return m.channel == ctx.channel and m.author == ctx.message.author
 
+        async def cancel(quote_bank):
+            await read.quote(ctx, choice(quote_bank))
+            await read.official(ctx, 'joke cancelled', 'no_entry_sign')
+            varz.frozen_users.remove(ctx.message.author.id)
+            return False
+
         async def wait_for_response(expected):
             while True:
                 content = resources.clean_msg(await self.bot.wait_for("message", check=check))
                 if content.partition(' ')[0] in resources.get_commands(self.bot):
-                    await read.quote(ctx, choice(quotes.cmd_midcmd_quotes))
-                    await read.official(ctx, 'joke cancelled', 'no_entry_sign')
-                    varz.frozen_users.remove(ctx.message.author.id)
-                    return False  # cancel joke
+                    return await cancel(quotes.cmd_midcmd_quotes)
                 elif content in expected:
-                    return True  # successful progression
+                    return True
                 elif content in quotes.welcome_activators:
-                    await read.quote(ctx, choice(quotes.welcome_quotes))
-                    await read.official(ctx, 'joke cancelled', 'no_entry_sign')
-                    varz.frozen_users.remove(ctx.message.author.id)
-                    return False  # cancel joke
+                    return await cancel(quotes.welcome_quotes)
                 elif content in quotes.cancel_activators:
                     if choice([True, False]):
-                        await read.quote(ctx, choice(quotes.cancel_obedient))
-                        await read.official(ctx, 'joke cancelled', 'no_entry_sign')
-                        varz.frozen_users.remove(ctx.message.author.id)
-                        return False  # cancel joke
+                        return await cancel(quotes.cancel_obedient)
                     else:
                         await read.quote(ctx, choice(quotes.cancel_disobedient))
                         await read.quote(ctx, f'{ctx.message.author.name}: {choice(expected)}?')
-                        return True  # successful progression
+                        return True
                 else:
                     quotes_unexpected = await quotes.get_unexpected_quotes(choice(expected))
                     await read.quote(ctx, choice(quotes_unexpected))

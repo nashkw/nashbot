@@ -7,7 +7,7 @@ from nashbot.varz import BLANK
 
 # helper functions
 
-def get_table(blist, head=None):
+def get_table(blist, head=None, block=True):
     table = table2ascii(
         header=head,
         body=blist,
@@ -15,7 +15,7 @@ def get_table(blist, head=None):
         style=PresetStyle.thin_compact_rounded,
         first_col_heading=True,
     )
-    return table
+    return f'```\n' + table + '\n```' if block else table
 
 
 def opt_list(opts, emojis=None, shorthand=False):

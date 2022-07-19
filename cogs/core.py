@@ -69,12 +69,12 @@ class CustomHelp(HelpCommand):
         super().__init__(command_attrs=cmd_attrs)
 
     def page_tables(self, cmds):
-        p_tables, cmds = [], [[c for c in cmds if not c.hidden], [c for c in cmds if c.hidden]]
+        p_tables, cmds = '', [[c for c in cmds if not c.hidden], [c for c in cmds if c.hidden]]
         if cmds[0]:
-            p_tables.append(f"{quotes.get_table([[c, c.brief.lower()] for c in cmds[0]])}")
+            p_tables += quotes.get_table([[c, c.brief.lower()] for c in cmds[0]])
         if cmds[1]:
-            p_tables.append(f"{quotes.get_table([[c, c.brief.lower()] for c in cmds[1]])}")
-        return f'```\n' + '\n'.join(p_tables) + '\n```'
+            p_tables += quotes.get_table([[c, c.brief.lower()] for c in cmds[1]])
+        return p_tables
 
     def num_cmds(self, cmds):
         n_cmds, cmds = [], [[c for c in cmds if not c.hidden], [c for c in cmds if c.hidden]]

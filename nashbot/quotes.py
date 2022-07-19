@@ -10,26 +10,27 @@ def get_table(blist, head=None):
     table = table2ascii(
         header=head,
         body=blist,
-        alignments=[Alignment.LEFT] + [Alignment.LEFT],
+        alignments=[Alignment.LEFT] * len(blist[0]),
         style=PresetStyle.thin_compact_rounded,
         first_col_heading=True,
     )
     return table
 
 
+def opt_list(opts, emojis=None, shorthand=False):
+    v = [wrap(opt, em, shorthand=shorthand, both=False) for opt, em in zip(opts, emojis)] if emojis else opts
+    v = '\n\u200b\n'.join(v) + '\n\u200b'
+    return v
+
+
 def wrap(m, emoji, shorthand=True, both=True):
     if shorthand:
         emoji = f':{emoji}:'
-    if both:
-        return f'{emoji}　{m}　{emoji}'
-    else:
-        return f'{emoji}　{m}'
+    return f'{emoji}　{m}　{emoji}' if both else f'{emoji}　{m}'
 
 
-def opt_list(opts, emojis=None):
-    v = [f'{em} : {opt}' for opt, em in zip(opts, emojis)] if emojis else opts
-    v = '\n\u200b\n'.join(v) + '\n\u200b'
-    return v
+def add_s(quote, l_test):
+    return quote + 's' if len(l_test) > 1 else quote
 
 
 # quotes for misc commands

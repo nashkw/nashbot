@@ -11,27 +11,20 @@ from discord.ext.commands import Cog, HelpCommand, command, is_owner
 class CustomHelp(HelpCommand):
     async def send_bot_help(self, mapping):
         title = quotes.wrap('nashbot™ commands & curios 4 all ur earthly needs', 'sparkles')
-        buttons, pages, headers = ['⏏️'], [[]], ['command categories:']
-        for i, (cog, cmds) in enumerate(mapping.items()):
+        buttons, pages, headers = ['⏏️'], ['\n\u200b\n'], ['command categories:']
+        for cog, cmds in mapping.items():
             if cmds and cog:
-                cmds = [[c for c in cmds if not c.hidden], [c for c in cmds if c.hidden]]
+                cmds, p_tables, n_cmds = [[c for c in cmds if not c.hidden], [c for c in cmds if c.hidden]], [], []
                 if cmds[0]:
-                    p = f"```\n{quotes.get_table([[c, c.help.lower()] for c in cmds[0]])}\n"
-                    n_cmds = f'{len(cmds[0])} commands' if len(cmds[0]) > 1 else f'{len(cmds[0])} command'
-                else:
-                    p = '```\n'
-                    n_cmds = ''
+                    p_tables.append(f"{quotes.get_table([[c, c.help.lower()] for c in cmds[0]])}")
+                    n_cmds.append(quotes.add_s(f'{len(cmds[0])} command', cmds[0]))
                 if cmds[1]:
-                    p += f"{quotes.get_table([[c, c.help.lower()] for c in cmds[1]])}\n```"
-                    n_only = f' nash-only commands' if len(cmds[1]) > 1 else f' nash-only command'
-                    n_cmds += f', {len(cmds[1])}{n_only}' if n_cmds else f'{len(cmds[1])}{n_only}'
-                else:
-                    p += '```'
-
+                    p_tables.append(f"{quotes.get_table([[c, c.help.lower()] for c in cmds[1]])}")
+                    n_cmds.append(quotes.add_s(f'{len(cmds[1])} nash-only command', cmds[1]))
                 buttons.append(cog.emoji)
-                pages.append(p)
-                headers.append(f'{cog.emoji}　**{cog.qualified_name}**　({n_cmds})')
-        pages[0] = '\n\u200b\n' + quotes.opt_list(headers[1:])
+                pages.append(f'```\n' + '\n'.join(p_tables) + '\n```')
+                headers.append(f'{cog.emoji}　**{cog.qualified_name}**　({", ".join(n_cmds)})')
+        pages[0] += quotes.opt_list(headers[1:])
         await read.help_paginated(self.context, buttons, title, pages, headers=headers)
 
 
@@ -55,7 +48,7 @@ class Core(Cog, name='nashbot™'):
             await ctx.invoke(self.bot.get_command('clearqueue'))
         await read.official(ctx, '...shutting down...', 'zzz')
 
-    @command(name='shutdown', aliases=['die', 'kys'], help='shut down the bot')
+    @command(name='shutdown', aliases=['die', 'kys'], help='shut down the bot', hidden=True)
     @is_owner()
     async def shutdown(self, ctx):
         await read.quote(ctx, choice(await quotes.get_shutdown_quotes(ctx)))

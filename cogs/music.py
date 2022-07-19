@@ -170,7 +170,7 @@ class Music(Cog, name='music'):
         np = quotes.wrap(f'**now playing: "{self.nowplaying}"**', self.np_emoji())
         v = [[i+1, item] for i, item in enumerate(self.q_titles)]
         v = [f'```{quotes.get_table(item)}```' for item in [v[i:i + 10] for i in range(0, len(v), 10)]]
-        await read.paginated(ctx, quotes.wrap('music queue', 'musical_note'), v, header=np)
+        await read.paginated(ctx, quotes.wrap('music queue', 'musical_note'), v, headers=np)
 
     @command(name='shownash', aliases=['nshow'], help='show the available local music albums', hidden=True)
     @is_owner()

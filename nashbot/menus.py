@@ -17,6 +17,8 @@ class PSource(ListPageSource):
         self.name = title
         if headers is None:
             self.heads = [False for p in pages]
+        elif isinstance(headers, str):
+            self.heads = [headers for p in pages]
         else:
             self.heads = headers
         super().__init__(pages, per_page=1)

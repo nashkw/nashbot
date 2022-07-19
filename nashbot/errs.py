@@ -1,28 +1,28 @@
 # errs.py
 
 
-from discord.ext import commands
+from discord.ext.commands import CommandError
 
 
-class FailedSearch(commands.CommandError):
+class FailedSearch(CommandError):
     pass
 
 
-class NotInVChannel(commands.CommandError):
+class NotInVChannel(CommandError):
     pass
 
 
-class NoVClient(commands.CommandError):
+class NoVClient(CommandError):
     pass
 
 
-class QueuelessShuffle(commands.CommandError):
+class QueuelessShuffle(CommandError):
     pass
 
 
-class BadArg(commands.CommandError):
+class BadArg(CommandError):
     pass
 
 
-class GlobalCheckFailure(commands.CommandError):
+class GlobalCheckFailure(CommandError):
     pass

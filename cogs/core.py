@@ -23,7 +23,7 @@ class Core(Cog, name='nashbot'):
             async with ctx.typing():
                 while varz.active_menus:
                     varz.active_menus[0].stop()
-                    await varz.active_menus[0].message.remove_reaction('\N{BLACK SQUARE FOR STOP}\ufe0f', self.bot.user)
+                    await varz.active_menus[0].message.remove_reaction(varz.STOP_EMOJI, self.bot.user)
             await read.official(ctx, 'embeds deactivated', 'x')
         if ctx.voice_client is not None:
             await ctx.invoke(self.bot.get_command('clearqueue'))

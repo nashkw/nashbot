@@ -2,7 +2,7 @@
 
 
 from discord import Embed
-from nashbot.varz import active_menus
+from nashbot.varz import active_menus, STOP_EMOJI
 from discord.ext.menus import MenuPages, Button, button, ListPageSource, Position, Last
 
 
@@ -50,7 +50,7 @@ class MyMenuPages(MenuPages):
             active_menus.append(self)
         super().__init__(source, **kwargs)
 
-    @button('\N{BLACK SQUARE FOR STOP}\ufe0f')
+    @button(STOP_EMOJI)
     async def stop_pages(self, payload):
         self.stop()
 
@@ -71,6 +71,6 @@ class HelpPages(MyMenuPages, inherit_buttons=False):
         for i, b in enumerate(buttons):
             self.add_button(Button(b, get_action(i), position=Position(i)))
 
-    @button('\N{BLACK SQUARE FOR STOP}\ufe0f', position=Last(0))
+    @button(STOP_EMOJI, position=Last(0))
     async def stop_pages(self, payload):
         self.stop()

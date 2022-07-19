@@ -2,18 +2,18 @@
 
 
 from nashbot import read
-from discord.ext import commands
+from discord.ext.commands import Cog, command
 
 
-class Reminder(commands.Cog, name='reminder'):
+class Reminder(Cog, name='reminder'):
 
     def __init__(self, bot):
         self.bot = bot
         self.emoji = '⏰'
 
-    @commands.command(name='remindme', brief='set a reminder for yourself',
-                      help='TODO',
-                      usage=['TODO'])
+    @command(name='remindme', brief='set a reminder for yourself',
+             help='TODO',
+             usage=['TODO'])
     async def remindme(self, ctx):
         await read.quote(ctx, 'TODO')
 

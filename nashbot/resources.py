@@ -3,6 +3,7 @@
 
 from nashbot.errs import *
 from nashbot.varz import ALBUMS_PATH
+from discord.ext.commands import check
 
 
 # helper functions
@@ -28,4 +29,4 @@ def is_v_client():
         if not ctx.voice_client:
             raise NoVClient
         return True
-    return commands.check(predicate)
+    return check(predicate)

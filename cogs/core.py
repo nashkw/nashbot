@@ -4,31 +4,48 @@
 from os import environ, execv
 from sys import argv, executable
 from random import choice
+from discord import Embed
 from nashbot import quotes, read, vars
 from discord.ext.commands import Cog, HelpCommand, command, is_owner
 
 
 class CustomHelp(HelpCommand):
+
+    def page_tables(self, cmds):
+        p_tables, cmds = [], [[c for c in cmds if not c.hidden], [c for c in cmds if c.hidden]]
+        if cmds[0]:
+            p_tables.append(f"{quotes.get_table([[c, c.help.lower()] for c in cmds[0]])}")
+        if cmds[1]:
+            p_tables.append(f"{quotes.get_table([[c, c.help.lower()] for c in cmds[1]])}")
+        return f'```\n' + '\n'.join(p_tables) + '\n```'
+
+    def num_cmds(self, cmds):
+        n_cmds, cmds = [], [[c for c in cmds if not c.hidden], [c for c in cmds if c.hidden]]
+        if cmds[0]:
+            n_cmds.append(quotes.add_s(f'{len(cmds[0])} command', cmds[0]))
+        if cmds[1]:
+            n_cmds.append(quotes.add_s(f'{len(cmds[1])} nash-only command', cmds[1]))
+        return f'({", ".join(n_cmds)})'
+
     async def send_bot_help(self, mapping):
         title = quotes.wrap('nashbot™ commands & curios 4 all ur earthly needs', 'sparkles')
         buttons, pages, headers = ['⏏️'], ['\n\u200b\n'], ['command categories:']
         for cog, cmds in mapping.items():
             if cmds and cog:
-                cmds, p_tables, n_cmds = [[c for c in cmds if not c.hidden], [c for c in cmds if c.hidden]], [], []
-                if cmds[0]:
-                    p_tables.append(f"{quotes.get_table([[c, c.help.lower()] for c in cmds[0]])}")
-                    n_cmds.append(quotes.add_s(f'{len(cmds[0])} command', cmds[0]))
-                if cmds[1]:
-                    p_tables.append(f"{quotes.get_table([[c, c.help.lower()] for c in cmds[1]])}")
-                    n_cmds.append(quotes.add_s(f'{len(cmds[1])} nash-only command', cmds[1]))
                 buttons.append(cog.emoji)
-                pages.append(f'```\n' + '\n'.join(p_tables) + '\n```')
-                headers.append(f'{cog.emoji}　**{cog.qualified_name}**　({", ".join(n_cmds)})')
+                pages.append(self.page_tables(cmds))
+                headers.append(f'{cog.emoji}　**{cog.qualified_name}**　{self.num_cmds(cmds)}')
         pages[0] += quotes.opt_list(headers[1:])
         await read.help_paginated(self.context, buttons, title, pages, headers=headers)
 
+    async def send_cog_help(self, cog):
+        e = Embed(title=quotes.wrap(f'{cog.qualified_name} commands', cog.emoji, shorthand=False))
+        e.add_field(name=self.num_cmds(cog.get_commands()), value=self.page_tables(cog.get_commands()) + '\n')
+        e.set_footer(text='for more information on a command try typing "help [commandname]"')
+        await read.embed(self.get_destination(), e)
 
-class Core(Cog, name='nashbot™'):
+
+class Core(Cog, name='nashbot'):
 
     def __init__(self, bot):
         self.bot = bot

@@ -15,7 +15,7 @@ class Test(Cog, name='test'):
 
     @command(name='emojisets', aliases=['esets', 'eset'], brief='test emoji sets in reactions', hidden=True,
              help='test all emoji sets in reaction form to confirm they can be successfully converted to unicode',
-             extras={'examples': ['emojisets', 'eset hearts']})
+             usage=['emojisets', 'eset hearts'])
     @is_owner()
     async def emojisets(self, ctx, eset_n: str = None):
 
@@ -41,7 +41,7 @@ class Test(Cog, name='test'):
 
     @command(name='emojitruth', aliases=['etruth', 'etrue'], brief='test the true form of emojis', hidden=True,
              help='read back the contents of the users message, and separate it out into characters',
-             extras={'examples': ['emojitruth 🤡', 'etrue ❤️🧡💛💚💙💜🤍🤎🖤']})
+             usage=['emojitruth 🤡', 'etrue ❤️🧡💛💚💙💜'])
     @is_owner()
     async def emojitruth(self, ctx, *, emojis: str):
         await read.quote(ctx, f"```unaltered: {emojis}\nlist of characters: {list(emojis)}```")

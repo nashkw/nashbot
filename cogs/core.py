@@ -5,7 +5,7 @@ from os import environ, execv
 from sys import argv, executable
 from random import choice
 from discord import Embed
-from nashbot import quotes, read, vars
+from nashbot import quotes, read, varz
 from discord.ext.commands import Cog, HelpCommand, command, is_owner
 
 
@@ -19,11 +19,11 @@ class Core(Cog, name='nashbot'):
         bot.help_command.cog = self
 
     async def safe_shutdown(self, ctx):
-        if vars.active_menus:
+        if varz.active_menus:
             async with ctx.typing():
-                while vars.active_menus:
-                    vars.active_menus[0].stop()
-                    await vars.active_menus[0].message.remove_reaction('\N{BLACK SQUARE FOR STOP}\ufe0f', self.bot.user)
+                while varz.active_menus:
+                    varz.active_menus[0].stop()
+                    await varz.active_menus[0].message.remove_reaction('\N{BLACK SQUARE FOR STOP}\ufe0f', self.bot.user)
             await read.official(ctx, 'embeds deactivated', 'x')
         if ctx.voice_client is not None:
             await ctx.invoke(self.bot.get_command('clearqueue'))
@@ -69,8 +69,6 @@ class CustomHelp(HelpCommand):
         super().__init__(command_attrs=cmd_attrs)
 
     def page_tables(self, cmds):
-        for c in cmds:
-            print(f'{c},    {c.brief},    {c.help},    {c.description}')
         p_tables, cmds = [], [[c for c in cmds if not c.hidden], [c for c in cmds if c.hidden]]
         if cmds[0]:
             p_tables.append(f"{quotes.get_table([[c, c.brief.lower()] for c in cmds[0]])}")
@@ -88,7 +86,7 @@ class CustomHelp(HelpCommand):
 
     async def send_bot_help(self, mapping):
         title = quotes.wrap('nashbot™ commands & curios 4 all ur earthly needs', 'sparkles')
-        buttons, pages, headers, footers = ['⏏️'], ['\n\u200b\n'], ['command categories:'], [False]
+        buttons, pages, headers, footers = ['⏏️'], [varz.BLANK], ['command categories:'], [False]
         for cog, cmds in mapping.items():
             if cmds and cog:
                 buttons.append(cog.emoji)
@@ -104,6 +102,15 @@ class CustomHelp(HelpCommand):
         e.set_footer(text=self.COG_HELP_FOOTER)
         await read.embed(self.get_destination(), e)
 
-    async def send_command_help(self, cog):
-        pass
+    async def send_command_help(self, cmd):
+        explanation = varz.BLANK + cmd.help + varz.BLANK
+        e = Embed(title=quotes.wrap(f'the {cmd} command', cmd.cog.emoji, shorthand=False), description=explanation)
+        if cmd.aliases:
+            e.add_field(name='other names for this command:', value='> ' + '\n> '.join(cmd.aliases) + varz.BLANK)
+        if cmd.usage:
+            examples = '\n'.join([f'> " {example} "' for example in cmd.usage]) + varz.BLANK
+            e.add_field(name='examples of how to use this command: ', value=examples)
+        if cmd.hidden:
+            e.set_footer(text='(warning: this is a nash-only command, unusable by everyone else)')
+        await read.embed(self.get_destination(), e)
 

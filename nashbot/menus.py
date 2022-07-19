@@ -2,7 +2,7 @@
 
 
 from discord import Embed
-from nashbot.vars import active_menus
+from nashbot.varz import active_menus
 from discord.ext.menus import MenuPages, Button, button, ListPageSource, Position, Last
 
 

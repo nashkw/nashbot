@@ -2,6 +2,7 @@
 
 
 from table2ascii import table2ascii, PresetStyle, Alignment
+from nashbot.varz import BLANK
 
 
 # helper functions
@@ -19,7 +20,7 @@ def get_table(blist, head=None):
 
 def opt_list(opts, emojis=None, shorthand=False):
     v = [wrap(opt, em, shorthand=shorthand, both=False) for opt, em in zip(opts, emojis)] if emojis else opts
-    v = '\n\u200b\n'.join(v) + '\n\u200b'
+    v = BLANK.join(v) + BLANK
     return v
 
 

@@ -4,7 +4,7 @@
 from os import getenv, environ
 from dotenv import load_dotenv
 from discord import Intents
-from nashbot import errs, quotes, read, vars
+from nashbot import errs, quotes, read, varz
 from discord.ext.commands import errors, Bot
 
 
@@ -18,7 +18,7 @@ bot = Bot(
     owner_ids={386921492601896961, 727183720628486306, 757917569058603066},
 )
 
-for cog in [path.stem for path in vars.COGS_PATH.glob('*.py')]:
+for cog in [path.stem for path in varz.COGS_PATH.glob('*.py')]:
     bot.load_extension(f'cogs.{cog}')
 
 
@@ -54,7 +54,7 @@ async def on_command_error(ctx, error):
 
 @bot.check
 def check_commands(ctx):
-    if ctx.message.author.id in vars.frozen_users:
+    if ctx.message.author.id in varz.frozen_users:
         raise errs.GlobalCheckFailure
     return True
 

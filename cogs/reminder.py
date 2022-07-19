@@ -13,7 +13,7 @@ class Reminder(commands.Cog, name='reminder'):
 
     @commands.command(name='remindme', brief='set a reminder for yourself',
                       help='TODO',
-                      extras={'examples': ['TODO']})
+                      usage=['TODO'])
     async def remindme(self, ctx):
         await read.quote(ctx, 'TODO')
 

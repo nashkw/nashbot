@@ -2,7 +2,7 @@
 
 
 from nashbot.errs import *
-from nashbot.vars import ALBUMS_PATH
+from nashbot.varz import ALBUMS_PATH
 
 
 # helper functions

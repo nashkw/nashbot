@@ -6,7 +6,7 @@ from random import choice, shuffle
 from pathlib import Path
 from asyncio import Queue, Event, QueueEmpty
 from discord import FFmpegPCMAudio, FFmpegOpusAudio
-from nashbot import errs, quotes, read, resources, vars
+from nashbot import errs, quotes, read, resources, varz
 from youtube_dl import YoutubeDL
 from _collections import deque
 from discord.ext.commands import is_owner, Cog, command, MissingRequiredArgument, BadArgument
@@ -64,7 +64,7 @@ class Music(Cog, name='music'):
             if isinstance(pre_source, Path):
                 source = FFmpegPCMAudio(source=pre_source)
             else:
-                source = await FFmpegOpusAudio.from_probe(pre_source, **vars.FFMPEG_OPTS)
+                source = await FFmpegOpusAudio.from_probe(pre_source, **varz.FFMPEG_OPTS)
             ctx.voice_client.play(source, after=lambda _: self.bot.loop.call_soon_threadsafe(self.next.set))
             await self.next.wait()
             if self.repeating:
@@ -76,7 +76,7 @@ class Music(Cog, name='music'):
                 raise errs.NotInVChannel
 
             if is_search:
-                info = YoutubeDL(vars.YDL_OPTS).extract_info(f"ytsearch:{arg}", download=False)
+                info = YoutubeDL(varz.YDL_OPTS).extract_info(f"ytsearch:{arg}", download=False)
                 if not info['entries']:
                     raise errs.FailedSearch
                 else:
@@ -84,7 +84,7 @@ class Music(Cog, name='music'):
                     await self.q_sources.put(info['formats'][0]['url'])
                     self.q_titles.append(info['title'])
             else:
-                songs = sorted(list((vars.ALBUMS_PATH / arg).glob('*.mp3')), key=lambda s: load(s).tag.track_num)
+                songs = sorted(list((varz.ALBUMS_PATH / arg).glob('*.mp3')), key=lambda s: load(s).tag.track_num)
                 if not songs:
                     raise errs.FailedSearch
                 else:
@@ -106,19 +106,19 @@ class Music(Cog, name='music'):
         if not self.looping:
             await self.music_loop(ctx)
 
-    @command(name='play', brief='play a song from youtube',
+    @command(name='play', aliases=['ytplay', 'playsong'], brief='play a song from youtube',
              help='play a song from youtube. the bot will choose the first search result & add it to the music queue. '
                   'remember 2 make sure ur in a voice channel b4 u try & play music tho',
-             extras={'examples': ['play organgatangabangin b-man', 'play meme']})
+             usage=['play organgatangabangin b-man', 'ytplay meme'])
     async def play(self, ctx, *, search: str):
         if search.lower().replace(',', '').strip() in quotes.meme_activators:
             search = choice(quotes.meme_songs)
         await self.music_play(ctx, search)
 
-    @command(name='nashplay', aliases=['nplay'], brief='add a local album to the music queue', hidden=True,
+    @command(name='nashplay', aliases=['nplay', 'localplay'], brief='add a local album to the music queue', hidden=True,
              help='play an album from local music files. specify the album by either its name or index (use the nshow '
                   'cmd 2 find this). remember 2 make sure ur in a voice channel b4 u try & play music tho',
-             extras={'examples': ['nashplay radiohead', 'nplay 83']})
+             usage=['nashplay radiohead', 'nplay 83'])
     @is_owner()
     async def nashplay(self, ctx, *, album):
         if album.isdigit():
@@ -129,7 +129,7 @@ class Music(Cog, name='music'):
                 raise errs.BadArg
         await self.music_play(ctx, album, is_search=False)
 
-    @command(name='pause', aliases=['unpause'], brief='pause or unpause the currently playing song',
+    @command(name='pause', aliases=['unpause', 'togglepause'], brief='pause or unpause the currently playing song',
              help='toggle the paused effect for the current music queue. keep in mind youll need 2 b playin music b4 '
                   'tryin this')
     @resources.is_v_client()
@@ -141,7 +141,7 @@ class Music(Cog, name='music'):
             ctx.voice_client.resume()
             await read.official(ctx, f'unpaused music: "{self.nowplaying}"', 'arrow_forward')
 
-    @command(name='skip', brief='skip the currently playing song',
+    @command(name='skip', aliases=['next', 'nextsong', 'skipsong'], brief='skip the currently playing song',
              help='skip the currently playing song, even if its looping. keep in mind youll need 2 b playin music b4 '
                   'tryin this')
     @resources.is_v_client()
@@ -151,7 +151,7 @@ class Music(Cog, name='music'):
         ctx.voice_client.stop()
         await read.official(ctx, f'skipped: "{self.nowplaying}"', 'track_next')
 
-    @command(name='loop', aliases=['unloop'], brief='set the currently playing song to loop',
+    @command(name='loop', aliases=['unloop', 'toggleloop'], brief='set the currently playing song to loop',
              help='toggle the loop effect for the currently playing song. if u skip a looping song the next song will '
                   'start looping instead. keep in mind youll need 2 b playin music b4 tryin this')
     @resources.is_v_client()
@@ -199,7 +199,7 @@ class Music(Cog, name='music'):
     @command(name='dequeue', aliases=['dq', 'qremove'], brief='remove a song from the music queue',
              help='remove the song at the specified index from the music queue. index 0 is always the currently '
                   'playing song. keep in mind youll need 2 b playin music b4 tryin this',
-             extras={'examples': ['dequeue 4', 'dq 0']})
+             usage=['dequeue 4', 'dq 0'])
     @resources.is_v_client()
     async def dequeue(self, ctx, index: int):
         if index == 0:

@@ -2,7 +2,7 @@
 
 
 from random import choice, shuffle
-from nashbot import errs, quotes, read, vars, resources
+from nashbot import errs, quotes, read, varz, resources
 from itertools import cycle
 from discord.ext.commands import command, Cog
 
@@ -24,7 +24,7 @@ class Fun(Cog, name='fun'):
     async def highfive(self, ctx):
         await read.quote(ctx, choice(await quotes.get_highfive_quotes(ctx)))
 
-    @command(name='joke', brief='ask the bot to tell u a joke',
+    @command(name='joke', aliases=['telljoke', 'bfunny', 'befunny'], brief='ask the bot to tell u a joke',
              help='ask the bot 2 tell u a joke! warning: those with bad joke allergies should proceed with caution')
     async def joke(self, ctx):
         await read.quote(ctx, choice(await quotes.get_joke_quotes(ctx)))
@@ -33,7 +33,7 @@ class Fun(Cog, name='fun'):
              help='ask the bot 2 tell u a knock knock joke! remember youll have to participate tho, takes 2 2 tango :)')
     async def kkjoke(self, ctx):
         joke = choice(await quotes.get_kkjoke_quotes(ctx))
-        vars.frozen_users.append(ctx.message.author.id)
+        varz.frozen_users.append(ctx.message.author.id)
 
         def check(m):
             return m.channel == ctx.channel and m.author == ctx.message.author
@@ -44,20 +44,20 @@ class Fun(Cog, name='fun'):
                 if content.partition(' ')[0] in resources.get_commands(self.bot):
                     await read.quote(ctx, choice(quotes.cmd_midcmd_quotes))
                     await read.official(ctx, 'joke cancelled', 'no_entry_sign')
-                    vars.frozen_users.remove(ctx.message.author.id)
+                    varz.frozen_users.remove(ctx.message.author.id)
                     return False  # cancel joke
                 elif content in expected:
                     return True  # successful progression
                 elif content in quotes.welcome_activators:
                     await read.quote(ctx, choice(quotes.welcome_quotes))
                     await read.official(ctx, 'joke cancelled', 'no_entry_sign')
-                    vars.frozen_users.remove(ctx.message.author.id)
+                    varz.frozen_users.remove(ctx.message.author.id)
                     return False  # cancel joke
                 elif content in quotes.cancel_activators:
                     if choice([True, False]):
                         await read.quote(ctx, choice(quotes.cancel_obedient))
                         await read.official(ctx, 'joke cancelled', 'no_entry_sign')
-                        vars.frozen_users.remove(ctx.message.author.id)
+                        varz.frozen_users.remove(ctx.message.author.id)
                         return False  # cancel joke
                     else:
                         await read.quote(ctx, choice(quotes.cancel_disobedient))
@@ -74,17 +74,17 @@ class Fun(Cog, name='fun'):
         if not await wait_for_response([joke[0] + ' who', ]):
             return  # cancel joke
         await read.quote(ctx, joke[1:])
-        vars.frozen_users.remove(ctx.message.author.id)
+        varz.frozen_users.remove(ctx.message.author.id)
 
     @command(name='skellygif', aliases=['skelly', 'skeleton'], brief='ask the bot for a skeleton gif',
              help='ask 4 a skeleton gif. & if u activate the spam theyll just keep comin until u use this cmd again!',
-             extras={'examples': ['skellygif', 'skelly spam', 'skeleton toggle']})
+             usage=['skellygif', 'skelly spam', 'skeleton toggle'])
     async def skellygif(self, ctx, spam: str = None):
         if self.skelly_spam:
             self.skelly_spam = False
         elif spam in quotes.spam_activators or spam is None:
             self.skelly_spam = spam
-            skelly_gifs = [sgif for sgif in vars.SKELLY_PATH.glob('*.gif')]
+            skelly_gifs = [sgif for sgif in varz.SKELLY_PATH.glob('*.gif')]
             shuffle(skelly_gifs)
             for gif in cycle(skelly_gifs):
                 await read.file(ctx, gif)

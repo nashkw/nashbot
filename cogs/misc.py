@@ -3,7 +3,7 @@
 
 from emoji import emojize
 from random import choice, randint
-from nashbot import errs, quotes, read
+from nashbot import errs, quotes, read, varz
 from discord import Embed, HTTPException
 from discord.ext.commands import command, Cog, MissingRequiredArgument
 
@@ -14,9 +14,9 @@ class Misc(Cog, name='misc'):
         self.bot = bot
         self.emoji = '📜'
 
-    @command(name='random', aliases=['dice', 'rolldice'], brief='ask the bot to pick a random number',
+    @command(name='random', aliases=['rand', 'dice', 'rolldice'], brief='ask the bot to pick a random number',
              help='ask the bot 4 a random number, either by picking from a range or by simulating dice rolls',
-             extras={'examples': ['random 8', 'random 3-27', 'dice d6', 'rolldice 4 d8']})
+             usage=['random 8', 'rand 3-27', 'dice d6', 'rolldice 4 d8'])
     async def random(self, ctx, *, arg: str):
         if arg.isdigit():
             result = [f'randomly selecting in range 1-{arg}', randint(1, int(arg))]
@@ -33,16 +33,18 @@ class Misc(Cog, name='misc'):
             raise errs.BadArg
         await read.official(ctx, f'{result[0]} to get...　**{result[1]}**', 'game_die')
 
-    @command(name='vote', aliases=['poll'], brief='set up a vote with a list of possible choices',
-             help='set up a vote on a subject of ur choice, listing all the possible options to vote on',
-             extras={'examples': ['vote proceed? yes, no', 'poll "when yall free?" mon,tues,wed,thurs,fri,sat,sun']})
+    @command(name='vote', aliases=['poll', 'survey', 'callvote'], brief='set up a vote with a list of possible choices',
+             help='set up a vote on a subject of ur choice, listing all the possible options to vote on. b careful 2 '
+                  'enclose the subject in quotes if its more than 1 word otheriwse itll get confused w/ the options '
+                  'list. b careful 2 separate the options list with commas otherwise it wont b recognised',
+             usage=['vote proceed? yes, no', "poll 'when yall free?' wed,thurs,fri", 'survey "wt game??" dst, mc, l4d'])
     async def vote(self, ctx, subject: str, *, opts: str):
         opts = opts.replace(', ', ',').split(',')
         valid_sets = [eset for eset in quotes.emoji_sets.values() if len(eset) >= len(opts)]
         if valid_sets and len(opts) <= 20:
             emojis = choice(valid_sets)
             e = Embed(title=quotes.wrap(subject, 'grey_question'))
-            e.add_field(name='\u200b', value=quotes.opt_list(opts, emojis=emojis))
+            e.add_field(name=varz.BLANK, value=quotes.opt_list(opts, emojis=emojis))
             e.set_footer(text='(click the matching emoji to vote)')
             msg = await read.embed(ctx, e)
             for i in range(len(opts)):

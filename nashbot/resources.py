@@ -3,6 +3,7 @@
 
 from nashbot.errs import *
 from nashbot.varz import ALBUMS_PATH
+from nashbot.quotes import get_table
 from discord.ext.commands import check
 
 
@@ -19,6 +20,10 @@ def get_albums():
 
 def clean_msg(m):
     return m.content.lower().replace('?', '').replace('...', '').replace(' :)', '').strip()
+
+
+def table_paginate(p_list, n):
+    return [get_table(page, trunc=True) for page in [p_list[i:i + n] for i in range(0, len(p_list), n)]]
 
 
 # custom checks

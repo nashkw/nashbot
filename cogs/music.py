@@ -184,18 +184,17 @@ class Music(Cog, name='music'):
     @resources.is_v_client()
     async def showqueue(self, ctx):
         np = quotes.wrap(f'**now playing: "{self.nowplaying}"**', self.np_emoji())
-        v = [[i+1, item] for i, item in enumerate(self.q_titles)]
-        foot = None if v else '(there are no songs queued after this one - use the "play [songname]" cmd to add more)'
-        v = [quotes.get_table(item) for item in [v[i:i + 10] for i in range(0, len(v), 10)]] if v else [varz.BLANK]
-        await read.paginated(ctx, quotes.wrap('music queue', 'musical_note'), v, headers=np, footers=foot)
+        fill = [[i+1, item] for i, item in enumerate(self.q_titles)]
+        foot = None if fill else '(there are no songs queued after this one, use the "play [songname]" cmd to add more)'
+        fill = resources.table_paginate(fill, 10) if fill else [varz.BLANK]
+        await read.paginated(ctx, quotes.wrap('music queue', 'musical_note'), fill, headers=np, footers=foot)
 
     @command(name='shownash', aliases=['nshow'], brief='show the available local music albums', hidden=True,
              help='show all avaliable local music albums & their indexes 4 use in the nplay cmd')
     @is_owner()
     async def shownash(self, ctx):
-        v = resources.get_albums()
-        v = [quotes.get_table(albums) for albums in [v[i:i + 10] for i in range(0, len(v), 10)]]
-        await read.paginated(ctx, quotes.wrap('forbidden & secret local albums', 'eyes'), v)
+        fill = resources.table_paginate(resources.get_albums(), 10)
+        await read.paginated(ctx, quotes.wrap('forbidden & secret local albums', 'eyes'), fill)
 
     @command(name='dequeue', aliases=['dq', 'qremove'], brief='remove a song from the music queue',
              help='remove the song at the specified index from the music queue. index 0 is always the currently '

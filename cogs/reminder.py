@@ -1,11 +1,11 @@
-# reminders.py
+# reminder.py
 
 
 from nashbot import read
 from discord.ext import commands
 
 
-class Reminders(commands.Cog, name='reminders'):
+class Reminder(commands.Cog, name='reminder'):
 
     def __init__(self, bot):
         self.bot = bot
@@ -20,4 +20,4 @@ class Reminders(commands.Cog, name='reminders'):
 
 
 def setup(bot):
-    bot.add_cog(Reminders(bot))
+    bot.add_cog(Reminder(bot))

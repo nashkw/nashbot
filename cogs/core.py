@@ -29,19 +29,20 @@ class CustomHelp(HelpCommand):
 
     async def send_bot_help(self, mapping):
         title = quotes.wrap('nashbot™ commands & curios 4 all ur earthly needs', 'sparkles')
-        buttons, pages, headers = ['⏏️'], ['\n\u200b\n'], ['command categories:']
+        buttons, pages, headers, footers = ['⏏️'], ['\n\u200b\n'], ['command categories:'], [False]
         for cog, cmds in mapping.items():
             if cmds and cog:
                 buttons.append(cog.emoji)
                 pages.append(self.page_tables(cmds))
                 headers.append(f'{cog.emoji}　**{cog.qualified_name}**　{self.num_cmds(cmds)}')
+                footers.append('(for more information on a command try typing "help [commandname]")')
         pages[0] += quotes.opt_list(headers[1:])
-        await read.help_paginated(self.context, buttons, title, pages, headers=headers)
+        await read.help_paginated(self.context, buttons, title, pages, headers=headers, footers=footers)
 
     async def send_cog_help(self, cog):
         e = Embed(title=quotes.wrap(f'{cog.qualified_name} commands', cog.emoji, shorthand=False))
         e.add_field(name=self.num_cmds(cog.get_commands()), value=self.page_tables(cog.get_commands()) + '\n')
-        e.set_footer(text='for more information on a command try typing "help [commandname]"')
+        e.set_footer(text='(for more information on a command try typing "help [commandname]")')
         await read.embed(self.get_destination(), e)
 
 

@@ -1,4 +1,4 @@
-# tests.py
+# test.py
 
 
 from emoji import emojize
@@ -7,7 +7,7 @@ from nashbot import errs, quotes, read
 from discord.ext.commands import is_owner, command, MissingRequiredArgument, Cog
 
 
-class Tests(Cog, name='tests'):
+class Test(Cog, name='test'):
 
     def __init__(self, bot):
         self.bot = bot
@@ -59,4 +59,4 @@ class Tests(Cog, name='tests'):
 
 
 def setup(bot):
-    bot.add_cog(Tests(bot))
+    bot.add_cog(Test(bot))

@@ -13,27 +13,34 @@ def get_action(index):
 
 
 class PSource(ListPageSource):
-    def __init__(self, pages, title, headers=None, footer=None):
+    def __init__(self, pages, title, heads=None, foots=None):
         self.name = title
-        if headers is None:
-            self.heads = [False for p in pages]
-        elif isinstance(headers, str):
-            self.heads = [headers for p in pages]
-        else:
-            self.heads = headers
         super().__init__(pages, per_page=1)
-        if footer is None:
-            self.foot = '(use the reaction emojis to navigate)' if self.is_paginating() else footer
+
+        if heads is None:
+            self.heads = [False for p in pages]
+        elif isinstance(heads, str):
+            self.heads = [heads for p in pages]
         else:
-            self.foot = footer
+            self.heads = heads
+
+        if foots is None:
+            if self.is_paginating():
+                self.foots = ['(use the reaction emojis to navigate)' for p in pages]
+            else:
+                self.foots = [False for p in pages]
+        elif isinstance(foots, str):
+            self.foots = [foots for p in pages]
+        else:
+            self.foots = [f if f else '(use the reaction emojis to navigate)' for f in foots]
 
     async def format_page(self, m, page):
         if self.heads[m.current_page]:
             embed = Embed(title=self.name).add_field(name=self.heads[m.current_page], value=page)
         else:
             embed = Embed(title=self.name, description=page)
-        if self.foot:
-            embed.set_footer(text=self.foot)
+        if self.foots[m.current_page]:
+            embed.set_footer(text=self.foots[m.current_page])
         return embed
 
 
@@ -54,7 +61,7 @@ class MyMenuPages(MenuPages):
 
     async def finalize(self, timed_out):
         foot = f'(this embed has {"timed out" if timed_out else "been deactivated"})'
-        await self.change_source(PSource(self.source.entries, self.source.name, headers=self.source.heads, footer=foot))
+        await self.change_source(PSource(self.source.entries, self.source.name, heads=self.source.heads, foots=foot))
         active_menus.remove(self)
 
 

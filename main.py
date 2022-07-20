@@ -14,7 +14,7 @@ TOKEN = getenv('DISCORD_TOKEN')
 
 bot = Bot(
     command_prefix='',
-    intents=Intents.default(),
+    intents=Intents.all(),
     owner_ids={386921492601896961, 727183720628486306, 757917569058603066},
 )
 

@@ -5,7 +5,7 @@ from os import environ, execv
 from sys import argv, executable
 from random import choice
 from discord import Embed
-from nashbot import quotes, read, varz
+from nashbot import quotes, read, varz, resources, errs
 from discord.ext.commands import Cog, HelpCommand, command, is_owner, BadArgument
 
 
@@ -52,17 +52,36 @@ class Core(Cog, name='nashbot'):
         await read.quote(ctx, choice(await quotes.get_botlink_quotes(ctx)))
         await read.quote(ctx, varz.BOT_INVITE_LINK)
 
-    @command(name='purge', aliases=['purgechannel', 'purgehere'], brief='purge messages from the current channel',
-             help='delete messages from the current text channel. u can specify how many messages to delete, or just '
-                  'use the cmd without specifying anything in order 2 delete all messages in the channel')
-    async def purge(self, ctx, extent: int = None):
-        deleted = await ctx.channel.purge(limit=extent)
-        await read.official(ctx, f'deleted {len(deleted)} messages from <#{ctx.channel.id}>', 'x')
+    @command(name='purge', aliases=['flush', 'clearchannel'], brief='purge messages from the current channel',
+             help='delete messages from the current text channel. u can select a user to target & ignore messages '
+                  'from other users. u can also specify a number of messages to search through when purging. left '
+                  'blank, this cmd will simply delete all messages in the channel',
+             usage=['purge', 'flush nashbot™', 'clearchannel nashk 50', 'purge 100', 'flush everything'])
+    async def purge(self, ctx, target: str = None, extent: int = None):
+        if target:
+            if target in quotes.bot_names:
+                target = self.bot.user
+            elif target in quotes.everyone_names:
+                target = None
+            elif target.isdigit() and extent is None:
+                extent = int(target)
+                target = None
+            if target and target not in resources.get_member_variations(ctx.guild.members):
+                raise errs.BadArg(message=target)
+            elif target:
+                target = resources.is_target_member(target)
+        gone = await ctx.channel.purge(limit=extent, check=target)
+        await read.official(ctx, f'removed {len(gone)} {quotes.add_s("message", gone)} from <#{ctx.channel.id}>', 'x')
 
     async def error_handling(self, ctx, error):
         if isinstance(error, BadArgument):
             if ctx.command == self.bot.get_command('purge'):
-                await read.err(ctx, 'uh... whaa? thats not how u use that cmd man. try smth like "purge 8" next time')
+                await read.err(ctx, '...thats not how u use that cmd lol. try smth like "purge 8" or "purge [user] 12"')
+            else:
+                return False
+        elif isinstance(error, errs.BadArg):
+            if ctx.command == self.bot.get_command('purge'):
+                await read.err(ctx, f'uuuuh whomst?? "{error}" isnt anyone in this server i dont think. a typo mayhap?')
             else:
                 return False
         else:

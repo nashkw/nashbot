@@ -33,7 +33,7 @@ def wrap(m, emoji, shorthand=True, both=True):
 
 
 def add_s(quote, l_test):
-    return quote + 's' if len(l_test) > 1 else quote
+    return quote + 's' if len(l_test) != 1 else quote
 
 
 # quotes for core commands
@@ -169,6 +169,31 @@ async def get_botlink_quotes(ctx):
         ),
     ]
     return botlink_quotes
+
+
+bot_names = [
+    'bot',
+    'nashbot',
+    'the bot'
+    'el bot',
+    'urself',
+    'u',
+    'nashbot™',
+    'nashbot:tm:',
+    'nashbot™\uFE0F',
+]
+
+everyone_names = [
+    'everyone',
+    'all',
+    'here',
+    'everything',
+    'channel',
+    'this',
+    'anything',
+    'it all',
+    'all this',
+]
 
 
 # quotes for misc commands

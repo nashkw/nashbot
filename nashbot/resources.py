@@ -9,8 +9,16 @@ from discord.ext.commands import check
 
 # helper functions
 
+def flatten(to_flatten):
+    return [item for sublist in to_flatten for item in sublist]
+
+
+def get_member_variations(members):
+    return set(flatten([[m, m.name, m.id, m.mention] for m in members]))
+
+
 def get_commands(bot):
-    return [cmd for cmdlist in [[cmd.name] + cmd.aliases for cmd in bot.commands] for cmd in cmdlist]
+    return flatten([[cmd.name] + cmd.aliases for cmd in bot.commands])
 
 
 def get_albums():
@@ -35,3 +43,9 @@ def is_v_client():
             raise NoVClient
         return True
     return check(predicate)
+
+
+def is_target_member(target):
+    def predicate(m):
+        return get_member_variations([m.author]).intersection({target})
+    return predicate

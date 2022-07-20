@@ -141,12 +141,12 @@ async def get_restart_quotes(ctx):
     return restart_quotes
 
 
-async def get_botlink_quotes(ctx):
-    botlink_quotes = [
+async def get_link_quotes(ctx):
+    link_quotes = [
         'absolutely no problemo chief :thumbsup:',
         'here u go bestie :innocent:',
         'yeah yeah, comin riiight up...',
-        'mmmm my invite link. yeeaaaah. yeahh. yah. that. 2 secs',
+        'mmmm an invite link. yeeaaaah. yeahh. yah. that. 2 secs',
         '1 invite link comin right up! :fork_knife_plate:',
         f'it would b my honour, {ctx.message.author.name} :pensive:',
         'anything 4 u pardner :cowboy:',
@@ -159,7 +159,7 @@ async def get_botlink_quotes(ctx):
             'better not get up 2 any mischief human :face_with_monocle: :face_with_monocle:',
          ),
         (
-            'my... invite link-? oh, my invite link! yes! of course!',
+            'an... invite link-? oh, an invite link! yes! of course!',
             '...ah. hmm. well it must b around here *somewhere*... hol up',
         ),
         (
@@ -168,7 +168,7 @@ async def get_botlink_quotes(ctx):
             'oh yeah u can have this also',
         ),
     ]
-    return botlink_quotes
+    return link_quotes
 
 
 bot_names = [

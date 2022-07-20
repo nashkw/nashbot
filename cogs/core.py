@@ -45,18 +45,26 @@ class Core(Cog, name='nashbot'):
         environ['restart'] = str(ctx.channel.id)
         execv(executable, ['python'] + argv)
 
-    @command(name='botlink', aliases=['botadder', 'invitebot'], brief='get the link for inviting nashbot to a server',
+    @command(name='botlink', aliases=['botadder', 'invitebot'], brief='get nashbots invite link',
              help='ask the bot to send u its invite to server link. this link can be used 2 add the bot 2 a server '
                   'u have the "manage server" permission for. note that nashbot will need admin privileges')
     async def botlink(self, ctx):
-        await read.quote(ctx, choice(await quotes.get_botlink_quotes(ctx)))
+        await read.quote(ctx, choice(await quotes.get_link_quotes(ctx)))
         await read.quote(ctx, varz.BOT_INVITE_LINK)
+
+    @command(name='serverlink', aliases=['getinvite', 'invitelink', 'inviter'], brief='get this servers invite link',
+             help='ask the bot for a link u can send 2 other ppl in order 2 let them join this server. the invite '
+             'youll get will never expire')
+    async def serverlink(self, ctx):
+        await read.quote(ctx, choice(await quotes.get_link_quotes(ctx)))
+        await read.quote(ctx, await ctx.channel.create_invite())
 
     @command(name='purge', aliases=['flush', 'clearchannel'], brief='purge messages from the current channel',
              help='delete messages from the current text channel. u can select a user to target & ignore messages '
                   'from other users. u can also specify a number of messages to search through when purging. left '
-                  'blank, this cmd will simply delete all messages in the channel',
+                  'blank, this cmd will simply delete all messages in the channel', hidden=True,
              usage=['purge', 'flush nashbot™', 'clearchannel nashk 50', 'purge 100', 'flush everything'])
+    @is_owner()
     async def purge(self, ctx, target: str = None, extent: int = None):
         if target:
             if target in quotes.bot_names:

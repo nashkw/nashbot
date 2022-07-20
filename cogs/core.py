@@ -6,7 +6,7 @@ from sys import argv, executable
 from random import choice
 from discord import Embed
 from nashbot import quotes, read, varz
-from discord.ext.commands import Cog, HelpCommand, command, is_owner
+from discord.ext.commands import Cog, HelpCommand, command, is_owner, BadArgument
 
 
 class Core(Cog, name='nashbot'):
@@ -52,8 +52,22 @@ class Core(Cog, name='nashbot'):
         await read.quote(ctx, choice(await quotes.get_botlink_quotes(ctx)))
         await read.quote(ctx, varz.BOT_INVITE_LINK)
 
+    @command(name='purge', aliases=['purgechannel', 'purgehere'], brief='purge messages from the current channel',
+             help='delete messages from the current text channel. u can specify how many messages to delete, or just '
+                  'use the cmd without specifying anything in order 2 delete all messages in the channel')
+    async def purge(self, ctx, extent: int = None):
+        deleted = await ctx.channel.purge(limit=extent)
+        await read.official(ctx, f'deleted {len(deleted)} messages from <#{ctx.channel.id}>', 'x')
+
     async def error_handling(self, ctx, error):
-        return False
+        if isinstance(error, BadArgument):
+            if ctx.command == self.bot.get_command('purge'):
+                await read.err(ctx, 'uh... whaa? thats not how u use that cmd man. try smth like "purge 8" next time')
+            else:
+                return False
+        else:
+            return False
+        return True
 
     def cog_unload(self):
         self.bot.help_command = self.orig_help

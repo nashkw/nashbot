@@ -14,6 +14,7 @@ active_menus = []
 
 BLANK = '\n\u200b\n'
 STOP_EMOJI = '\N{BLACK SQUARE FOR STOP}\ufe0f'
+BOT_INVITE_LINK = 'https://discord.com/api/oauth2/authorize?client_id=985864214260371476&permissions=8&scope=bot'
 
 FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn', }
 YDL_OPTS = {'format': 'bestaudio', 'noplaylist': True, }

@@ -36,60 +36,7 @@ def add_s(quote, l_test):
     return quote + 's' if len(l_test) > 1 else quote
 
 
-# quotes for misc commands
-
-async def get_hi_quotes(ctx):
-    hi_quotes = [
-        'hi??',
-        'u called?',
-        'mmhm im responding',
-        'yo mama OOOOOHHHHHH-',
-        f'this message is better than 6/10 {ctx.invoked_with} response options',
-        'hello. but at what cost...',
-        f'{ctx.invoked_with} urself bucko',
-        '...are u talking... to me? h-hello?',
-        'greetings mortal',
-        'honk. yes thats right, i speak clown now',
-        'do u have a minute 2 talk abt our lord & saviour jesus christ?',
-        'hewwo... :point_right: :point_left:',
-        'this is an extra super rare response!!!!! or maybe its the most common one. youll never know',
-        'salutations, etc.',
-        'd-did you hear that? a-! ah-!! a g-g-g-ghost!!??!!',
-        'congratulations!! you win!! enter your card details and national insurance no. to continue :)',
-        'howdus :sunflower:',
-        'why hello there my strangely fleshy companion what can i do for u on this fine day',
-        'error 404 hi response not found. suggestion: give the bot a raise',
-        'greetings... fRoM tHe wOrLd oF tOmOrRoW!!!! (spooky)',
-        'my, what a phenomenal greeting. however will i top that',
-        'hi! okay cool. bye!',
-        'how now, my good fellow',
-        f'ah, {ctx.message.author.name}. ive been expecting u',
-        'wazup wazup wazup',
-        (
-            'beep boop my brain is soup',
-            '...jk i dont have a brain :zany_face:',
-        ),
-    ]
-    return hi_quotes
-
-
-async def get_highfive_quotes(ctx):
-    highfive_quotes = [
-        'u gots it pardner :hand_splayed: :cowboy:',
-        'oh go on then :expressionless: :hand_splayed:',
-        'ill do u one better... HIGH TEN MOTHERFUCKER :hand_splayed: :sunglasses: :hand_splayed:',
-        'ah... a high five... as is my duty... :hand_splayed: :pensive:',
-        'm-me?? a-a high f-five?? well... if ur sure... :flushed: :hand_splayed:',
-        'of course!! one high five comin right up 4 my fav mortal :hand_splayed: :innocent:',
-        'down low :hand_splayed: SIKE TOO SLOW suffer fool',
-        '...and what exactly made u think i had hands?',
-        'this better not b some kinda sick prank or smth :hand_splayed: :face_with_raised_eyebrow:',
-        'what, u think u got it in u 2 high five THIS :muscle: :sparkles: ??? dream on nerd',
-        'this better b ur last 1 bucko :triumph: :hand_splayed:',
-        'up top bestie :smiley: :hand_splayed:',
-        f'...how juvenile. i expected better from u, {ctx.message.author.name}.',
-    ]
-    return highfive_quotes
+# quotes for core commands
 
 
 async def get_shutdown_quotes(ctx):
@@ -194,51 +141,37 @@ async def get_restart_quotes(ctx):
     return restart_quotes
 
 
-cmd_midcmd_quotes = [
-    'ur... ur tryna use a different cmd? woooooooow not cool man :/',
-    'but,,, thats another cmd? we were kinda in the middle of smth??? ...so rude u humans...',
-    'thats... thats a different cmd bud. guess we callin in quits on this 1, huh... :(',
-    'pssssh wtever, sure, thats probs a better cmd anyways. will go ahead & bin this 1',
-    (
-        'farewell current cmd ig. u served me well :smiling_face_with_tear:',
-        'im in mourning now tho so if u still wanna use the new cmd u gotta do that urself',
-     ),
-    (
-            'sure, a different cmd. not like we were doing anything :skull: :skull: :skull:',
-            'guess i can tell when im not wanted',
-    ),
-    (
-            'sure lets all just throw out rando cmds now :zany_face:',
-            '...humans. istg. fuck this cmd ig',
-    ),
-    (
-        'wooo shaking things up with a totally different cmd, keeping things fresh. i like ur style human :sunglasses:',
-        '...will admit uve got me a bit confused now tho, might just go ahead & cancel this cmd',
-    ),
-    (
-        'yo werent we like,,, doing smth? is now rlly the best time 4 a whole new cmd??',
-        'i mean, u know best ig. ill go ahead & cancel this 1...??',
-     ),
-]
+async def get_botlink_quotes(ctx):
+    botlink_quotes = [
+        'absolutely no problemo chief :thumbsup:',
+        'here u go bestie :innocent:',
+        'yeah yeah, comin riiight up...',
+        'mmmm my invite link. yeeaaaah. yeahh. yah. that. 2 secs',
+        '1 invite link comin right up! :fork_knife_plate:',
+        f'it would b my honour, {ctx.message.author.name} :pensive:',
+        'anything 4 u pardner :cowboy:',
+        (
+            '...see this is the problem w/ having so many pockets... u might wanna sit down, this could take a minu-',
+            'ah ha! gotsit! here ya go :D',
+         ),
+        (
+            '...& wt exactly r u planning 2 do w/ that?',
+            'better not get up 2 any mischief human :face_with_monocle: :face_with_monocle:',
+         ),
+        (
+            'my... invite link-? oh, my invite link! yes! of course!',
+            '...ah. hmm. well it must b around here *somewhere*... hol up',
+        ),
+        (
+            'here u go king :crown:',
+            '...',
+            'oh yeah u can have this also',
+        ),
+    ]
+    return botlink_quotes
 
-spam_activators = [
-    'spam',
-    'toggle',
-    'togglespam',
-    'toggle spam',
-    'forever',
-    'loop',
-    'loopforever',
-    'loop forever',
-    'cycle',
-    'cycleforever',
-    'cycle forever',
-    'eternal',
-    'alarm',
-    'togglealarm',
-    'toggle alarm',
-    'start',
-]
+
+# quotes for misc commands
 
 emoji_sets = {
     'people': [
@@ -479,7 +412,61 @@ emoji_sets = {
 }
 
 
-# quotes for joke commands
+# quotes for fun commands
+
+async def get_hi_quotes(ctx):
+    hi_quotes = [
+        'hi??',
+        'u called?',
+        'mmhm im responding',
+        'yo mama OOOOOHHHHHH-',
+        f'this message is better than 6/10 {ctx.invoked_with} response options',
+        'hello. but at what cost...',
+        f'{ctx.invoked_with} urself bucko',
+        '...are u talking... to me? h-hello?',
+        'greetings mortal',
+        'honk. yes thats right, i speak clown now',
+        'do u have a minute 2 talk abt our lord & saviour jesus christ?',
+        'hewwo... :point_right: :point_left:',
+        'this is an extra super rare response!!!!! or maybe its the most common one. youll never know',
+        'salutations, etc.',
+        'd-did you hear that? a-! ah-!! a g-g-g-ghost!!??!!',
+        'congratulations!! you win!! enter your card details and national insurance no. to continue :)',
+        'howdus :sunflower:',
+        'why hello there my strangely fleshy companion what can i do for u on this fine day',
+        'error 404 hi response not found. suggestion: give the bot a raise',
+        'greetings... fRoM tHe wOrLd oF tOmOrRoW!!!! (spooky)',
+        'my, what a phenomenal greeting. however will i top that',
+        'hi! okay cool. bye!',
+        'how now, my good fellow',
+        f'ah, {ctx.message.author.name}. ive been expecting u',
+        'wazup wazup wazup',
+        (
+            'beep boop my brain is soup',
+            '...jk i dont have a brain :zany_face:',
+        ),
+    ]
+    return hi_quotes
+
+
+async def get_highfive_quotes(ctx):
+    highfive_quotes = [
+        'u gots it pardner :hand_splayed: :cowboy:',
+        'oh go on then :expressionless: :hand_splayed:',
+        'ill do u one better... HIGH TEN MOTHERFUCKER :hand_splayed: :sunglasses: :hand_splayed:',
+        'ah... a high five... as is my duty... :hand_splayed: :pensive:',
+        'm-me?? a-a high f-five?? well... if ur sure... :flushed: :hand_splayed:',
+        'of course!! one high five comin right up 4 my fav mortal :hand_splayed: :innocent:',
+        'down low :hand_splayed: SIKE TOO SLOW suffer fool',
+        '...and what exactly made u think i had hands?',
+        'this better not b some kinda sick prank or smth :hand_splayed: :face_with_raised_eyebrow:',
+        'what, u think u got it in u 2 high five THIS :muscle: :sparkles: ??? dream on nerd',
+        'this better b ur last 1 bucko :triumph: :hand_splayed:',
+        'up top bestie :smiley: :hand_splayed:',
+        f'...how juvenile. i expected better from u, {ctx.message.author.name}.',
+    ]
+    return highfive_quotes
+
 
 async def get_joke_quotes(ctx):
     joke_quotes = [
@@ -1038,6 +1025,7 @@ async def get_unexpected_quotes(expected):
     ]
     return unexpected_quotes
 
+
 step_1_expected = [
     'who dere',
     'whos dere',
@@ -1230,6 +1218,52 @@ welcome_quotes = [
         'oh FUCK my bad i dont have a body lmao. forgot abt that. guess ill stay out here :weary:',
         '(lets not think 2 hard abt how i knocked on the door)',
      ),
+]
+
+cmd_midcmd_quotes = [
+    'ur... ur tryna use a different cmd? woooooooow not cool man :/',
+    'but,,, thats another cmd? we were kinda in the middle of smth??? ...so rude u humans...',
+    'thats... thats a different cmd bud. guess we callin in quits on this 1, huh... :(',
+    'pssssh wtever, sure, thats probs a better cmd anyways. will go ahead & bin this 1',
+    (
+        'farewell current cmd ig. u served me well :smiling_face_with_tear:',
+        'im in mourning now tho so if u still wanna use the new cmd u gotta do that urself',
+     ),
+    (
+            'sure, a different cmd. not like we were doing anything :skull: :skull: :skull:',
+            'guess i can tell when im not wanted',
+    ),
+    (
+            'sure lets all just throw out rando cmds now :zany_face:',
+            '...humans. istg. fuck this cmd ig',
+    ),
+    (
+        'wooo shaking things up with a totally different cmd, keeping things fresh. i like ur style human :sunglasses:',
+        '...will admit uve got me a bit confused now tho, might just go ahead & cancel this cmd',
+    ),
+    (
+        'yo werent we like,,, doing smth? is now rlly the best time 4 a whole new cmd??',
+        'i mean, u know best ig. ill go ahead & cancel this 1...??',
+     ),
+]
+
+spam_activators = [
+    'spam',
+    'toggle',
+    'togglespam',
+    'toggle spam',
+    'forever',
+    'loop',
+    'loopforever',
+    'loop forever',
+    'cycle',
+    'cycleforever',
+    'cycle forever',
+    'eternal',
+    'alarm',
+    'togglealarm',
+    'toggle alarm',
+    'start',
 ]
 
 

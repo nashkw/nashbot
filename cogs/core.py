@@ -45,6 +45,13 @@ class Core(Cog, name='nashbot'):
         environ['restart'] = str(ctx.channel.id)
         execv(executable, ['python'] + argv)
 
+    @command(name='botlink', aliases=['botadder', 'invitebot'], brief='get the link for inviting nashbot to a server',
+             help='ask the bot to send u its invite to server link. this link can be used 2 add the bot 2 a server '
+                  'u have the "manage server" permission for. note that nashbot will need admin privileges')
+    async def botlink(self, ctx):
+        await read.quote(ctx, choice(await quotes.get_botlink_quotes(ctx)))
+        await read.quote(ctx, varz.BOT_INVITE_LINK)
+
     async def error_handling(self, ctx, error):
         return False
 

@@ -39,12 +39,12 @@ class Test(Cog, name='test'):
             for k, eset in quotes.emoji_sets.items():
                 await test_eset(eset, k)
 
-    @command(name='emojitruth', aliases=['etruth', 'etrue'], brief='test the true form of emojis', hidden=True,
-             help='read back the contents of the users message, and separate it out into characters',
-             usage=['emojitruth 🤡', 'etrue ❤️🧡💛💚💙💜'])
+    @command(name='msgtruth', aliases=['mtruth', 'mtrue'], brief='test the true form of a message', hidden=True,
+             help='read back the contents of the users message, separating it out into a list of characters',
+             usage=['msgtruth greetingz 🤡', 'mtruth hello there <@985864214260371476>', 'mtrue ❤️🧡💛💚💙💜'])
     @is_owner()
-    async def emojitruth(self, ctx, *, emojis: str):
-        await read.quote(ctx, f"```unaltered: {emojis}\nlist of characters: {list(emojis)}```")
+    async def msgtruth(self, ctx, *, m: str):
+        await read.quote(ctx, f"```unaltered: {m}\nlist of characters: {list(m)}```")
 
     async def error_handling(self, ctx, error):
         if isinstance(error, errs.FailedSearch):

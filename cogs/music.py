@@ -187,14 +187,14 @@ class Music(Cog, name='music'):
         fill = [[i+1, item] for i, item in enumerate(self.q_titles)]
         foot = None if fill else '(there are no songs queued after this one, use the "play [songname]" cmd to add more)'
         fill = resources.table_paginate(fill, 10) if fill else [varz.BLANK]
-        await read.paginated(ctx, quotes.wrap('music queue', 'musical_note'), fill, headers=np, footers=foot)
+        await read.paginated(ctx, quotes.wrap('music queue', 'musical_note'), fill, heads=np, foots=foot)
 
     @command(name='shownash', aliases=['nshow'], brief='show the available local music albums', hidden=True,
              help='show all avaliable local music albums & their indexes 4 use in the nplay cmd')
     @is_owner()
     async def shownash(self, ctx):
         fill = resources.table_paginate(resources.get_albums(), 10)
-        await read.paginated(ctx, quotes.wrap('forbidden & secret local albums', 'eyes'), fill)
+        await read.paginated(ctx, quotes.wrap('forbidden & secret local albums', 'eyes'), fill, hide=True)
 
     @command(name='dequeue', aliases=['dq', 'qremove'], brief='remove a song from the music queue',
              help='remove the song at the specified index from the music queue. index 0 is always the currently '

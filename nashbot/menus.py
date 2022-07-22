@@ -44,7 +44,7 @@ class PSource(ListPageSource):
         return embed
 
 
-class MyMenuPages(MenuPages):
+class Paginated(MenuPages):
     def __init__(self, source, **kwargs):
         if source.is_paginating():
             active_menus.append(self)
@@ -65,7 +65,7 @@ class MyMenuPages(MenuPages):
         active_menus.remove(self)
 
 
-class HelpPages(MyMenuPages, inherit_buttons=False):
+class HelpPages(Paginated, inherit_buttons=False):
     def __init__(self, buttons, source, **kwargs):
         super().__init__(source, **kwargs)
         for i, b in enumerate(buttons):

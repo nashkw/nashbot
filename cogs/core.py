@@ -142,7 +142,7 @@ class CustomHelp(HelpCommand):
                 headers.append(f'{cog.emoji}　**{cog.qualified_name}**　{self.num_cmds(cmds)}')
                 footers.append(self.COG_HELP_FOOTER)
         pages[0] += quotes.opt_list(headers[1:])
-        await read.help_paginated(self.context, buttons, title, pages, headers=headers, footers=footers)
+        await read.help_paginated(self.context, buttons, title, pages, heads=headers, foots=footers)
 
     async def send_cog_help(self, cog):
         e = Embed(title=quotes.wrap(f'{cog.qualified_name} commands', cog.emoji, shorthand=False))

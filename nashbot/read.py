@@ -11,15 +11,15 @@ async def embed(ctx, emb):
     return await ctx.send(embed=emb)
 
 
-async def paginated(ctx, title, pages, headers=None, footers=None):
+async def paginated(ctx, name, pages, heads=None, foots=None, hide=False):
     await ctx.trigger_typing()
-    m = MyMenuPages(PSource(pages, title, heads=headers, foots=footers), clear_reactions_after=True)
+    m = Paginated(PSource(pages, name, heads=heads, foots=foots), clear_reactions_after=True, delete_message_after=hide)
     await m.start(ctx)
 
 
-async def help_paginated(ctx, buttons, title, pages, headers=None, footers=None):
+async def help_paginated(ctx, buttons, name, pages, heads=None, foots=None):
     await ctx.trigger_typing()
-    m = HelpPages(buttons, PSource(pages, title, heads=headers, foots=footers), clear_reactions_after=True)
+    m = HelpPages(buttons, PSource(pages, name, heads=heads, foots=foots), clear_reactions_after=True)
     await m.start(ctx)
 
 

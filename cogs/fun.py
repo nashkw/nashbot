@@ -14,7 +14,7 @@ class Fun(Cog, name='fun'):
         self.emoji = '🎉'
         self.skelly_spam = False
 
-    @command(name='hi', aliases=['hello', 'howdy', 'greetings', 'salutations'], brief='greet the bot',
+    @command(name='hi', aliases=['hello', 'howdy', 'greetings', 'salutations', 'hewwo', 'helno'], brief='greet the bot',
              help='greet the bot! hopefully itll greet u back? wt a nice lil ping pong cmd :)')
     async def hi(self, ctx):
         await read.quote(ctx, choice(await quotes.get_hi_quotes(ctx)))
@@ -45,6 +45,7 @@ class Fun(Cog, name='fun'):
             return False
 
         async def wait_for_response(expected):
+            nonsense_count = 0
             while True:
                 content = resources.clean_msg(await self.bot.wait_for("message", check=check))
                 if content.partition(' ')[0] in resources.get_commands(self.bot):
@@ -61,8 +62,11 @@ class Fun(Cog, name='fun'):
                         await read.quote(ctx, f'{ctx.message.author.name}: {choice(expected)}?')
                         return True
                 else:
-                    quotes_unexpected = await quotes.get_unexpected_quotes(choice(expected))
-                    await read.quote(ctx, choice(quotes_unexpected))
+                    nonsense_count += 1
+                    if nonsense_count >= 5:
+                        return await cancel(await quotes.get_fed_up_quotes(ctx))
+                    else:
+                        await read.quote(ctx, choice(await quotes.get_unexpected_quotes(choice(expected))))
 
         await read.quote(ctx, 'knock knock')
         if not await wait_for_response(quotes.step_1_expected):

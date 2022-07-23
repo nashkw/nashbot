@@ -1044,12 +1044,34 @@ async def get_unexpected_quotes(expected):
         'i dont have feet but if i did i would SURELY b tapping them impatiently rn',
         f'ill give u a hint: ur meant 2 say "{expected}"',
         'sometimes i wonder if its humans or monkeys that im talkin 2. rn signs point 2 monkeys',
-        f'excellent mashing of the keyboard sir :face_with_monocle: might i suggest u try "{expected}" next?',
         f'think ur 2 cool 2 say "{expected}" do u??',
         'w-what did u call me??!!?? :flushed:',
+        (
+            'excellent mashing of the keyboard sir :face_with_monocle:',
+            f'might i suggest u try "{expected}" next?',
+         ),
     ]
     return unexpected_quotes
 
+
+async def get_fed_up_quotes(ctx):
+    fed_up_quotes = [
+        'yk wt human?? fuck this. i got better things 2 do :nail_care:',
+        'ok thats it',
+        'okay fine, i can take a hint!! geeze... :|',
+        'im SO sick of this mortal bs jfc. see u never human :middle_finger: :middle_finger:',
+        'nvm u *clearly* do not know how knock knock jokes work',
+        f'i have HAD IT w/ u {ctx.message.author.name} :rage:',
+        '...ah... guess u didnt want 2 hear the joke after all... :cry:',
+        'okay yeah ur deffo messing w/ me rn',
+        'i... i feel like im having a stroke or smth. thats not how u do knock knock jokes?? ...i need 2 go lie down',
+        'ok im now 100% certain im talking 2 a monkey with ill advised internet access, will go ahead & cancel this 1',
+        (
+            'ah- i see! i understand now, uve lost ur mind',
+            'such a shame... it wouldve been a great joke 2 :pensive:',
+         ),
+    ]
+    return fed_up_quotes
 
 step_1_expected = [
     'who dere',

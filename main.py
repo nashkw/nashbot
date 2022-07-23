@@ -25,14 +25,14 @@ for cog in [path.stem for path in varz.COGS_PATH.glob('*.py')]:
 @bot.event
 async def on_ready():
     if 'restart' in environ:
-        print('\nnashbot™ restarted successfully')
+        print('> nashbot™ restarted successfully')
         await bot.get_channel(int(environ.pop('restart'))).send(quotes.wrap('...powering up...', 'zap'))
-    print('nashbot™ has connected to discord')
+    print('> nashbot™ has connected to discord')
 
 
 @bot.event
 async def on_disconnect():
-    print('nashbot™ has disconnected from discord')
+    print('> nashbot™ has disconnected from discord\n')
 
 
 @bot.event

@@ -35,6 +35,7 @@ class Core(Cog, name='nashbot'):
     async def shutdown(self, ctx):
         await read.quote(ctx, choice(await quotes.get_shutdown_quotes(ctx)))
         await self.safe_shutdown(ctx)
+        print('\n> nashbot™ shutting down...')
         await self.bot.close()
 
     @command(name='restart', aliases=['reboot', 'refresh'], brief='restart the bot',
@@ -42,6 +43,7 @@ class Core(Cog, name='nashbot'):
     async def restart(self, ctx):
         await read.quote(ctx, choice(await quotes.get_restart_quotes(ctx)))
         await self.safe_shutdown(ctx)
+        print('\n> nashbot™ restarting...')
         environ['restart'] = str(ctx.channel.id)
         execv(executable, ['python'] + argv)
 

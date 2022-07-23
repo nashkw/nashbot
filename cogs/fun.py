@@ -44,6 +44,11 @@ class Fun(Cog, name='fun'):
             varz.frozen_users.remove(ctx.message.author.id)
             return False
 
+        async def force_continue(quote_bank, expected):
+            await read.quote(ctx, choice(quote_bank))
+            await read.quote(ctx, f'{ctx.message.author.name}: {choice(expected)}?')
+            return True
+
         async def wait_for_response(expected):
             nonsense_count = 0
             while True:
@@ -52,15 +57,15 @@ class Fun(Cog, name='fun'):
                     return await cancel(quotes.cmd_midcmd_quotes)
                 elif content in expected:
                     return True
+                elif content in quotes.kkjoke_confused or content in quotes.step_1_expected:
+                    return await force_continue(quotes.kkjoke_pity_continue, expected)
                 elif content in quotes.welcome_activators:
                     return await cancel(quotes.welcome_quotes)
                 elif content in quotes.cancel_activators:
                     if choice([True, False]):
                         return await cancel(quotes.cancel_obedient)
                     else:
-                        await read.quote(ctx, choice(quotes.cancel_disobedient))
-                        await read.quote(ctx, f'{ctx.message.author.name}: {choice(expected)}?')
-                        return True
+                        return await force_continue(quotes.cancel_disobedient, expected)
                 else:
                     nonsense_count += 1
                     if nonsense_count >= 5:

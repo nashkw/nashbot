@@ -1108,6 +1108,35 @@ step_1_expected = [
     'whodis',
 ]
 
+kkjoke_confused = [
+    'knock knock',
+    'knock knock who',
+    'wt',
+    'what',
+    'whaa',
+    'wts happening',
+    'whats happening',
+    'im confused',
+    "i'm confused",
+    'i dont get it',
+    'i dont understand',
+    'idk wts going on',
+    'idk whats going on',
+    'i dont know wts going on',
+    'i dont know whats going on',
+]
+
+kkjoke_pity_continue = [
+    (
+        'u... u rlly dont know how knock knock jokes work do u? ur not messing w/ me u rlly dont know',
+        '...huh. guess ill help u out then. achem-',
+     ),
+    (
+        'oh u rlly dont know how knock knock jokes r meant 2 go, do u?',
+        'thats kinda crazy man ngl. but dw homie i gotchu :muscle: :sunglasses:',
+    ),
+]
+
 cancel_activators = [
     'cancel',
     'cancel joke',

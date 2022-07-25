@@ -104,17 +104,7 @@ class Fun(Cog, name='fun'):
     @command(name='quiz', aliases=['takequiz', 'doquiz', 'quizme'], brief='take one of the nashbot™ quizzes',
              help='TODO')
     async def quiz(self, ctx):
-        name = 'the "weather or not u have a personality" quiz'
-        quiz = quotes.quizzes[name]
-        results = quiz[1]
-        questions = list(quiz[0].keys())
-        shuffle(questions)
-        pages = []
-        for q in questions:
-            opts = list(quiz[0][q].keys())
-            shuffle(opts)
-            pages.append(varz.BLANK + quotes.opt_list(opts, emojis=quotes.emoji_sets['fruit']))
-        await read.paginated(ctx, quotes.wrap(name, 'grey_question'), pages, heads=questions, foots='(click the matching emoji to select an answer)')
+        await read.quiz(ctx, 'the "weather or not u have a personality" quiz')
 
     async def error_handling(self, ctx, error):
         if ctx.command == self.bot.get_command('kkjoke') and ctx.message.author.id in varz.frozen_users:

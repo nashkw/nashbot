@@ -1349,6 +1349,7 @@ spam_activators = [
 
 quizzes = {
     'the "weather or not u have a personality" quiz': [
+        'description TODO',
         {
             'pick an element': {
                 'electricity':  [0, 2, 0, 0, 0, 5, 2, 2, 0, 0, 0, 0],

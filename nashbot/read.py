@@ -23,6 +23,12 @@ async def help_paginated(ctx, buttons, name, pages, heads=None, foots=None):
     await m.start(ctx)
 
 
+async def quiz(ctx, quiz_name):
+    await ctx.trigger_typing()
+    m = QuizPages(quiz_name, clear_reactions_after=True)
+    await m.start(ctx)
+
+
 async def quote(ctx, quo):
     await ctx.trigger_typing()
     if isinstance(quo, tuple):

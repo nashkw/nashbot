@@ -1,12 +1,15 @@
 # menus.py
 
 
+from random import shuffle
 from discord import Embed
-from nashbot.varz import active_menus, STOP_EMOJI
+from emoji.core import emojize
+from nashbot.varz import active_menus, STOP_EMOJI, BLANK
+from nashbot.quotes import quizzes, opt_list, wrap, emoji_sets
 from discord.ext.menus import MenuPages, Button, button, ListPageSource, Position, Last
 
 
-def get_action(index):
+def show_page_action(index):
     async def action(self_menu, payload):
         await self_menu.show_page(index)
     return action
@@ -69,8 +72,36 @@ class HelpPages(Paginated, inherit_buttons=False):
     def __init__(self, buttons, source, **kwargs):
         super().__init__(source, **kwargs)
         for i, b in enumerate(buttons):
-            self.add_button(Button(b, get_action(i), position=Position(i)))
+            self.add_button(Button(b, show_page_action(i), position=Position(i)))
 
     @button(STOP_EMOJI, position=Last(0))
+    async def stop_pages(self, payload):
+        self.stop()
+
+
+class QuizPages(Paginated):
+    def __init__(self, quiz_name, **kwargs):
+        self.quiz = quizzes[quiz_name]
+        self.questions = list(self.quiz[1].keys())
+        self.results = self.quiz[2]
+        shuffle(self.questions)
+
+        self.question_opts = []
+        pages = [self.quiz[0]]
+        foots = [False]
+        for q in self.questions:
+            opts = list(self.quiz[1][q].keys())
+            shuffle(opts)
+            self.question_opts.append(opts)
+            pages.append(BLANK + opt_list(opts, emojis=emoji_sets['fruit']))
+            foots.append('(click the matching emoji to select an answer)')
+
+        source = PSource(pages, wrap(quiz_name, 'grey_question'), heads=[False, ] + self.questions, foots=foots)
+        super().__init__(source, **kwargs)
+        max_emojis = max([len(opt) for opt in self.question_opts])
+        for i, e in enumerate(emoji_sets['fruit'][:max_emojis]):
+            self.add_button(Button(emojize(e, language='alias'), show_page_action(i), position=Position(i)))
+
+    @button(STOP_EMOJI, position=Last(2))
     async def stop_pages(self, payload):
         self.stop()

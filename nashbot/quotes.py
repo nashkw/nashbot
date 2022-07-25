@@ -1348,11 +1348,13 @@ spam_activators = [
 ]
 
 quizzes = {
-    'the "weather or not u have a personality" quiz': [
+    'weather personalities': [
         {
+            'name': 'the "weather or not u have a personality" quiz',
             'description': 'description TODO',
             'max_result': 33,
             'emoji': 'white_sun_rain_cloud',
+            'emoji_set': emoji_sets['fruit'],
         },
         {
             'pick an element': {

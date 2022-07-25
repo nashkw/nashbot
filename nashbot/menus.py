@@ -58,10 +58,11 @@ class PSource(ListPageSource):
 
 
 class QuizSource(PSource):
-    def __init__(self, name, info, questions, question_opts):
+    def __init__(self, info, questions, question_opts):
         pages = [BLANK + info['description'] + BLANK, *question_opts, 'end']
         foots = [False, *['(click the matching emoji to select an answer)' for q in questions], False]
-        super().__init__(pages, wrap(name, info['emoji']), heads=[False, *questions, False], foots=foots)
+        heads = [False, *[BLANK + q for q in questions], False]
+        super().__init__(pages, wrap(info['name'], info['emoji']), heads=heads, foots=foots)
 
     async def format_page(self, m, to_display):
         if to_display == 'end':
@@ -110,9 +111,11 @@ class HelpPages(Paginated, inherit_buttons=False):
 class QuizPages(Paginated):
     def __init__(self, quiz_name, **kwargs):
         self.quiz = quizzes[quiz_name]
-        self.results = self.quiz[2]
+        self.info = self.quiz[0]
+        self.info['shortname'] = quiz_name
         self.questions = list(self.quiz[1].keys())
         shuffle(self.questions)
+        self.results = self.quiz[2]
 
         self.question_opts = []
         self.user_choices = []
@@ -122,10 +125,9 @@ class QuizPages(Paginated):
             self.question_opts.append(opts)
             self.user_choices.append(None)
 
-        source = QuizSource(quiz_name, self.quiz[0], self.questions, self.question_opts)
-        super().__init__(source, **kwargs)
+        super().__init__(QuizSource(self.info, self.questions, self.question_opts), **kwargs)
         max_emojis = max([len(opt) for opt in self.question_opts])
-        for i, e in enumerate(emoji_sets['fruit'][:max_emojis]):
+        for i, e in enumerate(self.info['emoji_set'][:max_emojis]):
             self.add_button(Button(emojize(e, language='alias'), quiz_select_action(i), position=Last(2 + i)))
 
     def get_num_answered(self):
@@ -137,16 +139,16 @@ class QuizPages(Paginated):
     def calculate_result(self):
         tally = sorted(zip([sum(x) for x in zip(*self.user_choices)], self.results), reverse=True)
         result = tally[0][1]
-        table = get_table([[res[1][0], f'{round(100 * res[0]/self.quiz[0]["max_result"])}%'] for res in tally])
+        table = get_table([[res[1][0], f'{round(100 * res[0]/self.info["max_result"])}%'] for res in tally])
         return result, table
 
     @button(STOP_EMOJI)
     async def stop_pages(self, payload):
         if self.is_quiz_completed():
             res, table = self.calculate_result()
-            e = Embed(title=self.source.name)
-            e.add_field(name=BLANK + wrap(res[0], res[1]), value=BLANK + res[2] + BLANK)
+            e = Embed(title=wrap(f"{self.ctx.author.name}'s {self.info['shortname']} quiz results", self.info['emoji']))
             e.add_field(name=BLANK + 'match percentages:', value=table)
+            e.add_field(name=BLANK + wrap(res[0], res[1]), value=BLANK + res[2] + BLANK)
             e.set_footer(text='(type "quiz TODO" if u wanna take this quiz again)')
             await self.change_source(PSource([e], self.source.name))
         self.stop()

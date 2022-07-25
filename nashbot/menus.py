@@ -5,7 +5,7 @@ from random import shuffle
 from discord import Embed
 from emoji.core import emojize
 from nashbot.varz import active_menus, STOP_EMOJI, BLANK
-from nashbot.quotes import quizzes, opt_list, wrap, emoji_sets
+from nashbot.quotes import quizzes, opt_list, wrap, emoji_sets, get_table
 from discord.ext.menus import MenuPages, Button, button, ListPageSource, Position, Last
 
 
@@ -24,9 +24,9 @@ def quiz_select_action(index):
 
 
 class PSource(ListPageSource):
-    def __init__(self, pages, title, heads=None, foots=None):
+    def __init__(self, pages, title, heads=None, foots=None, per_page=1):
         self.name = title
-        super().__init__(pages, per_page=1)
+        super().__init__(pages, per_page=per_page)
 
         if heads is None:
             self.heads = [False for p in pages]
@@ -46,7 +46,9 @@ class PSource(ListPageSource):
             self.foots = [f if f else '(use the blue reaction emojis to navigate)' for f in foots]
 
     async def format_page(self, m, page):
-        if self.heads[m.current_page]:
+        if isinstance(page, Embed):
+            return page
+        elif self.heads[m.current_page]:
             embed = Embed(title=self.name).add_field(name=self.heads[m.current_page], value=page)
         else:
             embed = Embed(title=self.name, description=page)
@@ -56,13 +58,12 @@ class PSource(ListPageSource):
 
 
 class QuizSource(PSource):
-    def __init__(self, name, description, questions, question_opts):
-        pages = [BLANK + description + BLANK, *question_opts, 'end']
+    def __init__(self, name, info, questions, question_opts):
+        pages = [BLANK + info['description'] + BLANK, *question_opts, 'end']
         foots = [False, *['(click the matching emoji to select an answer)' for q in questions], False]
-        super().__init__(pages, wrap(name, 'grey_question'), heads=[False, *questions, False], foots=foots)
+        super().__init__(pages, wrap(name, info['emoji']), heads=[False, *questions, False], foots=foots)
 
     async def format_page(self, m, to_display):
-        print(f'formatting {to_display}')
         if to_display == 'end':
             self.heads[m.current_page] = BLANK + f'{m.get_num_answered()}/{len(m.questions)} questions answered'
             if m.is_quiz_completed():
@@ -133,18 +134,19 @@ class QuizPages(Paginated):
     def is_quiz_completed(self):
         return self.get_num_answered() >= len(self.questions)
 
+    def calculate_result(self):
+        tally = sorted(zip([sum(x) for x in zip(*self.user_choices)], self.results), reverse=True)
+        result = tally[0][1]
+        table = get_table([[res[1][0], f'{round(100 * res[0]/self.quiz[0]["max_result"])}%'] for res in tally])
+        return result, table
+
     @button(STOP_EMOJI)
     async def stop_pages(self, payload):
         if self.is_quiz_completed():
-            res = self.results[6]
-            page = BLANK + res[2] + BLANK
-            await self.change_source(PSource([page], self.source.name, heads=BLANK + wrap(res[0], res[1])))
+            res, table = self.calculate_result()
+            e = Embed(title=self.source.name)
+            e.add_field(name=BLANK + wrap(res[0], res[1]), value=BLANK + res[2] + BLANK)
+            e.add_field(name=BLANK + 'match percentages:', value=table)
+            e.set_footer(text='(type "quiz TODO" if u wanna take this quiz again)')
+            await self.change_source(PSource([e], self.source.name))
         self.stop()
-
-    async def finalize(self, timed_out):
-        if self.is_quiz_completed():
-            foot = '(type "quiz TODO" to take this quiz again)'
-        else:
-            foot = f'(this embed has {"timed out" if timed_out else "been deactivated"})'
-        await self.change_source(PSource(self.source.entries, self.source.name, heads=self.source.heads, foots=foot))
-        active_menus.remove(self)

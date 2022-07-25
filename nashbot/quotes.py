@@ -1349,7 +1349,11 @@ spam_activators = [
 
 quizzes = {
     'the "weather or not u have a personality" quiz': [
-        'description TODO',
+        {
+            'description': 'description TODO',
+            'max_result': 33,
+            'emoji': 'white_sun_rain_cloud',
+        },
         {
             'pick an element': {
                 'electricity':  [0, 2, 0, 0, 0, 5, 2, 2, 0, 0, 0, 0],
@@ -1524,7 +1528,7 @@ quizzes = {
                 '"nice" or "sweet". sometimes, observing the vibrant & intense personalities around u, it can feel '
                 'like u urself r boring or unoriginal. dont let this discourage u or make u feel lesser, tho - theres '
                 'nothing wrong w/ enjoying "basic" things and taking joy in the mundane. if the world had more ppl '
-                'who were as kind & level-headed as u, it would b a much safer & happier place.',
+                'who were as kind & level-headed as u it would b a much safer & happier place.',
             ],
             [
                 'sunny',

@@ -19,6 +19,8 @@ async def paginated(ctx, name, pages, heads=None, foots=None, hide=False):
 
 async def help_paginated(ctx, buttons, name, pages, heads=None, foots=None):
     await ctx.trigger_typing()
+    if isinstance(foots, list):
+        foots = [foot if foot else '(use the reaction emojis to navigate)' for foot in foots]
     m = HelpPages(buttons, PSource(pages, name, heads=heads, foots=foots), clear_reactions_after=True)
     await m.start(ctx)
 

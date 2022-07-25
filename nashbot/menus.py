@@ -10,8 +10,17 @@ from discord.ext.menus import MenuPages, Button, button, ListPageSource, Positio
 
 
 def show_page_action(index):
-    async def action(self_menu, payload):
-        await self_menu.show_page(index)
+    async def action(m, payload):
+        await m.show_page(index)
+    return action
+
+
+def quiz_select_action(index):
+    async def action(m, payload):
+        question_no = m.current_page - 1
+        if 0 <= question_no < len(m.questions) and index <= len(m.question_opts[question_no]):
+            print('passed')
+            m.user_choices[question_no] = m.quiz[1][m.questions[question_no]][m.question_opts[question_no][index]]
     return action
 
 
@@ -29,13 +38,13 @@ class PSource(ListPageSource):
 
         if foots is None:
             if self.is_paginating():
-                self.foots = ['(use the reaction emojis to navigate)' for p in pages]
+                self.foots = ['(use the blue reaction emojis to navigate)' for p in pages]
             else:
                 self.foots = [False for p in pages]
         elif isinstance(foots, str):
             self.foots = [foots for p in pages]
         else:
-            self.foots = [f if f else '(use the reaction emojis to navigate)' for f in foots]
+            self.foots = [f if f else '(use the blue reaction emojis to navigate)' for f in foots]
 
     async def format_page(self, m, page):
         if self.heads[m.current_page]:
@@ -45,6 +54,21 @@ class PSource(ListPageSource):
         if self.foots[m.current_page]:
             embed.set_footer(text=self.foots[m.current_page])
         return embed
+
+
+class QuizSource(PSource):
+    def __init__(self, name, description, questions, question_opts):
+        pages = [description, *question_opts, 'end']
+        foots = [False, *['(click the matching emoji to select an answer)' for q in questions], False]
+        super().__init__(pages, wrap(name, 'grey_question'), heads=[False, *questions, False], foots=foots)
+
+    async def format_page(self, m, to_display):
+        print(f'formatting {to_display}')
+        if to_display == 'end':
+            to_display = 'submit instructions TODO'
+        elif isinstance(to_display, list):
+            to_display = BLANK + opt_list(to_display, emojis=emoji_sets['fruit'])
+        return await super().format_page(m, to_display)
 
 
 class Paginated(MenuPages):
@@ -82,26 +106,20 @@ class HelpPages(Paginated, inherit_buttons=False):
 class QuizPages(Paginated):
     def __init__(self, quiz_name, **kwargs):
         self.quiz = quizzes[quiz_name]
-        self.questions = list(self.quiz[1].keys())
         self.results = self.quiz[2]
+        self.questions = list(self.quiz[1].keys())
         shuffle(self.questions)
 
         self.question_opts = []
-        pages = [self.quiz[0]]
-        foots = [False]
+        self.user_choices = []
         for q in self.questions:
             opts = list(self.quiz[1][q].keys())
             shuffle(opts)
             self.question_opts.append(opts)
-            pages.append(BLANK + opt_list(opts, emojis=emoji_sets['fruit']))
-            foots.append('(click the matching emoji to select an answer)')
+            self.user_choices.append(None)
 
-        source = PSource(pages, wrap(quiz_name, 'grey_question'), heads=[False, ] + self.questions, foots=foots)
+        source = QuizSource(quiz_name, self.quiz[0], self.questions, self.question_opts)
         super().__init__(source, **kwargs)
         max_emojis = max([len(opt) for opt in self.question_opts])
         for i, e in enumerate(emoji_sets['fruit'][:max_emojis]):
-            self.add_button(Button(emojize(e, language='alias'), show_page_action(i), position=Position(i)))
-
-    @button(STOP_EMOJI, position=Last(2))
-    async def stop_pages(self, payload):
-        self.stop()
+            self.add_button(Button(emojize(e, language='alias'), quiz_select_action(i), position=Last(2 + i)))

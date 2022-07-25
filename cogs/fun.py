@@ -82,7 +82,7 @@ class Fun(Cog, name='fun'):
         await read.quote(ctx, joke[1:])
         varz.frozen_users.remove(ctx.message.author.id)
 
-    @command(name='skellygif', aliases=['skelly', 'skeleton'], brief='ask the bot for a skeleton gif',
+    @command(name='skellygif', aliases=['skelly', 'skeleton', 'skellyspam'], brief='ask the bot for a skeleton gif',
              help='ask 4 a skeleton gif. & if u activate the spam theyll just keep comin until u use this cmd again!',
              usage=['skellygif', 'skelly spam', 'skeleton toggle'])
     async def skellygif(self, ctx, spam: str = None):

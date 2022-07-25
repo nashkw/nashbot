@@ -39,9 +39,9 @@ class Test(Cog, name='test'):
             for k, eset in quotes.emoji_sets.items():
                 await test_eset(eset, k)
 
-    @command(name='msgtruth', aliases=['mtruth', 'mtrue'], brief='test the true form of a message', hidden=True,
+    @command(name='msgtruth', aliases=['mtrue', 'etrue'], brief='test the true form of a message', hidden=True,
              help='read back the contents of the users message, separating it out into a list of characters',
-             usage=['msgtruth greetingz 🤡', 'mtruth hello there <@985864214260371476>', 'mtrue ❤️🧡💛💚💙💜'])
+             usage=['msgtruth greetingz 🤡', 'mtrue hello there <@985864214260371476>', 'etrue ❤️🧡💛💚💙💜'])
     @is_owner()
     async def msgtruth(self, ctx, *, m: str):
         await read.quote(ctx, f"```unaltered: {m}\nlist of characters: {list(m)}```")

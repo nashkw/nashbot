@@ -393,9 +393,9 @@ emoji_sets = {
         ':yellow_heart:',
         ':green_heart:',
         ':purple_heart:',
-        ':black_heart:',
-        ':brown_heart:',
         ':white_heart:',
+        ':brown_heart:',
+        ':black_heart:',
     ],
     'circles': [
         ':red_circle:',
@@ -1073,6 +1073,7 @@ async def get_fed_up_quotes(ctx):
     ]
     return fed_up_quotes
 
+
 step_1_expected = [
     'who dere',
     'whos dere',
@@ -1127,6 +1128,10 @@ kkjoke_confused = [
 ]
 
 kkjoke_pity_continue = [
+    'right so u CLEARLY dont get how knock knock jokes work. honestly its kinda sad. so im gonna help u out, okay??',
+    'this... this is just depressing, yo. im gonna give u a hand w/ this, ok?',
+    'ah, first time hearing a knock knock joke, is it? thats alright, we all start somewhere. ill show u how its done:',
+    'eek, this must b so embarrassing 4 u. did no 1 ever explain how knock knock jokes work? here look ill demonstrate',
     (
         'u... u rlly dont know how knock knock jokes work do u? ur not messing w/ me u rlly dont know',
         '...huh. guess ill help u out then. achem-',
@@ -1341,6 +1346,206 @@ spam_activators = [
     'toggle alarm',
     'start',
 ]
+
+quizzes = {
+    'the "weather or not u have a personality" quiz': [
+        {
+            'pick an element': {
+                'electricity':  [0, 2, 0, 0, 0, 5, 2, 2, 0, 0, 0, 0],
+                'earth':        [0, 0, 0, 2, 2, 0, 0, 0, 0, 5, 2, 0],
+                'water':        [0, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0],
+                'fire':         [0, 0, 5, 0, 0, 2, 0, 0, 2, 2, 5, 0],
+                'air':          [5, 5, 2, 0, 0, 0, 0, 5, 0, 0, 0, 0],
+                'ice':          [2, 0, 0, 5, 0, 0, 5, 0, 0, 0, 0, 0],
+            },
+            'pick a sense': {
+                'taste':            [0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 3],
+                'touch':            [0, 0, 0, 0, 0, 1, 0, 0, 1, 3, 3, 0],
+                'hearing':          [3, 3, 0, 1, 0, 3, 0, 1, 0, 0, 0, 0],
+                'smell':            [0, 0, 0, 0, 3, 0, 0, 0, 0, 1, 0, 0],
+                'vision':           [1, 1, 0, 3, 0, 0, 1, 3, 0, 0, 1, 0],
+                'proprioception':   [0, 0, 3, 0, 0, 0, 3, 0, 3, 0, 0, 1],
+            },
+            'pick a colour': {
+                'ivory white':          [0, 0, 0, 0, 0, 0, 3, 2, 0, 3, 1, 5],
+                'pale lavender':        [3, 2, 0, 5, 0, 0, 2, 3, 0, 2, 0, 2],
+                'bubblegum pink':       [0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 3, 3],
+                'vivid crimson':        [0, 5, 3, 0, 0, 5, 0, 0, 2, 0, 2, 0],
+                'apricot yellow':       [0, 0, 1, 0, 0, 3, 0, 0, 0, 5, 5, 1],
+                'seaweed green':        [0, 0, 0, 1, 3, 0, 0, 0, 1, 0, 0, 0],
+                'midnight turquoise':   [1, 1, 5, 0, 5, 1, 0, 0, 5, 0, 0, 0],
+                'powder blue':          [5, 0, 0, 2, 1, 0, 5, 1, 0, 0, 0, 0],
+                'muddy grey':           [2, 3, 2, 3, 2, 0, 1, 5, 3, 0, 0, 0],
+            },
+            'pick a setting': {
+                'a rowboat missing its oars, resting gently on a still lake':   [5, 0, 0, 2, 0, 0, 2, 0, 0, 2, 0, 0],
+                'a warehouse containing thousands of differently sized boxes':  [0, 5, 0, 0, 0, 0, 0, 2, 1, 1, 0, 3],
+                'thrashing, clanging machinery so loud u cant urself speak':    [0, 3, 5, 0, 1, 3, 0, 0, 0, 0, 0, 0],
+                'a long walkway made of glass, built above a field of flowers': [1, 0, 0, 5, 0, 0, 0, 3, 0, 3, 1, 2],
+                'a turbulent whirlpool filled with tangled seaweed & debris':   [0, 0, 3, 0, 5, 2, 0, 0, 2, 0, 0, 0],
+                'a gladiatorial arena circled by pure white flames':            [0, 0, 1, 0, 0, 5, 1, 0, 0, 0, 0, 0],
+                'an insulating stasis pod cut off from the outside world':      [0, 0, 0, 1, 0, 0, 5, 0, 3, 0, 0, 0],
+                'a never-ending sky where gravity doesnt exist':                [3, 2, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0],
+                'a claustrophobic labyrinth without a start or end':            [0, 1, 2, 0, 3, 0, 3, 0, 5, 0, 0, 1],
+                'an empty field split down the middle by a well-worn road':     [2, 0, 0, 3, 0, 0, 0, 0, 0, 5, 3, 0],
+                'a lively beach, hot & shimmering in the morning sun':          [0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 5, 0],
+                'a splintered portal vibrating in psychedelic technicolour':    [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 5],
+            },
+            'which word describes u best?': {
+                'relaxed':      [5, 0, 0, 1, 0, 0, 0, 3, 0, 1, 1, 0],
+                'busy':         [0, 5, 3, 0, 0, 2, 0, 0, 1, 0, 0, 0],
+                'passionate':   [0, 0, 5, 0, 3, 3, 0, 0, 0, 0, 0, 2],
+                'steady':       [2, 0, 0, 5, 0, 0, 1, 0, 0, 3, 0, 0],
+                'sensitive':    [0, 0, 0, 0, 5, 1, 2, 0, 3, 0, 0, 0],
+                'fiery':        [0, 0, 1, 0, 1, 5, 0, 0, 0, 0, 0, 0],
+                'reserved':     [0, 0, 0, 3, 0, 0, 5, 2, 0, 0, 0, 1],
+                'airy':         [1, 1, 0, 0, 0, 0, 0, 5, 0, 0, 3, 0],
+                'complicated':  [0, 2, 2, 0, 2, 0, 3, 0, 5, 0, 0, 3],
+                'mellow':       [3, 0, 0, 2, 0, 0, 0, 0, 0, 5, 2, 0],
+                'cheerful':     [0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 5, 0],
+                'absurd':       [0, 3, 0, 0, 0, 0, 0, 0, 2, 0, 0, 5],
+            },
+            'what quality do u most identify w/?': {
+                'lazy':             [5, 0, 0, 2, 0, 0, 0, 2, 0, 1, 0, 0],
+                'manic':            [0, 5, 3, 0, 0, 2, 0, 0, 0, 0, 0, 3],
+                'obsessive':        [0, 0, 5, 0, 3, 1, 0, 0, 0, 0, 0, 0],
+                'passive':          [3, 0, 0, 5, 0, 0, 1, 3, 0, 2, 3, 0],
+                'overemotional':    [0, 0, 0, 0, 5, 3, 0, 0, 1, 0, 0, 0],
+                'irritable':        [0, 0, 2, 1, 1, 5, 0, 0, 0, 0, 0, 0],
+                'withdrawn':        [2, 0, 1, 0, 0, 0, 5, 1, 2, 0, 0, 2],
+                'flaky':            [0, 3, 0, 0, 0, 0, 0, 5, 0, 0, 1, 1],
+                'overthinker':      [0, 0, 0, 0, 2, 0, 3, 0, 5, 0, 0, 0],
+                'boring':           [0, 0, 0, 3, 0, 0, 0, 0, 0, 5, 0, 0],
+                'naive':            [1, 1, 0, 0, 0, 0, 0, 0, 0, 3, 5, 0],
+                'incomprehensible': [0, 2, 0, 0, 0, 0, 2, 0, 3, 0, 2, 5],
+            },
+            'what do u wish u were doing rn?': {
+                'eh im good doing this tbh':                                [5, 0, 0, 3, 0, 0, 0, 3, 0, 2, 1, 0],
+                'dangerous q, i got like 8 different things going on man':  [0, 5, 1, 1, 0, 2, 0, 0, 2, 0, 0, 3],
+                'a thing 2 do w/ my current Area Of Interest:tm:':          [0, 1, 5, 0, 0, 0, 1, 0, 0, 0, 0, 2],
+                'ugh i got some chores i rlly need 2 out the way':          [1, 0, 0, 5, 0, 0, 0, 2, 0, 1, 0, 0],
+                'talkin 2 someone abt my current Major Issue:tm:':          [0, 3, 0, 0, 5, 0, 0, 0, 1, 0, 0, 1],
+                'clappin back - bro theres some shit i am PISSED abt atm':  [0, 0, 3, 0, 2, 5, 0, 0, 0, 0, 0, 0],
+                'ngl a minute just 2 sit quietly & think would go so hard': [0, 0, 0, 0, 3, 0, 5, 0, 3, 0, 0, 0],
+                'depends on wt the options r ig. im open 2 ideas':          [2, 0, 0, 0, 1, 0, 3, 5, 0, 0, 2, 0],
+                'getting someone 2 sit me down & explain WTF IS GOIN ON??': [0, 2, 0, 0, 0, 3, 0, 0, 5, 0, 0, 0],
+                'im happy w/ this! dont have much else goin on rn lmao':    [3, 0, 0, 0, 0, 0, 0, 1, 0, 5, 3, 0],
+                'nothing!! im enjoying myself dw :)':                       [0, 0, 0, 2, 0, 0, 0, 0, 0, 3, 5, 0],
+                'srry my answer is v specific & not listed here lol':       [0, 0, 2, 0, 0, 1, 2, 0, 0, 0, 0, 5],
+            },
+        },
+        [
+            [
+                'cloudy',
+                ':cloud:',
+                'ur breezy & chill, floating thru life unbothered. u dont tend 2 get worked up abt things, which is '
+                'good cus if u did get worked up everyone knows things would get real manic real fast. u struggle '
+                'w/ finding motivation as u often feel tired & lethargic, & dont tend 2 feel strongly abt achieving '
+                'the goals that u do have. ur natural serenity & ability 2 take a step back & look at things as '
+                'objectively as possible makes u good at negotiating tense situations.',
+            ],
+            [
+                'windy',
+                ':kite:',
+                'brrrr gotta go fast, amirite? u feel the need 4 speed, smth which can b both a blessing & a curse. '
+                'it can b good 4 getting things done, but u can also move so fast u never fully finish anything. '
+                'it can be good 4 keeping urself moving thru difficult situations, but u can end up not giving '
+                'urself the time 2 process & reflect which can & will end up biting u in the ass later. ur chaotic '
+                '& unpredictable - scatterbrained at ur worst, stunningly creative at ur best.',
+            ],
+            [
+                'tornado',
+                ':cloud_with_tornado:',
+                'chaotic 2 the max, ur an unstoppable force of nature. ur constantly in motion, always vividly '
+                'focused on smth, whether thats a new media obsession, a project ur super invested in, or ur '
+                'current subject of emotional turmoil. u can become oblivious 2 ur surroundings - useful 4 '
+                'channeling ur energy, but often damaging 2 those around u. u can b unintentionally cruel, or even '
+                'vindictive in ur worst moods. u tend 2 have powerful emotional connections 2 those closest 2 u.',
+            ],
+            [
+                'drizzle',
+                ':umbrella:',
+                'ur life is a constant drip drip drip of sensation, emotion, & situations. its steady & almost '
+                'predictable, involving w/out becoming overwhelming, but sometimes excruciatingly mundane. u can '
+                'feel restless at times, itching to experience more & embrace the unknown. at others u can feel '
+                'smothered & harried, like life never lets up enough 2 let u relax & plan. u struggle w/ feeling '
+                'dissatisfied, but when u let that go ur able 2 achieve a kind of quiet joy others only dream of.',
+            ],
+            [
+                'rainstorm',
+                ':cloud_with_rain:',
+                'u feel things deeply & strongly, a trait thats torturous 2 try & repress. bottling ur feelings '
+                'only ever ends in emotional volatility & the occasional explosion that hurts both u & those around u, '
+                'so try ur best 2 let it all flow out, even if its a difficult emotion 2 experience. u care a lot, '
+                'smth which can lead 2 unnecessary angst & anxiety, but smth which can b ur best quality when it '
+                'comes 2 projects & social connections. self reflection & mindfulness will b ur best friends.',
+            ],
+            [
+                'thunderstorm',
+                ':cloud_with_lightning:',
+                'intense & uncompromising, u express urself boldly & w/out restraint. ur quick to anger - fiercely '
+                'protective at ur best, but needlessly destructive at ur worst. wtever the situation, taking a step '
+                'back 2 make sure ur fury is rlly called 4 is never a bad idea. u have no problem defending urself '
+                'or others against perceived injustice, but its easy 2 tunnel vision in ur righteous fury, black & '
+                'white arguments preventing u from seeing other points of view & practicing kindness.',
+            ],
+            [
+                'frosty',
+                ':snowflake:',
+                'guarded & serene, u can come off as secretive & emotionless in turns. u dont always feel the need 2 '
+                'express ur opinions & thought processes, leading 2 a blank exterior that doesnt reflect ur rich inner '
+                'life. u become confused when ppl describe u as cold, as u struggle with how 2 process ur more intense '
+                'emotions & often wish u felt things less deeply. in reality this struggle is due 2 ur reluctance 2 '
+                'externalise anything & lean on others 4 support, smth which could bring u the inner peace u crave.',
+            ],
+            [
+                'snowy',
+                ':snowman:',
+                'u have a feather light touch in everything u do, making u excellent at handling ppl w/ volatile '
+                'emotions while keeping ur own mental health out of harms way. on the other hand, ur compassion has a '
+                'fleeting quality 2 it that can lead ppl 2 think u dont feel things deeply, smth which can limit ur '
+                'ability 2 have meaningful relationships. its often the case that u dont feel the need 2 attach urself '
+                '2 anything - a rare quality which gives u incredible creative & intellectual freedom.',
+            ],
+            [
+                'blizzard',
+                ':cloud_snow:',
+                'ur personality is complex & ever shifting, so its smth both u & those around u struggle 2 pin '
+                'down. u can feel like u dont rlly know urself, & u have problems understanding wt ur feeling & why ur '
+                'feeling it so strongly. this uncertainty can lead 2 an insecurity that makes u prone 2 isolating '
+                'urself, smth which will make ur intense emotions more painful & harder 2 manage. u need 2 b less '
+                'rigid w/ ur definitions, & let urself relax into the physical rather than obsessing over the mental.',
+            ],
+            [
+                'temperate',
+                ':partly_sunny:',
+                'ur mild-mannered & open-minded, well-liked by those around u & often described with words such as '
+                '"nice" or "sweet". sometimes, observing the vibrant & intense personalities around u, it can feel '
+                'like u urself r boring or unoriginal. dont let this discourage u or make u feel lesser, tho - theres '
+                'nothing wrong w/ enjoying "basic" things and taking joy in the mundane. if the world had more ppl '
+                'who were as kind & level-headed as u, it would b a much safer & happier place.',
+            ],
+            [
+                'sunny',
+                ':sunny:',
+                'bright & enthusiastic, u have a warm, joyful presence. ur consciously upbeat, actively trying ur best '
+                'not 2 let circumstances bring u down, & often pulling it off so well ppl think ur optimism is '
+                'effortless. this can sometimes make it difficult 2 relate 2 u, as u can come off as simpleminded & '
+                'unrealistic. remember, being open abt ur emotional thought process wont dim ur light or somehow mean '
+                'that ur a fake, its just a way 2 show empathy & humanity - smth which can effect more than u think.',
+            ],
+            [
+                'rainbow',
+                ':rainbow:',
+                'ur a miracle!! or, at least, thats how ppl see u. ur actions often seem random & fantastical, & ur '
+                'stories give the impression of a free spirit who puts themselves out there & loves having fun. from '
+                'the inside, tho, u see urself as eclectic & unique rather than daring or carefree. u have a '
+                'strikingly refined sense of self, contradictions & all, leading u 2 see urself as an oddball who '
+                'doesnt quite fit in. dont worry, tho - this is often the trait others admire most abt u.',
+            ],
+        ],
+    ],
+}
 
 
 # quotes for music commands

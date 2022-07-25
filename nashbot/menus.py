@@ -19,7 +19,6 @@ def quiz_select_action(index):
     async def action(m, payload):
         question_no = m.current_page - 1
         if 0 <= question_no < len(m.questions) and index <= len(m.question_opts[question_no]):
-            print('passed')
             m.user_choices[question_no] = m.quiz[1][m.questions[question_no]][m.question_opts[question_no][index]]
     return action
 
@@ -58,14 +57,18 @@ class PSource(ListPageSource):
 
 class QuizSource(PSource):
     def __init__(self, name, description, questions, question_opts):
-        pages = [description, *question_opts, 'end']
+        pages = [BLANK + description + BLANK, *question_opts, 'end']
         foots = [False, *['(click the matching emoji to select an answer)' for q in questions], False]
         super().__init__(pages, wrap(name, 'grey_question'), heads=[False, *questions, False], foots=foots)
 
     async def format_page(self, m, to_display):
         print(f'formatting {to_display}')
         if to_display == 'end':
-            to_display = 'submit instructions TODO'
+            self.heads[m.current_page] = BLANK + f'{m.get_num_answered()}/{len(m.questions)} questions answered'
+            if m.is_quiz_completed():
+                to_display = 'click the stop emoji to submit ur answers & get ur result!' + BLANK
+            else:
+                to_display = 'ur gonna need 2 go back & answer all the questions u skipped b4 u can submit' + BLANK
         elif isinstance(to_display, list):
             to_display = BLANK + opt_list(to_display, emojis=emoji_sets['fruit'])
         return await super().format_page(m, to_display)
@@ -123,3 +126,25 @@ class QuizPages(Paginated):
         max_emojis = max([len(opt) for opt in self.question_opts])
         for i, e in enumerate(emoji_sets['fruit'][:max_emojis]):
             self.add_button(Button(emojize(e, language='alias'), quiz_select_action(i), position=Last(2 + i)))
+
+    def get_num_answered(self):
+        return len([u_choice for u_choice in self.user_choices if u_choice is not None])
+
+    def is_quiz_completed(self):
+        return self.get_num_answered() >= len(self.questions)
+
+    @button(STOP_EMOJI)
+    async def stop_pages(self, payload):
+        if self.is_quiz_completed():
+            res = self.results[6]
+            page = BLANK + res[2] + BLANK
+            await self.change_source(PSource([page], self.source.name, heads=BLANK + wrap(res[0], res[1])))
+        self.stop()
+
+    async def finalize(self, timed_out):
+        if self.is_quiz_completed():
+            foot = '(type "quiz TODO" to take this quiz again)'
+        else:
+            foot = f'(this embed has {"timed out" if timed_out else "been deactivated"})'
+        await self.change_source(PSource(self.source.entries, self.source.name, heads=self.source.heads, foots=foot))
+        active_menus.remove(self)

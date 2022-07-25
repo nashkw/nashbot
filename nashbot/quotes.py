@@ -1438,7 +1438,7 @@ quizzes = {
         [
             [
                 'cloudy',
-                ':cloud:',
+                'cloud',
                 'ur breezy & chill, floating thru life unbothered. u dont tend 2 get worked up abt things, which is '
                 'good cus if u did get worked up everyone knows things would get real manic real fast. u struggle '
                 'w/ finding motivation as u often feel tired & lethargic, & dont tend 2 feel strongly abt achieving '
@@ -1447,7 +1447,7 @@ quizzes = {
             ],
             [
                 'windy',
-                ':kite:',
+                'kite',
                 'brrrr gotta go fast, amirite? u feel the need 4 speed, smth which can b both a blessing & a curse. '
                 'it can b good 4 getting things done, but u can also move so fast u never fully finish anything. '
                 'it can be good 4 keeping urself moving thru difficult situations, but u can end up not giving '
@@ -1456,7 +1456,7 @@ quizzes = {
             ],
             [
                 'tornado',
-                ':cloud_with_tornado:',
+                'cloud_with_tornado',
                 'chaotic 2 the max, ur an unstoppable force of nature. ur constantly in motion, always vividly '
                 'focused on smth, whether thats a new media obsession, a project ur super invested in, or ur '
                 'current subject of emotional turmoil. u can become oblivious 2 ur surroundings - useful 4 '
@@ -1465,7 +1465,7 @@ quizzes = {
             ],
             [
                 'drizzle',
-                ':umbrella:',
+                'umbrella',
                 'ur life is a constant drip drip drip of sensation, emotion, & situations. its steady & almost '
                 'predictable, involving w/out becoming overwhelming, but sometimes excruciatingly mundane. u can '
                 'feel restless at times, itching to experience more & embrace the unknown. at others u can feel '
@@ -1474,7 +1474,7 @@ quizzes = {
             ],
             [
                 'rainstorm',
-                ':cloud_with_rain:',
+                'cloud_with_rain',
                 'u feel things deeply & strongly, a trait thats torturous 2 try & repress. bottling ur feelings '
                 'only ever ends in emotional volatility & the occasional explosion that hurts both u & those around u, '
                 'so try ur best 2 let it all flow out, even if its a difficult emotion 2 experience. u care a lot, '
@@ -1483,7 +1483,7 @@ quizzes = {
             ],
             [
                 'thunderstorm',
-                ':cloud_with_lightning:',
+                'cloud_with_lightning',
                 'intense & uncompromising, u express urself boldly & w/out restraint. ur quick to anger - fiercely '
                 'protective at ur best, but needlessly destructive at ur worst. wtever the situation, taking a step '
                 'back 2 make sure ur fury is rlly called 4 is never a bad idea. u have no problem defending urself '
@@ -1492,7 +1492,7 @@ quizzes = {
             ],
             [
                 'frosty',
-                ':snowflake:',
+                'snowflake',
                 'guarded & serene, u can come off as secretive & emotionless in turns. u dont always feel the need 2 '
                 'express ur opinions & thought processes, leading 2 a blank exterior that doesnt reflect ur rich inner '
                 'life. u become confused when ppl describe u as cold, as u struggle with how 2 process ur more intense '
@@ -1501,7 +1501,7 @@ quizzes = {
             ],
             [
                 'snowy',
-                ':snowman:',
+                'snowman',
                 'u have a feather light touch in everything u do, making u excellent at handling ppl w/ volatile '
                 'emotions while keeping ur own mental health out of harms way. on the other hand, ur compassion has a '
                 'fleeting quality 2 it that can lead ppl 2 think u dont feel things deeply, smth which can limit ur '
@@ -1510,7 +1510,7 @@ quizzes = {
             ],
             [
                 'blizzard',
-                ':cloud_snow:',
+                'cloud_snow',
                 'ur personality is complex & ever shifting, so its smth both u & those around u struggle 2 pin '
                 'down. u can feel like u dont rlly know urself, & u have problems understanding wt ur feeling & why ur '
                 'feeling it so strongly. this uncertainty can lead 2 an insecurity that makes u prone 2 isolating '
@@ -1519,7 +1519,7 @@ quizzes = {
             ],
             [
                 'temperate',
-                ':partly_sunny:',
+                'partly_sunny',
                 'ur mild-mannered & open-minded, well-liked by those around u & often described with words such as '
                 '"nice" or "sweet". sometimes, observing the vibrant & intense personalities around u, it can feel '
                 'like u urself r boring or unoriginal. dont let this discourage u or make u feel lesser, tho - theres '
@@ -1528,7 +1528,7 @@ quizzes = {
             ],
             [
                 'sunny',
-                ':sunny:',
+                'sunny',
                 'bright & enthusiastic, u have a warm, joyful presence. ur consciously upbeat, actively trying ur best '
                 'not 2 let circumstances bring u down, & often pulling it off so well ppl think ur optimism is '
                 'effortless. this can sometimes make it difficult 2 relate 2 u, as u can come off as simpleminded & '
@@ -1537,7 +1537,7 @@ quizzes = {
             ],
             [
                 'rainbow',
-                ':rainbow:',
+                'rainbow',
                 'ur a miracle!! or, at least, thats how ppl see u. ur actions often seem random & fantastical, & ur '
                 'stories give the impression of a free spirit who puts themselves out there & loves having fun. from '
                 'the inside, tho, u see urself as eclectic & unique rather than daring or carefree. u have a '

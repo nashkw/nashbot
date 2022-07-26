@@ -102,7 +102,9 @@ class Fun(Cog, name='fun'):
             raise errs.BadArg
 
     @command(name='quiz', aliases=['takequiz', 'doquiz', 'quizme'], brief='take one of the nashbot™ quizzes',
-             help='TODO')
+             help='take a nashbot™ quiz! ull get a random quiz if u dont specify anything, but u can pick a quiz by '
+                  'either its name or index (found via the quizlist cmd). u can also specify a type of quiz to get',
+             usage=['quiz', 'takequiz 2', 'doquiz weather personalities', 'quizme meme'])
     async def quiz(self, ctx, *, quiz=None):
         if quiz is None:
             quiz = choice(list(quotes.quizzes.keys()))
@@ -119,7 +121,7 @@ class Fun(Cog, name='fun'):
         await read.quiz(ctx, quiz)
 
     @command(name='quizlist', aliases=['quizzes', 'showquizzes'], brief='show all available nashbot™ quizzes',
-             help='show all available nashbot™ quizzes, their types, & their indexes 4 use in the quiz cmd')
+             help='show all available nashbot™ quizzes, their types, & their indexes (4 use in the quiz cmd)')
     async def quizlist(self, ctx):
         fill = resources.table_paginate(resources.get_quizzes(), 10, head=['index', 'quiz name', 'type'])
         await read.paginated(ctx, quotes.wrap('nashbot™ quizzical questions 4 fun & profit', 'brain'), fill)
@@ -127,9 +129,17 @@ class Fun(Cog, name='fun'):
     async def error_handling(self, ctx, error):
         if ctx.command == self.bot.get_command('kkjoke') and ctx.message.author.id in varz.frozen_users:
             varz.frozen_users.remove(ctx.message.author.id)
-        if isinstance(error, errs.BadArg):
+        elif isinstance(error, errs.FailedSearch):
+            if ctx.command == self.bot.get_command('quiz'):
+                await read.err(ctx, 'theres no quiz w/ that name srry, & thats not a quiz type either. a typo maybe??')
+            else:
+                return False
+        elif isinstance(error, errs.BadArg):
             if ctx.command == self.bot.get_command('skellygif'):
                 await read.err(ctx, 'uh... whaa? try "skellygif spam" if thats wt u were aiming 4. or just "skellygif"')
+            elif ctx.command == self.bot.get_command('quiz'):
+                await read.err(ctx, 'invalid index buddy. here, find the index w/ this list & try again')
+                await ctx.invoke(self.bot.get_command('quizlist'))
             else:
                 return False
         else:

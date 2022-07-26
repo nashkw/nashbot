@@ -112,6 +112,10 @@ class Fun(Cog, name='fun'):
                 quiz = resources.get_quizzes().pop(indexes.index(int(quiz)))[1]
             else:
                 raise errs.BadArg
+        elif quiz in [q[2] for q in resources.get_quizzes()]:
+            quiz = choice([q[1] for q in resources.get_quizzes() if q[2] == quiz])
+        elif quiz not in [q[1] for q in resources.get_quizzes()]:
+            raise errs.FailedSearch
         await read.quiz(ctx, quiz)
 
     @command(name='quizlist', aliases=['quizzes', 'showquizzes'], brief='show all available nashbot™ quizzes',

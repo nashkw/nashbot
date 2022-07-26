@@ -104,7 +104,7 @@ class Fun(Cog, name='fun'):
     @command(name='quiz', aliases=['takequiz', 'doquiz', 'quizme'], brief='take one of the nashbot™ quizzes',
              help='TODO')
     async def quiz(self, ctx):
-        await read.quiz(ctx, 'weather personalities')
+        await read.quiz(ctx, choice(list(quotes.quizzes.keys())))
 
     async def error_handling(self, ctx, error):
         if ctx.command == self.bot.get_command('kkjoke') and ctx.message.author.id in varz.frozen_users:

@@ -1351,7 +1351,8 @@ quizzes = {
     'weather personalities': [
         {
             'name': 'the "weather or not u have a personality" quiz',
-            'description': 'description TODO',
+            'description': 'find out which weather phenomenon matches ur personality...',
+            'type': 'legit',
             'max_result': 33,
             'emoji': 'white_sun_rain_cloud',
             'emoji_set': emoji_sets['fruit'],
@@ -1552,6 +1553,102 @@ quizzes = {
             ],
         ],
     ],
+    'uwu vibeomatic': [
+        {
+            'name': 'the marvellous mechanical UwU Vibe-O-Matic:tm:',
+            'description': 'find out which off-brand "uwu vibed" vague sound/phrase u r...',
+            'type': 'meme',
+            'max_result': 25,
+            'emoji': 'poop',
+            'emoji_set': emoji_sets['creatures_aquatic'],
+        },
+        {
+            'wt is ur weapon of choice?': {
+                'wolverine claws':                                                  [5, 0, 2, 0, 0, 0],
+                'disco balls that r secretly grenades (!!)':                        [0, 5, 0, 2, 0, 0],
+                'a baseball bat, lightly soaked in the blood of the bourgeoisie':   [0, 0, 5, 0, 0, 2],
+                'comically oversized boxing gloves':                                [0, 0, 0, 5, 2, 0],
+                'a vintage baguette':                                               [0, 2, 0, 0, 5, 0],
+                'i need no weapon. my wail can level cities':                       [2, 0, 0, 0, 0, 5],
+            },
+            'wt do u never leave the house w/out?': {
+                'suspiciously ripped wolf keychain':                            [5, 0, 0, 0, 0, 2],
+                'baggie of magic mushrooms':                                    [0, 5, 0, 0, 2, 0],
+                'fingerless gloves (2 show off the acrylics)':                  [2, 0, 5, 0, 0, 0],
+                'miniature trombone':                                           [0, 2, 0, 5, 0, 0],
+                'full coverage white face paint':                               [0, 0, 0, 2, 5, 0],
+                'at least 5 sharpies (not 4 sniffing why would u say that)':    [0, 0, 2, 0, 0, 5],
+            },
+            'choose ur headgear': {
+                'fluffy fox ears winter hat':                                   [5, 0, 0, 0, 0, 2],
+                'springy alien antenna headband':                               [0, 5, 0, 2, 0, 0],
+                'black balaclava (4 crime)':                                    [0, 0, 5, 0, 2, 0],
+                'extremely poor quality novelty jester hat (made in taiwan)':   [0, 2, 0, 5, 0, 0],
+                'vintage navy blue artisanal beret':                            [0, 0, 2, 0, 5, 0],
+                'a flower crown :)  ...yes its from claires':                   [2, 0, 0, 0, 0, 5],
+            },
+            'wt do u do in ur spare time?': {
+                'dig up receipts 2 back up my (correct) stance on the current reddit drama':        [5, 0, 2, 0, 0, 0],
+                'make fun necklaces out of my extensive "misc items w/ holes in" collection':       [0, 5, 0, 0, 0, 2],
+                'graffiti hot pink penises on police vehicles. srry not srry abt it #acab #bgdc':   [0, 2, 5, 0, 0, 0],
+                'quietly place innocuous balloon animals in formal public spaces':                  [0, 0, 0, 5, 2, 0],
+                'escape mysteriously placed invisible mazes. there r more than u might think...':   [0, 0, 0, 2, 5, 0],
+                'run a tragically underappreciated lyric-based fanfic blog on tumblr.com':          [2, 0, 0, 0, 0, 5],
+            },
+            'wt do u have in ur pocket?': {
+                'my- my pocket??? uhhh idk if thats an appropriate question man :S':        [5, 0, 0, 2, 0, 0],
+                'a crumpled page titled "how 2 save the turtles" i dont remember writing':  [0, 5, 0, 0, 2, 0],
+                'black carbon penknife decorated w/ cute paw-print sitckers':               [0, 0, 5, 0, 0, 2],
+                'my pocket is FILLED. to the BRIM. with CONFETTI.':                         [0, 2, 0, 5, 0, 0],
+                'a hole... ive been told my fav stripey sweater has seen better days :(':   [0, 0, 2, 0, 5, 0],
+                'my rubber wristband collection!! its always good 2 have options':          [2, 0, 0, 0, 0, 5],
+            },
+        },
+        [
+            [
+                'owo',
+                'flushed',
+                'ur a dedicated furry roleplayer. a veteran of the community, u either spend extreme amounts of '
+                'money on furry porn or draw it urself. peasants quiver with fear when they see how much karma ur '
+                'reddit account has. ur "owo" has been used 2 notice many a bulge ;)',
+            ],
+            [
+                'uwuga buuga',
+                'monkey',
+                'ur juat a grooOOovy rave enthusiast, man. u like 2 boogie & bungle, u like 2 wiggle & jiggle, u like '
+                '2 do the worm & drink slurm. u also rlly like munchin on them special brownies if that wasnt already '
+                'clear. u wear a lot of tie dye & probably live out ur van.',
+            ],
+            [
+                'nyaa~',
+                'smirk_cat',
+                'ur an anarcho-socialist catgirl. radical leftist policy just sounds so much better coming from a '
+                'cute & swag catgirl, & ur not gonna apologise 4 facts. every time u say "eat the rich" it becomes '
+                'less and less of a joke & ur not 100% sure how 2 feel abt that :/',
+            ],
+            [
+                'hon hon(k)',
+                'clown_face',
+                'ur a proud owner of clown shoes & ur not afraid 2 wear them. everywhere. uve been fired from 8 jobs '
+                '& counting but u like 2 think of this as just putting more clown rep out into the local community. '
+                'ur v brave, rlly. an activist. ur open top car has 12 seatbelts & a squeaky horn "just in case".',
+            ],
+            [
+                'oui ???',
+                'performing_arts',
+                'ur a... mime. ur just a mime. an honest 2 god 100% serious & authentic mime artist. wt r u doing '
+                'here?? how did u get here??? wt on gods green earth is happening???? all good questions u would '
+                'love 2 know the answers 2. ur currently v confused',
+            ],
+            [
+                'rawr xd',
+                'zany_face',
+                'ur a committed phan shipper, undeterred by any & all limitations whether they b social norms, healthy '
+                'relationship boundaries, or even basic human decency. 75% of ur wardrobe is some form of unethically '
+                'produced fan merch, the other 25% is from etsy. rawr means i love u in dinosaur.',
+            ],
+        ],
+    ]
 }
 
 

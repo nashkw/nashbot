@@ -2,7 +2,7 @@
 
 from discord import File
 from asyncio import sleep
-from nashbot.menus import *
+from nashbot.menus import Paginated, PSource, HelpPages, QuizPages
 from nashbot.quotes import wrap
 
 

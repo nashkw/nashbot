@@ -17,9 +17,9 @@ def show_page_action(index):
 
 def quiz_select_action(index):
     async def action(m, payload):
-        question_no = m.current_page - 1
-        if 0 <= question_no < len(m.questions) and index <= len(m.question_opts[question_no]):
-            m.user_choices[question_no] = m.quiz[1][m.questions[question_no]][m.question_opts[question_no][index]]
+        q_num = m.current_page - 1
+        if 0 <= q_num < len(m.questions) and index <= len(m.question_opts[q_num]):
+            m.user_choices[q_num] = m.opts_meanings[q_num][index]
     return action
 
 
@@ -59,6 +59,7 @@ class PSource(ListPageSource):
 
 class QuizSource(PSource):
     def __init__(self, info, questions, question_opts):
+        self.emojis = info['emoji_set']
         pages = [BLANK + info['description'] + BLANK, *question_opts, 'end']
         foots = [False, *['(click the matching emoji to select an answer)' for q in questions], False]
         heads = [False, *[BLANK + q for q in questions], False]
@@ -72,7 +73,7 @@ class QuizSource(PSource):
             else:
                 to_display = 'ur gonna need 2 go back & answer all the questions u skipped b4 u can submit' + BLANK
         elif isinstance(to_display, list):
-            to_display = BLANK + opt_list(to_display, emojis=emoji_sets['fruit'])
+            to_display = BLANK + opt_list(to_display, emojis=self.emojis)
         return await super().format_page(m, to_display)
 
 
@@ -110,19 +111,20 @@ class HelpPages(Paginated, inherit_buttons=False):
 
 class QuizPages(Paginated):
     def __init__(self, quiz_name, **kwargs):
-        self.quiz = quizzes[quiz_name]
-        self.info = self.quiz[0]
+        self.info = quizzes[quiz_name][0]
         self.info['shortname'] = quiz_name
-        self.questions = list(self.quiz[1].keys())
+        self.questions = list(quizzes[quiz_name][1].keys())
         shuffle(self.questions)
-        self.results = self.quiz[2]
+        self.results = quizzes[quiz_name][2]
 
         self.question_opts = []
+        self.opts_meanings = []
         self.user_choices = []
         for q in self.questions:
-            opts = list(self.quiz[1][q].keys())
+            opts = list(quizzes[quiz_name][1][q].keys())
             shuffle(opts)
             self.question_opts.append(opts)
+            self.opts_meanings.append([quizzes[quiz_name][1][q][opt] for opt in opts])
             self.user_choices.append(None)
 
         super().__init__(QuizSource(self.info, self.questions, self.question_opts), **kwargs)
@@ -136,19 +138,18 @@ class QuizPages(Paginated):
     def is_quiz_completed(self):
         return self.get_num_answered() >= len(self.questions)
 
-    def calculate_result(self):
+    def get_result(self):
         tally = sorted(zip([sum(x) for x in zip(*self.user_choices)], self.results), reverse=True)
-        result = tally[0][1]
         table = get_table([[res[1][0], f'{round(100 * res[0]/self.info["max_result"])}%'] for res in tally])
-        return result, table
+        result = tally[0][1]
+        e = Embed(title=wrap(f"{self.ctx.author.name}'s {self.info['shortname']} quiz results", self.info['emoji']))
+        e.add_field(name=BLANK + 'match percentages:', value=table + BLANK)
+        e.add_field(name=BLANK + wrap(result[0], result[1]), value=BLANK + result[2] + BLANK)
+        e.set_footer(text=f'(type "quiz {self.info["shortname"]}" if ud like 2 take this quiz again)')
+        return e
 
     @button(STOP_EMOJI)
     async def stop_pages(self, payload):
         if self.is_quiz_completed():
-            res, table = self.calculate_result()
-            e = Embed(title=wrap(f"{self.ctx.author.name}'s {self.info['shortname']} quiz results", self.info['emoji']))
-            e.add_field(name=BLANK + 'match percentages:', value=table)
-            e.add_field(name=BLANK + wrap(res[0], res[1]), value=BLANK + res[2] + BLANK)
-            e.set_footer(text='(type "quiz TODO" if u wanna take this quiz again)')
-            await self.change_source(PSource([e], self.source.name))
+            await self.change_source(PSource([self.get_result()], self.source.name))
         self.stop()

@@ -19,7 +19,10 @@ def quiz_select_action(index):
     async def action(m, payload):
         q_num = m.current_page - 1
         if 0 <= q_num < len(m.questions) and index <= len(m.question_opts[q_num]):
-            m.user_choices[q_num] = m.opts_meanings[q_num][index]
+            if m.user_choices[q_num] == m.opts_meanings[q_num][index]:
+                m.user_choices[q_num] = None
+            else:
+                m.user_choices[q_num] = m.opts_meanings[q_num][index]
             await m.show_current_page()
     return action
 

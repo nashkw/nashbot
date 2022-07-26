@@ -1592,7 +1592,7 @@ quizzes = {
                 'make fun necklaces out of my extensive "misc items w/ holes in" collection':       [0, 5, 0, 0, 0, 2],
                 'graffiti hot pink penises on police vehicles. srry not srry abt it #acab #bgdc':   [0, 2, 5, 0, 0, 0],
                 'quietly place innocuous balloon animals in formal public spaces':                  [0, 0, 0, 5, 2, 0],
-                'escape mysteriously placed invisible mazes. there r more than u might think...':   [0, 0, 0, 2, 5, 0],
+                'escape mysteriously placed invisible walls. there r more than u might think...':   [0, 0, 0, 2, 5, 0],
                 'run a tragically underappreciated lyric-based fanfic blog on tumblr.com':          [2, 0, 0, 0, 0, 5],
             },
             'wt do u have in ur pocket?': {
@@ -1608,7 +1608,7 @@ quizzes = {
             [
                 'owo',
                 'flushed',
-                'ur a dedicated furry roleplayer. a veteran of the community, u either spend extreme amounts of '
+                'ur a dedicated furry roleplayer. a veteran of the community, u either spend exorbitant amounts of '
                 'money on furry porn or draw it urself. peasants quiver with fear when they see how much karma ur '
                 'reddit account has. ur "owo" has been used 2 notice many a bulge ;)',
             ],

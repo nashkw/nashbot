@@ -20,6 +20,7 @@ def quiz_select_action(index):
         q_num = m.current_page - 1
         if 0 <= q_num < len(m.questions) and index <= len(m.question_opts[q_num]):
             m.user_choices[q_num] = m.opts_meanings[q_num][index]
+            await m.show_current_page()
     return action
 
 
@@ -73,6 +74,11 @@ class QuizSource(PSource):
             else:
                 to_display = 'ur gonna need 2 go back & answer all the questions u skipped b4 u can submit' + BLANK
         elif isinstance(to_display, list):
+            q_num = m.current_page - 1
+            if m.user_choices[q_num]:
+                i = m.opts_meanings[q_num].index(m.user_choices[q_num])
+                to_display = to_display.copy()
+                to_display[i] = f'**{to_display[i]}**'
             to_display = BLANK + opt_list(to_display, emojis=self.emojis)
         return await super().format_page(m, to_display)
 

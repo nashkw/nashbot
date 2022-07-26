@@ -103,14 +103,22 @@ class Fun(Cog, name='fun'):
 
     @command(name='quiz', aliases=['takequiz', 'doquiz', 'quizme'], brief='take one of the nashbot™ quizzes',
              help='TODO')
-    async def quiz(self, ctx):
-        await read.quiz(ctx, choice(list(quotes.quizzes.keys())))
+    async def quiz(self, ctx, *, quiz=None):
+        if quiz is None:
+            quiz = choice(list(quotes.quizzes.keys()))
+        elif quiz.isdigit():
+            indexes = [q[0] for q in resources.get_quizzes()]
+            if int(quiz) in indexes:
+                quiz = resources.get_quizzes().pop(indexes.index(int(quiz)))[1]
+            else:
+                raise errs.BadArg
+        await read.quiz(ctx, quiz)
 
-    @command(name='quizlist', aliases=['quizzes', 'showquizzes'], brief='show the available quizzes',
-             help='show all available quizzes, their types, & their indexes 4 use in the quiz cmd')
+    @command(name='quizlist', aliases=['quizzes', 'showquizzes'], brief='show all available nashbot™ quizzes',
+             help='show all available nashbot™ quizzes, their types, & their indexes 4 use in the quiz cmd')
     async def quizlist(self, ctx):
         fill = resources.table_paginate(resources.get_quizzes(), 10, head=['index', 'quiz name', 'type'])
-        await read.paginated(ctx, quotes.wrap('quizzical questions 4 fun & profit', 'brain'), fill)
+        await read.paginated(ctx, quotes.wrap('nashbot™ quizzical questions 4 fun & profit', 'brain'), fill)
 
     async def error_handling(self, ctx, error):
         if ctx.command == self.bot.get_command('kkjoke') and ctx.message.author.id in varz.frozen_users:

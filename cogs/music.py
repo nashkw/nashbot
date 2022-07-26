@@ -190,7 +190,7 @@ class Music(Cog, name='music'):
         await read.paginated(ctx, quotes.wrap('music queue', 'musical_note'), fill, heads=np, foots=foot)
 
     @command(name='shownash', aliases=['nshow'], brief='show the available local music albums', hidden=True,
-             help='show all avaliable local music albums & their indexes 4 use in the nplay cmd')
+             help='show all available local music albums & their indexes 4 use in the nplay cmd')
     @is_owner()
     async def shownash(self, ctx):
         fill = resources.table_paginate(resources.get_albums(), 10)

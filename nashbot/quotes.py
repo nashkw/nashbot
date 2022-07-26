@@ -16,6 +16,7 @@ def get_table(blist, head=None, block=True, trunc=False):
         alignments=[Alignment.LEFT] * len(blist[0]),
         style=PresetStyle.thin_compact_rounded,
         first_col_heading=True,
+        last_col_heading=True,
     )
     return f'```\n' + table + '\n```' if block else table
 

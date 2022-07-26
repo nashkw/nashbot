@@ -106,6 +106,12 @@ class Fun(Cog, name='fun'):
     async def quiz(self, ctx):
         await read.quiz(ctx, choice(list(quotes.quizzes.keys())))
 
+    @command(name='quizlist', aliases=['quizzes', 'showquizzes'], brief='show the available quizzes',
+             help='show all available quizzes, their types, & their indexes 4 use in the quiz cmd')
+    async def quizlist(self, ctx):
+        fill = resources.table_paginate(resources.get_quizzes(), 10, head=['index', 'quiz name', 'type'])
+        await read.paginated(ctx, quotes.wrap('quizzical questions 4 fun & profit', 'brain'), fill)
+
     async def error_handling(self, ctx, error):
         if ctx.command == self.bot.get_command('kkjoke') and ctx.message.author.id in varz.frozen_users:
             varz.frozen_users.remove(ctx.message.author.id)

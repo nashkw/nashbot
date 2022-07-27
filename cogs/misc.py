@@ -3,7 +3,7 @@
 
 from emoji import emojize
 from random import choice, randint
-from nashbot import errs, quotes, read, varz
+from nashbot import errs, quotes, read, varz, resources
 from discord import Embed, HTTPException
 from discord.ext.commands import command, Cog, MissingRequiredArgument
 
@@ -33,13 +33,23 @@ class Misc(Cog, name='misc'):
             raise errs.BadArg
         await read.official(ctx, f'{result[0]} to get...　**{result[1]}**', 'game_die')
 
+    @command(name='randopt', aliases=['tiebreak', 'pick'], brief='ask the bot to pick from a list of possible choices',
+             help='ask the bot 2 randomly select from a given list of options. b careful 2 separate the options list '
+                  'w/ commas otherwise options will end up merged w/ each other. if instead of a list u specify smth '
+                  'along the lines of "anyone" or "this channel" the options will b the members in the current channel',
+             usage=['randopt 1,2,3,4', 'tiebreak no mans sky, mc, guild wars, dst', 'pick anyone'])
+    async def randopt(self, ctx, *, opts: str):
+        await read.official(ctx, f'the bot has picked...　**{choice(resources.parse_opts(ctx, opts))}**', 'game_die')
+
     @command(name='vote', aliases=['poll', 'survey', 'callvote'], brief='set up a vote with a list of possible choices',
              help='set up a vote on a subject of ur choice, listing all the possible options to vote on. b careful 2 '
                   'enclose the subject in quotes if its more than 1 word otheriwse itll get confused w/ the options '
-                  'list. b careful 2 separate the options list with commas otherwise it wont b recognised',
-             usage=['vote proceed? yes, no', "poll 'when yall free?' wed,thurs,fri", 'survey "wt game??" dst, mc, l4d'])
+                  'list. b careful 2 separate the options list w/ commas otherwise options will end up merged w/ each '
+                  'other. if instead of a list u specify smth along the lines of "anyone" or "this channel" the '
+                  'options will b the members in the current channel',
+             usage=['vote proceed? yes, no', 'poll "when yall free?" wed,thurs,fri', 'survey "team captain" anyone'])
     async def vote(self, ctx, subject: str, *, opts: str):
-        opts = opts.replace(', ', ',').split(',')
+        opts = resources.parse_opts(ctx, opts)
         valid_sets = [eset for eset in quotes.emoji_sets.values() if len(eset) >= len(opts)]
         if valid_sets and len(opts) <= 20:
             emojis = choice(valid_sets)
@@ -66,6 +76,8 @@ class Misc(Cog, name='misc'):
         elif isinstance(error, MissingRequiredArgument):
             if ctx.command == self.bot.get_command('random'):
                 await read.err(ctx, '2 use this cmd u gotta give the range 2 choose from or the type of dice or smth')
+            elif ctx.command == self.bot.get_command('randopt'):
+                await read.err(ctx, '2 use this cmd u gotta give a comma seperated list of options my buddy my pal')
             elif ctx.command == self.bot.get_command('vote'):
                 await read.err(ctx, '2 use this cmd u gotta give the subject & then a comma seperated list of options')
             else:

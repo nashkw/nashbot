@@ -4,7 +4,7 @@
 from random import choice
 from nashbot.errs import NoVClient, BadArg, FailedSearch
 from nashbot.varz import ALBUMS_PATH
-from nashbot.quotes import get_table, quizzes
+from nashbot.quotes import get_table, quizzes, everyone_names
 from discord.ext.commands import check
 
 
@@ -48,6 +48,14 @@ def get_quiz_name(quiz, return_list=False):
             if quiz not in [q[1] for q in get_quizzes()]:
                 raise FailedSearch(message=f'quiz named "{quiz}", & thats not a quiz type either')
     return [quiz, ] if return_list and not isinstance(quiz, list) else quiz
+
+
+def parse_opts(ctx, opts):
+    if opts in everyone_names:
+        opts = [member.name for member in ctx.channel.members]
+    else:
+        opts = opts.replace(', ', ',').split(',')
+    return opts
 
 
 def clean_msg(m):

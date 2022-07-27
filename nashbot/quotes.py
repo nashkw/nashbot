@@ -185,13 +185,22 @@ bot_names = [
 ]
 
 everyone_names = [
-    'everyone',
-    'all',
     'here',
+    '@here',
+    'everyone',
+    '@everyone',
+    'everyone here',
+    'all',
+    'users',
+    'all users',
+    'members',
+    'all members',
     'everything',
     'channel',
     'this',
+    'this channel',
     'anything',
+    'anyone',
     'it all',
     'all this',
 ]

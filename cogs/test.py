@@ -48,14 +48,29 @@ class Test(Cog, name='test'):
         await read.quote(ctx, f"```unaltered: {m}\nlist of characters: {list(m)}```")
 
     @command(name='quizresult', aliases=['quizres', 'quizzed'], brief='test a quiz result', hidden=True,
-             help='TODO',
-             usage=['TODO'])
+             help='generate the result to a given quiz (quiz can b specified in all the same ways as it can b in the '
+                  'quiz cmd - namely by name, index, or type. if ur specification is more than 1 word remember 2 '
+                  'enclose it in quotes otherwise itll get confused w/ ur target result). if u dont specify which '
+                  'result u want all percentages will b randomly generated, but u can specify a target result by '
+                  'either index or name (u can check these via the quizresults cmd).',
+             usage=['quizresult weather', 'quizres meme', 'quizzed "mushroom soulmate" 3', 'quizresult uwu rawr xd'])
     @is_owner()
     async def quizresult(self, ctx, quiz: str, *, result=None):
         quiz = resources.get_quiz_name(quiz)
         menu = menus.QuizPages(quiz, clear_reactions_after=True)
         menu.ctx = ctx
-        tally = [[randint(0, menu.info['max_result']), res] for res in menu.results]
+        tally = [[randint(0, menu.info['max_result'] - 1), res] for res in menu.results]
+        if result is not None:
+            if result.isdigit():
+                result = int(result) - 1
+            elif result in [res[0] for res in menu.results]:
+                result = [res[0] for res in menu.results].index(result)
+            else:
+                raise errs.FailedSearch
+            if 0 <= result < len(menu.results):
+                tally[result] = [menu.info['max_result'], tally[result][1]]
+            else:
+                raise errs.BadArg
         await read.embed(ctx, menu.get_result(tally))
 
     async def error_handling(self, ctx, error):

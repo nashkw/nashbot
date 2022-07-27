@@ -1,7 +1,7 @@
 # resources.py
 
 
-from nashbot.errs import *
+from nashbot.errs import NoVClient
 from nashbot.varz import ALBUMS_PATH
 from nashbot.quotes import get_table, quizzes
 from discord.ext.commands import check

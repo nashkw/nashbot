@@ -5,7 +5,7 @@ from random import shuffle
 from discord import Embed
 from emoji.core import emojize
 from nashbot.varz import active_menus, STOP_EMOJI, BLANK
-from nashbot.quotes import quizzes, opt_list, wrap, emoji_sets, get_table
+from nashbot.quotes import quizzes, opt_list, wrap, get_table
 from discord.ext.menus import MenuPages, Button, button, ListPageSource, Position, Last
 
 
@@ -149,7 +149,7 @@ class QuizPages(Paginated):
 
     def get_result(self):
         tally = sorted(zip([sum(x) for x in zip(*self.user_choices)], self.results), reverse=True)
-        table = get_table([[res[1][0], f'{round(100 * res[0]/self.info["max_result"])}%'] for res in tally])
+        table = get_table([[r[1][0], f'{round(100 * r[0]/self.info["max_result"])}%'] for r in tally], bords=False)
         result = tally[0][1]
         e = Embed(title=wrap(f"{self.ctx.author.name}'s {self.info['shortname']} quiz results", self.info['emoji']))
         e.add_field(name=BLANK + 'match percentages:', value=table + BLANK)

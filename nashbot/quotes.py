@@ -7,16 +7,16 @@ from nashbot.varz import BLANK
 
 # helper functions
 
-def get_table(blist, head=None, block=True, trunc=False):
+def get_table(blist, head=None, block=True, trunc=False, bords=True):
     if trunc:
         blist = [[item[0], item[1][:47] + '...'] if len(item[1]) > 50 else item for item in blist]
     table = table2ascii(
         header=head,
         body=blist,
         alignments=[Alignment.LEFT] * len(blist[0]),
-        style=PresetStyle.thin_compact_rounded,
-        first_col_heading=True,
-        last_col_heading=True,
+        style=PresetStyle.thin_compact_rounded if bords else PresetStyle.borderless,
+        first_col_heading=bords,
+        last_col_heading=bords,
     )
     return f'```\n' + table + '\n```' if block else table
 
@@ -296,18 +296,18 @@ emoji_sets = {
         ':snake:',
         ':butterfly:',
         ':snail:',
-        ':spider_web:',
-        ':worm:',
         ':fly:',
-        ':beetle:',
-        ':bug:',
+        ':worm:',
         ':cricket:',
         ':lady_beetle:',
+        ':bug:',
         ':mosquito:',
         ':lizard:',
         ':cockroach:',
         ':bat:',
         ':scorpion:',
+        ':spider_web:',
+        ':beetle:',
     ],
     'creatures_aquatic': [
         ':squid:',
@@ -1560,7 +1560,7 @@ quizzes = {
             'description': 'find out which off-brand "uwu vibed" vague sound/phrase u r...',
             'type': 'meme',
             'max_result': 25,
-            'emoji': 'poop',
+            'emoji': 'flushed',
             'emoji_set': emoji_sets['creatures_aquatic'],
         },
         {
@@ -1608,7 +1608,7 @@ quizzes = {
         [
             [
                 'owo',
-                'flushed',
+                'wolf',
                 'ur a dedicated furry roleplayer. a veteran of the community, u either spend exorbitant amounts of '
                 'money on furry porn or draw it urself. peasants quiver with fear when they see how much karma ur '
                 'reddit account has. ur "owo" has been used 2 notice many a bulge ;)',
@@ -1649,7 +1649,121 @@ quizzes = {
                 'produced fan merch, the other 25% is from etsy. rawr means i love u in dinosaur.',
             ],
         ],
-    ]
+    ],
+    'mushroom soulmate': [
+        {
+            'name': 'MMS© (Mycelium Matchmaking Service)',
+            'description': 'find out which mushroom species could b ur 1 true love...',
+            'type': 'legit',
+            'max_result': 25,
+            'emoji': 'heart_exclamation',
+            'emoji_set': emoji_sets['creatures'],
+        },
+        {
+            'wts on u & ur partners bedside table?': {
+                'an ashtray sitting on top a mess of leaflets with alarming covers':        [5, 0, 0, 0, 0, 2],
+                'a red silk blindfold & a pair of black leather handcuffs':                 [0, 5, 0, 2, 0, 0],
+                'a box of chocolates & a sweet-smelling bouquet of fresh flowers':          [0, 0, 5, 0, 2, 0],
+                'a stack of non-fiction books & a high end silver laptop':                  [2, 0, 0, 5, 0, 0],
+                'half-finished poetry & 2 tickets 4 a flight 2 the french countryside':     [0, 0, 2, 0, 5, 0],
+                'some crumpled receipts, 2 leopard print gloves, & a half-eaten muffin':    [0, 2, 0, 0, 0, 5],
+            },
+            'wt is ur ideal date?': {
+                'vandalising that 1 statue u always hated then running from the authorities':   [5, 0, 0, 0, 0, 2],
+                'trip 2 the aquarium where things get steamy behind the lionfish tank':         [2, 5, 0, 0, 0, 0],
+                'picnic in a gazebo where u share baked goods & hold hands':                    [0, 0, 5, 0, 2, 0],
+                'cheese tasting event where u passionately debate literature':                  [0, 2, 0, 5, 0, 0],
+                'long walk in the countryside spent confessing dreams & sharing secrets':       [0, 0, 0, 2, 5, 0],
+                'playing xbox on ur couch, sharing a blunt, & ordering pineapple pizza':        [0, 0, 2, 0, 0, 5],
+            },
+            'which would u rather ur partner b?': {
+                'rebellious':   [5, 0, 0, 0, 0, 2],
+                'sexy':         [2, 5, 0, 0, 0, 0],
+                'loving':       [0, 2, 5, 0, 0, 0],
+                'cultured':     [0, 0, 0, 5, 2, 0],
+                'famous':       [0, 0, 0, 2, 5, 0],
+                'goofy':        [0, 0, 2, 0, 0, 5],
+            },
+            'if u had 2 pick 1, which would u rather ur partner b?': {
+                'unkind':       [5, 0, 0, 0, 0, 2],
+                'shameless':    [2, 5, 0, 0, 0, 0],
+                'naive':        [0, 0, 5, 2, 0, 0],
+                'snobby':       [0, 0, 0, 5, 2, 0],
+                'out of touch': [0, 0, 2, 0, 5, 0],
+                'trashy':       [0, 2, 0, 0, 0, 5],
+            },
+            'wt kind of partner r u?': {
+                'adventurous':  [5, 0, 0, 0, 0, 2],
+                'erotic':       [0, 5, 0, 2, 0, 0],
+                'devoted':      [2, 0, 5, 0, 0, 0],
+                'passionate':   [0, 2, 0, 5, 0, 0],
+                'genuine':      [0, 0, 2, 0, 5, 0],
+                'chill':        [0, 0, 0, 0, 2, 5],
+            },
+        },
+        [
+            [
+                'hydnellum peckii',
+                'tooth',
+                'this mushroom is known as the "bleeding tooth fungus" due 2 a horrible condition they suffered as '
+                'a child that caused their skin to constantly bleed small, bright red droplets that would burst '
+                'when touched. this condition has left them physically weak, unnaturally pale, & has left their skin '
+                'hanging off in soft white spikes. its also left them angry & restless, an impulsive risk taker who '
+                'delights in bucking the norm & making waves. theyre often described as feral, but their actions have '
+                'always been more calculated than that. their likes include cognitive science, tattoos, & parkour.',
+            ],
+            [
+                'clathrus archeri',
+                'japanese_ogre',
+                'also known as the "octopus stinkhorn", this mushroom has an affinity 4 the aquatic & wanted 2 start '
+                'a starfish sanctuary when he was growing up. he found his true calling elsewhere tho, quickly '
+                'acquiring the nickname "devils fingers" in certain circles ;) ...no rlly his fingers r long & red & '
+                'covered in a thin ink-black slime layer containing spores. oh & he smells like rotting flesh. '
+                '...what?? ud b surprised how many ppl r into that. dont knock it until u try it, srsly, no ones ever '
+                'walked away disappointed. his likes include gothic architecture, scuba diving, & bdsm',
+            ],
+            [
+                'phallus indusiatus',
+                'woman_with_veil',
+                'though her real name is "bamboo pith", most call this mushroom the "veiled lady". she has a warm, '
+                'bubbly personality & is quick to open her heart - a trait which has led to no less than 3 serious '
+                'engagements despite her young age. unfortunately, shes also been left at the altar (or near enough 2 '
+                'it) every single time. shes tried 2 bounce back from this, but the latest engagement especially has '
+                'left her insecure & wondering if she will ever find someone wholl truly love her back. her likes '
+                'include cheesecake, floral arrangement, & playing the clarinet.',
+            ],
+            [
+                'podoscypha petalodes',
+                'wine_glass',
+                'in her youth she was known as the "rosette fungus" in reference 2 her prolific career as an artisan '
+                'chef, but now that shes getting on in years shes more commonly known as the "wine glass fungus". '
+                'living all alone in her carefully curated villa, she can come off as snooty & aloof even though under '
+                'her tough leathery exterior she yearns 4 a simple, carnal love 2 reignite her passions. shes insecure '
+                'abt her age & hopes that her best years arent already behind her. her likes include french cheeses, '
+                'erotic sculpture, & quiet evenings spent w/ a good vintage & an interesting book.',
+            ],
+            [
+                'amanita muscaria',
+                'mushroom',
+                'born into the prestigious amanita family, this "fly agaric" mushroom has been famous since b4 they '
+                'can remember. the public face of their modelling agency, theyre picture perfect: a white stipe topped '
+                'by a red cap with white spots. behind the scenes tho, theyre deeply unhappy. their family is actually '
+                'extremely toxic, producing amatoxin which is known 2 cause liver failure. they feel trapped in the '
+                'limelight & privately dream of running away 2 live a simple life somewhere no one will recognise '
+                'them. their likes include épée fencing, lyric poetry, & courtroom dramas.',
+            ],
+            [
+                'favolaschia calocera',
+                'ping_pong',
+                'also known as the "orange ping-pong bat", this mushroom is fun-loving & not just a little bit trashy. '
+                'ur neighbours mothers friend jessica met him on a trip 2 madagascar & hed moved in w/in the week, '
+                'then moved out w/in the month. since then hes been bouncing around other ppls places, spreading so '
+                'rapidly hes now considered an invasive species :( hes acquired the nickname of "orange pore fungus" '
+                '4 reasons that become obvious when u meet him, but hes proudly anti-personal hygiene & would love 2 '
+                'talk at length on the subject w/ u. his likes include orange soda, console games, & vaping.',
+            ],
+        ],
+    ],
 }
 
 

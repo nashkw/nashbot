@@ -107,22 +107,7 @@ class Fun(Cog, name='fun'):
                   'select a quiz from (again, check the quizlist cmd to find options)',
              usage=['quiz', 'takequiz 2', 'doquiz uwu', 'quizme uwu vibeomatic', 'quiz meme'])
     async def quiz(self, ctx, *, quiz=None):
-        if quiz is None:
-            quiz = choice(resources.get_quizzes())[1]
-        elif quiz.isdigit():
-            indexes = [q[0] for q in resources.get_quizzes()]
-            if int(quiz) in indexes:
-                quiz = resources.get_quizzes().pop(indexes.index(int(quiz)))[1]
-            else:
-                raise errs.BadArg
-        else:
-            for attr in ['type', 'name', 'nickname']:
-                if quiz in [q[2][attr] for q in resources.get_quizzes()]:
-                    quiz = choice([q[1] for q in resources.get_quizzes() if q[2][attr] == quiz])
-                    break
-            else:
-                if quiz not in [q[1] for q in resources.get_quizzes()]:
-                    raise errs.FailedSearch
+        quiz = choice(resources.get_quizzes())[1] if quiz is None else resources.get_quiz_name(quiz)
         await read.quiz(ctx, quiz)
 
     @command(name='quizlist', aliases=['quizzes', 'showquizzes'], brief='show all available nashbot™ quizzes',

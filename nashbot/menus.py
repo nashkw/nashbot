@@ -87,14 +87,11 @@ class QuizSource(PSource):
 
 
 class Paginated(MenuPages):
-    def __init__(self, source, **kwargs):
-        if source.is_paginating():
-            active_menus.append(self)
-        super().__init__(source, **kwargs)
 
-    @button(STOP_EMOJI)
-    async def stop_pages(self, payload):
-        self.stop()
+    async def start(self, ctx, **kwargs):
+        if self.source.is_paginating():
+            active_menus.append(self)
+        await super().start(ctx, **kwargs)
 
     def reaction_check(self, payload):
         if payload.user_id == self.bot.user.id and payload.event_type == 'REACTION_REMOVE':
@@ -105,6 +102,10 @@ class Paginated(MenuPages):
         foot = f'(this embed has {"timed out" if timed_out else "been deactivated"})'
         await self.change_source(PSource(self.source.entries, self.source.name, heads=self.source.heads, foots=foot))
         active_menus.remove(self)
+
+    @button(STOP_EMOJI)
+    async def stop_pages(self, payload):
+        self.stop()
 
 
 class HelpPages(Paginated, inherit_buttons=False):
@@ -147,8 +148,10 @@ class QuizPages(Paginated):
     def is_quiz_completed(self):
         return self.get_num_answered() >= len(self.questions)
 
-    def get_result(self):
-        tally = sorted(zip([sum(x) for x in zip(*self.user_choices)], self.results), reverse=True)
+    def get_result(self, tally=None):
+        if tally is None:
+            tally = zip([sum(x) for x in zip(*self.user_choices)], self.results)
+        tally = sorted(tally, reverse=True)
         table = get_table([[r[1][0], f'{round(100 * r[0]/self.info["max_result"])}%'] for r in tally], bords=False)
         result = tally[0][1]
         e = Embed(title=wrap(f"{self.ctx.author.name}'s {self.info['shortname']} quiz results", self.info['emoji']))

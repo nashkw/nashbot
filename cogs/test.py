@@ -2,8 +2,9 @@
 
 
 from emoji import emojize
+from random import randint
 from discord import Embed, HTTPException
-from nashbot import errs, quotes, read
+from nashbot import errs, quotes, read, resources, menus
 from discord.ext.commands import is_owner, command, MissingRequiredArgument, Cog
 
 
@@ -45,6 +46,17 @@ class Test(Cog, name='test'):
     @is_owner()
     async def msgtruth(self, ctx, *, m: str):
         await read.quote(ctx, f"```unaltered: {m}\nlist of characters: {list(m)}```")
+
+    @command(name='quizresult', aliases=['quizres', 'quizzed'], brief='test a quiz result', hidden=True,
+             help='TODO',
+             usage=['TODO'])
+    @is_owner()
+    async def quizresult(self, ctx, quiz: str, *, result=None):
+        quiz = resources.get_quiz_name(quiz)
+        menu = menus.QuizPages(quiz, clear_reactions_after=True)
+        menu.ctx = ctx
+        tally = [[randint(0, menu.info['max_result']), res] for res in menu.results]
+        await read.embed(ctx, menu.get_result(tally))
 
     async def error_handling(self, ctx, error):
         if isinstance(error, errs.FailedSearch):

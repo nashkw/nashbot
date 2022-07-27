@@ -1,7 +1,8 @@
 # resources.py
 
 
-from nashbot.errs import NoVClient
+from random import choice
+from nashbot.errs import NoVClient, BadArg, FailedSearch
 from nashbot.varz import ALBUMS_PATH
 from nashbot.quotes import get_table, quizzes
 from discord.ext.commands import check
@@ -28,6 +29,24 @@ def get_albums():
 
 def get_quizzes(simple=False):
     return [[i+1, k, quizzes[k][0]['type'] if simple else quizzes[k][0]] for i, k in enumerate(sorted(quizzes.keys()))]
+
+
+def get_quiz_name(quiz):
+    if quiz.isdigit():
+        indexes = [q[0] for q in get_quizzes()]
+        if int(quiz) in indexes:
+            quiz = get_quizzes().pop(indexes.index(int(quiz)))[1]
+        else:
+            raise BadArg
+    else:
+        for attr in ['type', 'name', 'nickname']:
+            if quiz in [q[2][attr] for q in get_quizzes()]:
+                quiz = choice([q[1] for q in get_quizzes() if q[2][attr] == quiz])
+                break
+        else:
+            if quiz not in [q[1] for q in get_quizzes()]:
+                raise FailedSearch
+    return quiz
 
 
 def clean_msg(m):

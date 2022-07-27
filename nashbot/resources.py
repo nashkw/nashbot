@@ -26,8 +26,8 @@ def get_albums():
     return [[i + 1, album.stem] for i, album in enumerate(albums)]
 
 
-def get_quizzes():
-    return [[i+1, k, quizzes[k][0]['type']] for i, k in enumerate(sorted(quizzes.keys(), key=lambda k:k.lower()))]
+def get_quizzes(simple=False):
+    return [[i+1, k, quizzes[k][0]['type'] if simple else quizzes[k][0]] for i, k in enumerate(sorted(quizzes.keys()))]
 
 
 def clean_msg(m):

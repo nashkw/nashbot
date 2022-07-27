@@ -103,27 +103,32 @@ class Fun(Cog, name='fun'):
 
     @command(name='quiz', aliases=['takequiz', 'doquiz', 'quizme'], brief='take one of the nashbot™ quizzes',
              help='take a nashbot™ quiz! ull get a random quiz if u dont specify anything, but u can pick a quiz by '
-                  'either its name or index (found via the quizlist cmd). u can also specify a type of quiz to get',
-             usage=['quiz', 'takequiz 2', 'doquiz weather personalities', 'quizme meme'])
+                  'either its name or index (found via the quizlist cmd). u can also specify a quiz type to randomly '
+                  'select a quiz from (again, check the quizlist cmd to find options)',
+             usage=['quiz', 'takequiz 2', 'doquiz uwu', 'quizme uwu vibeomatic', 'quiz meme'])
     async def quiz(self, ctx, *, quiz=None):
         if quiz is None:
-            quiz = choice(list(quotes.quizzes.keys()))
+            quiz = choice(resources.get_quizzes())[1]
         elif quiz.isdigit():
             indexes = [q[0] for q in resources.get_quizzes()]
             if int(quiz) in indexes:
                 quiz = resources.get_quizzes().pop(indexes.index(int(quiz)))[1]
             else:
                 raise errs.BadArg
-        elif quiz in [q[2] for q in resources.get_quizzes()]:
-            quiz = choice([q[1] for q in resources.get_quizzes() if q[2] == quiz])
-        elif quiz not in [q[1] for q in resources.get_quizzes()]:
-            raise errs.FailedSearch
+        else:
+            for attr in ['type', 'name', 'nickname']:
+                if quiz in [q[2][attr] for q in resources.get_quizzes()]:
+                    quiz = choice([q[1] for q in resources.get_quizzes() if q[2][attr] == quiz])
+                    break
+            else:
+                if quiz not in [q[1] for q in resources.get_quizzes()]:
+                    raise errs.FailedSearch
         await read.quiz(ctx, quiz)
 
     @command(name='quizlist', aliases=['quizzes', 'showquizzes'], brief='show all available nashbot™ quizzes',
              help='show all available nashbot™ quizzes, their types, & their indexes (4 use in the quiz cmd)')
     async def quizlist(self, ctx):
-        fill = resources.table_paginate(resources.get_quizzes(), 10, head=['index', 'quiz name', 'type'])
+        fill = resources.table_paginate(resources.get_quizzes(simple=True), 10, head=['index', 'quiz name', 'type'])
         await read.paginated(ctx, quotes.wrap('nashbot™ quizzical questions 4 fun & profit', 'brain'), fill)
 
     async def error_handling(self, ctx, error):

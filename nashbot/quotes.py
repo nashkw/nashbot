@@ -1352,6 +1352,7 @@ quizzes = {
     'weather personalities': [
         {
             'name': 'the "weather or not u have a personality" quiz',
+            'nickname': 'weather',
             'description': 'find out which weather phenomenon matches ur personality...',
             'type': 'legit',
             'max_result': 33,
@@ -1556,7 +1557,8 @@ quizzes = {
     ],
     'uwu vibeomatic': [
         {
-            'name': 'the marvellous mechanical UwU Vibe-O-Matic:tm:',
+            'name': 'the marvellous mechanical UwU Vibe-O-Matic™\uFE0F',
+            'nickname': 'uwu',
             'description': 'find out which off-brand "uwu vibed" vague sound/phrase u r...',
             'type': 'meme',
             'max_result': 25,
@@ -1653,6 +1655,7 @@ quizzes = {
     'mushroom soulmate': [
         {
             'name': 'MMS© (Mycelium Matchmaking Service)',
+            'nickname': 'mushrooms',
             'description': 'find out which mushroom species could b ur 1 true love...',
             'type': 'legit',
             'max_result': 25,

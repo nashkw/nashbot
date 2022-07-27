@@ -154,7 +154,7 @@ class QuizPages(Paginated):
         e = Embed(title=wrap(f"{self.ctx.author.name}'s {self.info['shortname']} quiz results", self.info['emoji']))
         e.add_field(name=BLANK + 'match percentages:', value=table + BLANK)
         e.add_field(name=BLANK + wrap(result[0], result[1]), value=BLANK + result[2] + BLANK)
-        e.set_footer(text=f'(type "quiz {self.info["shortname"]}" if ud like 2 take this quiz again)')
+        e.set_footer(text=f'(type "quiz {self.info["nickname"]}" if ud like 2 take this quiz again)')
         return e
 
     @button(STOP_EMOJI)

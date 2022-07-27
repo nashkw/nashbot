@@ -45,7 +45,7 @@ def get_quiz_name(quiz):
                 break
         else:
             if quiz not in [q[1] for q in get_quizzes()]:
-                raise FailedSearch
+                raise FailedSearch(message=f'quiz named "{quiz}", & thats not a quiz type either')
     return quiz
 
 

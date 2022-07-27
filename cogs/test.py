@@ -66,7 +66,7 @@ class Test(Cog, name='test'):
             elif result in [res[0] for res in menu.results]:
                 result = [res[0] for res in menu.results].index(result)
             else:
-                raise errs.FailedSearch
+                raise errs.FailedSearch(message=f'result named "{result}" in the {quiz} quiz')
             if 0 <= result < len(menu.results):
                 tally[result] = [menu.info['max_result'], tally[result][1]]
             else:
@@ -76,12 +76,21 @@ class Test(Cog, name='test'):
     async def error_handling(self, ctx, error):
         if isinstance(error, errs.FailedSearch):
             if ctx.command == self.bot.get_command('emojisets'):
-                await read.err(ctx, 'uuuh thats not the name of an emoji set, srry man. check for typos maybe ?')
+                await read.err(ctx, 'uuuh thats not the name of an emoji set, srry man. check 4 typos maybe ??')
+            elif ctx.command == self.bot.get_command('quizresult'):
+                await read.err(ctx, f'soooo theres no {error}. srry man idk wt 2 say. check 4 typos maybe ??')
+            else:
+                return False
+        elif isinstance(error, errs.BadArg):
+            if ctx.command == self.bot.get_command('quizresult'):
+                await read.err(ctx, 'invalid result index buddy. maybe check it against the quizresults cmd first ??')
             else:
                 return False
         elif isinstance(error, MissingRequiredArgument):
-            if ctx.command == self.bot.get_command('emojitruth'):
-                await read.err(ctx, '2 use this cmd u gotta give some emojis to test my man my jester my fool :)')
+            if ctx.command == self.bot.get_command('msgtruth'):
+                await read.err(ctx, '2 use this cmd u gotta give some input 2 test my man my jester my fool :)')
+            elif ctx.command == self.bot.get_command('quizresult'):
+                await read.err(ctx, '2 use this cmd u gotta give the name (or index or type or wtever) of the quiz!!')
             else:
                 return False
         else:

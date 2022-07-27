@@ -121,7 +121,7 @@ class Fun(Cog, name='fun'):
             varz.frozen_users.remove(ctx.message.author.id)
         elif isinstance(error, errs.FailedSearch):
             if ctx.command == self.bot.get_command('quiz'):
-                await read.err(ctx, 'theres no quiz w/ that name srry, & thats not a quiz type either. a typo maybe??')
+                await read.err(ctx, f'soooo theres no {error}. srry man idk wt 2 say. check 4 typos maybe??')
             else:
                 return False
         elif isinstance(error, errs.BadArg):

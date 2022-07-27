@@ -128,7 +128,7 @@ class Fun(Cog, name='fun'):
             if ctx.command == self.bot.get_command('skellygif'):
                 await read.err(ctx, 'uh... whaa? try "skellygif spam" if thats wt u were aiming 4. or just "skellygif"')
             elif ctx.command == self.bot.get_command('quiz'):
-                await read.err(ctx, 'invalid index buddy. here, find the index w/ this list & try again')
+                await read.err(ctx, f'yikes, invalid index buddy. maybe check it against the {error} cmd first ??')
                 await ctx.invoke(self.bot.get_command('quizlist'))
             else:
                 return False

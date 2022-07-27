@@ -31,22 +31,23 @@ def get_quizzes(simple=False):
     return [[i+1, k, quizzes[k][0]['type'] if simple else quizzes[k][0]] for i, k in enumerate(sorted(quizzes.keys()))]
 
 
-def get_quiz_name(quiz):
+def get_quiz_name(quiz, return_list=False):
     if quiz.isdigit():
         indexes = [q[0] for q in get_quizzes()]
         if int(quiz) in indexes:
             quiz = get_quizzes().pop(indexes.index(int(quiz)))[1]
         else:
-            raise BadArg
+            raise BadArg(message='quizlist')
     else:
         for attr in ['type', 'name', 'nickname']:
             if quiz in [q[2][attr] for q in get_quizzes()]:
-                quiz = choice([q[1] for q in get_quizzes() if q[2][attr] == quiz])
+                possible = [q[1] for q in get_quizzes() if q[2][attr] == quiz]
+                quiz = possible if return_list else choice(possible)
                 break
         else:
             if quiz not in [q[1] for q in get_quizzes()]:
                 raise FailedSearch(message=f'quiz named "{quiz}", & thats not a quiz type either')
-    return quiz
+    return [quiz, ] if return_list and not isinstance(quiz, list) else quiz
 
 
 def clean_msg(m):

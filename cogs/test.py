@@ -47,12 +47,12 @@ class Test(Cog, name='test'):
     async def msgtruth(self, ctx, *, m: str):
         await read.quote(ctx, f"```unaltered: {m}\nlist of characters: {list(m)}```")
 
-    @command(name='quizresult', aliases=['quizres', 'quizzed'], brief='test a quiz result', hidden=True,
+    @command(name='quizresult', aliases=['quizres', 'quizzed'], brief='test a result of a nashbot™ quiz', hidden=True,
              help='generate the result to a given quiz (quiz can b specified in all the same ways as it can b in the '
                   'quiz cmd - namely by name, index, or type. if ur specification is more than 1 word remember 2 '
                   'enclose it in quotes otherwise itll get confused w/ ur target result). if u dont specify which '
                   'result u want all percentages will b randomly generated, but u can specify a target result by '
-                  'either index or name (u can check these via the quizresults cmd).',
+                  'either index or name (u can check these via the quizresults cmd)',
              usage=['quizresult weather', 'quizres meme', 'quizzed "mushroom soulmate" 3', 'quizresult uwu rawr xd'])
     @is_owner()
     async def quizresult(self, ctx, quiz: str, *, result=None):
@@ -70,20 +70,36 @@ class Test(Cog, name='test'):
             if 0 <= result < len(menu.results):
                 tally[result] = [menu.info['max_result'], tally[result][1]]
             else:
-                raise errs.BadArg
+                raise errs.BadArg(message='quizresults')
         await read.embed(ctx, menu.get_result(tally))
+
+    @command(name='quizresults', aliases=['quizreslist'], brief='list all possible results of a quiz', hidden=True,
+             help='show a list of all possible results 4 the specified nashbot™ quiz. u can specify a quiz the same '
+                  'way u would 4 the quiz cmd, namely by giving its name or index (check the quizlist cmd 2 find '
+                  'these). if u specify by type all quizzes of that type will b selected. if u dont specify anything '
+                  'u will see lists of results for all avaliable nashbot™ quizzes',
+             usage=['quizresults', 'quizreslist mushroom soulmate', 'quizresults meme'])
+    @is_owner()
+    async def quizresults(self, ctx, *, quiz: str = None):
+        if quiz is None:
+            quiz_list = [q[1] for q in resources.get_quizzes()]
+        else:
+            quiz_list = resources.get_quiz_name(quiz, return_list=True)
+        pages = [quotes.get_table([[i + 1, r[0]] for i, r in enumerate(quotes.quizzes[q][2])]) for q in quiz_list]
+        quiz_list = [quotes.wrap(q, quotes.quizzes[q][0]['emoji'], both=False) for q in quiz_list]
+        await read.paginated(ctx, quotes.wrap('possible nashbot™ quiz results', 'brain'), pages, heads=quiz_list)
 
     async def error_handling(self, ctx, error):
         if isinstance(error, errs.FailedSearch):
             if ctx.command == self.bot.get_command('emojisets'):
                 await read.err(ctx, 'uuuh thats not the name of an emoji set, srry man. check 4 typos maybe ??')
-            elif ctx.command == self.bot.get_command('quizresult'):
+            elif ctx.command in {self.bot.get_command('quizresult'), self.bot.get_command('quizresults')}:
                 await read.err(ctx, f'soooo theres no {error}. srry man idk wt 2 say. check 4 typos maybe ??')
             else:
                 return False
         elif isinstance(error, errs.BadArg):
-            if ctx.command == self.bot.get_command('quizresult'):
-                await read.err(ctx, 'invalid result index buddy. maybe check it against the quizresults cmd first ??')
+            if ctx.command in {self.bot.get_command('quizresult'), self.bot.get_command('quizresults')}:
+                await read.err(ctx, f'yikes, invalid index buddy. maybe check it against the {error} cmd first ??')
             else:
                 return False
         elif isinstance(error, MissingRequiredArgument):

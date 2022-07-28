@@ -76,7 +76,7 @@ class Music(Cog, name='music'):
                 raise errs.NotInVChannel
 
             if is_search:
-                info = YoutubeDL(varz.YDL_OPTS).extract_info(f"ytsearch:{arg}", download=False)
+                info = YoutubeDL(varz.YDL_STREAM_OPTS).extract_info(f"ytsearch:{arg}", download=False)
                 if not info['entries']:
                     raise errs.FailedSearch
                 else:
@@ -129,48 +129,55 @@ class Music(Cog, name='music'):
                 raise errs.BadArg
         await self.music_play(ctx, album, is_search=False)
 
-    @command(name='nashsave', aliases=['nsave', 'ndownload'], brief='download a song to local files', hidden=True,
-             help='TODO',
-             usage=['TODO'])
+    @command(name='nashsave', aliases=['nsave', 'ndownload'], brief='download a playlist to local files', hidden=True,
+             help='download all songs from a youtube playlist to the local file system. ull need 2 specify the name '
+                  'of the album, then the name of the artist, then the url of a youtube playlist w/ at least 1 song. '
+                  'if u specify the url of a song instead of a playlist it will still download but it wont have any '
+                  'value 4 its track number metadata value. remember that any argument containing spaces will need 2 '
+                  'b enclosed w/in quotes in order 2 avoid getting mixed up w/ other arguments.',
+             usage=['nashsave Kratos VIXX https://youtube.com/playlist?list=PL7nMVfgRrpSllb65Squ4cvfouUQFRjySp',
+                    'nsave "Kid A" Radiohead https://youtube.com/playlist?list=PLtP8IJbMRbLwJwxyaCUaUWtBo1KK2K7RG',
+                    'ndownload "Alive 2007" "Daft Punk" https://www.youtube.com/watch?v=NFxyYYRqobw'])
     @is_owner()
-    async def nashsave(self, ctx, url: str, album: str, artist: str):
-        opts = {
-            'format': 'bestaudio/best',
-            'download_archive': str(varz.DOWNLOADS_LOG_PATH),
-            'outtmpl': str(varz.DOWNLOADS_PATH / f'{artist} ({album})' / '%(title)s.%(ext)s'),
-            'postprocessors': [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'mp3',
-            }],
-        }
-
+    async def nashsave(self, ctx, album: str, artist: str, url: str):
+        opts = varz.YDL_DOWNLOAD_OPTS
+        opts['outtmpl'] = opts['outtmpl'].replace('ARTIST', artist).replace('ALBUM', album)
         async with ctx.typing():
-            songs = YoutubeDL(opts).extract_info(url, download=False)['entries']
-            if songs:
-                playlist = songs[0]["playlist"]
-                await read.official(ctx, f'**initiating playlist download: "{playlist}"**', 'arrow_down')
-
-                with YoutubeDL(opts) as ydl:
-                    for song in songs:
-                        ydl.cache.remove()
-                        await read.official(ctx, f'...now downloading: "{song["title"]}"...', 'arrow_down')
-                        try:
-                            ydl.download([song['webpage_url']])
-
-                            metadata = load(varz.DOWNLOADS_PATH / f'{artist} ({album})' / f'{song["title"]}.mp3').tag
-                            metadata.artist = artist
-                            metadata.album = album
-                            metadata.track_num = song['playlist_index']
-                            metadata.save()
-
-                            await read.official(ctx, f'successfully downloaded: "{song["title"]}"', 'white_check_mark')
-                        except DownloadError as error:
-                            await read.err(ctx, str(error))
-                            await read.official(ctx, f'aborting download & skipping: "{song["title"]}"', 'x')
-
-                await read.official(ctx, f'**completed playlist download: "{playlist}"**', 'white_check_mark')
+            try:
+                songs = YoutubeDL(opts).extract_info(url, download=False)
+            except DownloadError:
+                raise errs.FailedSearch
+            if 'entries' in songs:
+                if songs['entries']:
+                    songs = songs['entries']
+                    playlist = songs[0]['playlist']
+                    await read.official(ctx, f'**initiating playlist download: "{playlist}"**', 'arrow_down')
+                else:
+                    raise errs.TooSmall
             else:
-                raise errs.TooSmall
+                songs = [songs]
+                playlist = False
+
+            with YoutubeDL(opts) as ydl:
+                for song in songs:
+                    ydl.cache.remove()
+                    await read.official(ctx, f'now downloading: "{song["title"]}"', 'arrow_down')
+                    try:
+                        ydl.download([song['webpage_url']])
+
+                        metadata = load(varz.DOWNLOADS_PATH / f'{artist} ({album})' / f'{song["title"]}.mp3').tag
+                        metadata.artist = artist
+                        metadata.album = f'{artist} ({album})'
+                        metadata.track_num = song['playlist_index']
+                        metadata.save()
+
+                        await read.official(ctx, f'successfully downloaded: "{song["title"]}"', 'white_check_mark')
+                    except DownloadError as error:
+                        await read.err(ctx, str(error))
+                        await read.official(ctx, f'aborting & skipping download: "{song["title"]}"', 'x')
+
+            if playlist:
+                await read.official(ctx, f'**completed playlist download: "{playlist}"**', 'white_check_mark')
 
     @command(name='pause', aliases=['unpause', 'togglepause'], brief='pause or unpause the currently playing song',
              help='toggle the paused effect for the current music queue. keep in mind youll need 2 b playin music b4 '
@@ -275,9 +282,19 @@ class Music(Cog, name='music'):
         elif isinstance(error, errs.NotInVChannel):
             await read.err(ctx, 'yo u gotta b in a voice channel 2 play shit. i need audience yk?')
         elif isinstance(error, errs.FailedSearch):
-            await read.err(ctx, 'ur search got no results srry, u sure thats the right name??')
+            if ctx.command in {self.bot.get_command('play'), self.bot.get_command('nashplay')}:
+                await read.err(ctx, 'ur search got no results srry, u sure thats the right name??')
+            elif ctx.command == self.bot.get_command('nashsave'):
+                await read.err(ctx, 'uhhh, u whaa-?? theres no playlist or song w/ that url i dont think :|')
+            else:
+                return False
         elif isinstance(error, errs.TooSmall):
-            await read.err(ctx, 'but,, wheres the queue?? beef up the queue a bit b4 tryin that lmao')
+            if ctx.command == self.bot.get_command('shuffle'):
+                await read.err(ctx, 'but,, wheres the queue?? beef up the queue a bit b4 tryin that lmao')
+            elif ctx.command == self.bot.get_command('nashsave'):
+                await read.err(ctx, 'but,, wheres the playlist?? ull need 2 add at least 1 song b4 tryin that')
+            else:
+                return False
         elif isinstance(error, errs.BadArg):
             await read.err(ctx, 'invalid index buddy. here, find the index w/ this list & try again')
             if ctx.command == self.bot.get_command('dequeue'):
@@ -291,6 +308,8 @@ class Music(Cog, name='music'):
                 await read.err(ctx, '2 use this cmd u gotta give the albums name or index or, idk, at least *smth*')
             elif ctx.command == self.bot.get_command('play'):
                 await read.err(ctx, '2 use this cmd u gotta give the name of the song u wanna play bud')
+            elif ctx.command == self.bot.get_command('nashsave'):
+                await read.err(ctx, '2 use this cmd u gotta give the album name, the artists name, & the playlist url')
             elif ctx.command == self.bot.get_command('dequeue'):
                 await read.err(ctx, '2 use this cmd u gotta give the index of the song u want gone')
                 await ctx.invoke(self.bot.get_command('showqueue'))

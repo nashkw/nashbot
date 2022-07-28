@@ -7,7 +7,7 @@ from pathlib import Path
 from asyncio import Queue, Event, QueueEmpty
 from discord import FFmpegPCMAudio, FFmpegOpusAudio
 from nashbot import errs, quotes, read, resources, varz
-from youtube_dl import YoutubeDL
+from youtube_dl import YoutubeDL, DownloadError
 from _collections import deque
 from discord.ext.commands import is_owner, Cog, command, MissingRequiredArgument, BadArgument
 
@@ -129,6 +129,39 @@ class Music(Cog, name='music'):
                 raise errs.BadArg
         await self.music_play(ctx, album, is_search=False)
 
+    @command(name='nashsave', aliases=['nsave', 'ndownload'], brief='download a song to local files', hidden=True,
+             help='TODO',
+             usage=['TODO'])
+    @is_owner()
+    async def nashsave(self, ctx, url: str, album: str, artist: str):
+        opts = {
+            'format': 'bestaudio/best',
+            'download_archive': str(varz.DOWNLOADS_LOG_PATH),
+            'outtmpl': str(varz.DOWNLOADS_PATH / f'{artist} ({album})' / '%(title)s.%(ext)s'),
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+            }],
+        }
+
+        async with ctx.typing():
+            songs = YoutubeDL(opts).extract_info(url, download=False)['entries']
+            if songs:
+                await read.official(ctx, f'downloading playlist: "{songs[0]["playlist"]}"', 'arrow_down')
+                for song in songs:
+                    with YoutubeDL(opts) as ydl:
+                        ydl.cache.remove()
+                        await read.official(ctx, f'...now downloading: "{song["title"]}"...', 'arrow_down')
+                        try:
+                            ydl.download([song['webpage_url']])
+                            await read.official(ctx, f'successfully downloaded: "{song["title"]}"', 'white_check_mark')
+                        except DownloadError as error:
+                            await read.err(ctx, str(error))
+                            await read.official(ctx, f'aborting download & skipping: "{song["title"]}"', 'x')
+                await read.official(ctx, f'playlist download complete: "{songs[0]["playlist"]}"', 'white_check_mark')
+            else:
+                raise errs.TooSmall
+
     @command(name='pause', aliases=['unpause', 'togglepause'], brief='pause or unpause the currently playing song',
              help='toggle the paused effect for the current music queue. keep in mind youll need 2 b playin music b4 '
                   'tryin this')
@@ -176,7 +209,7 @@ class Music(Cog, name='music'):
             await read.official(ctx, 'shuffled music queue', 'twisted_rightwards_arrows')
             await ctx.invoke(self.bot.get_command('showqueue'))
         else:
-            raise errs.SmallQueue
+            raise errs.TooSmall
 
     @command(name='showqueue', aliases=['showq', 'qshow', 'q'], brief='show the current music queue',
              help='show all currently queued songs & their index in the current music queue. keep in mind youll need '
@@ -233,7 +266,7 @@ class Music(Cog, name='music'):
             await read.err(ctx, 'yo u gotta b in a voice channel 2 play shit. i need audience yk?')
         elif isinstance(error, errs.FailedSearch):
             await read.err(ctx, 'ur search got no results srry, u sure thats the right name??')
-        elif isinstance(error, errs.SmallQueue):
+        elif isinstance(error, errs.TooSmall):
             await read.err(ctx, 'but,, wheres the queue?? beef up the queue a bit b4 tryin that lmao')
         elif isinstance(error, errs.BadArg):
             await read.err(ctx, 'invalid index buddy. here, find the index w/ this list & try again')

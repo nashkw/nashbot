@@ -19,8 +19,8 @@ class NoVClient(CommandError):
         super().__init__(message, *args)
 
 
-class SmallQueue(CommandError):
-    def __init__(self, message='the target queue is too small to carry out that operation', *args):
+class TooSmall(CommandError):
+    def __init__(self, message='the target is too small to carry out that operation', *args):
         super().__init__(message, *args)
 
 

@@ -33,7 +33,7 @@ class Misc(Cog, name='misc'):
             raise errs.BadArg
         await read.official(ctx, f'{result[0]} to get...　**{result[1]}**', 'game_die')
 
-    @command(name='randopt', aliases=['tiebreak', 'pick'], brief='ask the bot to pick from a list of possible choices',
+    @command(name='randopt', aliases=['tiebreak', 'pick'], brief='ask the bot to pick from a list of options',
              help='ask the bot 2 randomly select from a given list of options. b careful 2 separate the options list '
                   'w/ commas otherwise options will end up merged w/ each other. if instead of a list u specify smth '
                   'along the lines of "anyone" or "this channel" the options will b the members in the current channel',
@@ -41,7 +41,7 @@ class Misc(Cog, name='misc'):
     async def randopt(self, ctx, *, opts: str):
         await read.official(ctx, f'the bot has picked...　**{choice(resources.parse_opts(ctx, opts))}**', 'game_die')
 
-    @command(name='vote', aliases=['poll', 'survey', 'callvote'], brief='set up a vote with a list of possible choices',
+    @command(name='vote', aliases=['poll', 'survey', 'callvote'], brief='set up a vote with a list of options',
              help='set up a vote on a subject of ur choice, listing all the possible options to vote on. b careful 2 '
                   'enclose the subject in quotes if its more than 1 word otheriwse itll get confused w/ the options '
                   'list. b careful 2 separate the options list w/ commas otherwise options will end up merged w/ each '

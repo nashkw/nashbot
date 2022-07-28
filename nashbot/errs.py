@@ -5,24 +5,30 @@ from discord.ext.commands import CommandError
 
 
 class FailedSearch(CommandError):
-    pass
+    def __init__(self, message='search unsuccessful with given parameter', *args):
+        super().__init__(message, *args)
 
 
 class NotInVChannel(CommandError):
-    pass
+    def __init__(self, message='the target user is not currently in a voice channel', *args):
+        super().__init__(message, *args)
 
 
 class NoVClient(CommandError):
-    pass
+    def __init__(self, message='the bot is not currently playing music', *args):
+        super().__init__(message, *args)
 
 
 class SmallQueue(CommandError):
-    pass
+    def __init__(self, message='the target queue is too small to carry out that operation', *args):
+        super().__init__(message, *args)
 
 
 class BadArg(CommandError):
-    pass
+    def __init__(self, message='the given argument is invalid for use in this operation', *args):
+        super().__init__(message, *args)
 
 
 class GlobalCheckFailure(CommandError):
-    pass
+    def __init__(self, message='failed to pass the global command check', *args):
+        super().__init__(message, *args)

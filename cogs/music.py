@@ -147,18 +147,28 @@ class Music(Cog, name='music'):
         async with ctx.typing():
             songs = YoutubeDL(opts).extract_info(url, download=False)['entries']
             if songs:
-                await read.official(ctx, f'downloading playlist: "{songs[0]["playlist"]}"', 'arrow_down')
-                for song in songs:
-                    with YoutubeDL(opts) as ydl:
+                playlist = songs[0]["playlist"]
+                await read.official(ctx, f'**initiating playlist download: "{playlist}"**', 'arrow_down')
+
+                with YoutubeDL(opts) as ydl:
+                    for song in songs:
                         ydl.cache.remove()
                         await read.official(ctx, f'...now downloading: "{song["title"]}"...', 'arrow_down')
                         try:
                             ydl.download([song['webpage_url']])
+
+                            metadata = load(varz.DOWNLOADS_PATH / f'{artist} ({album})' / f'{song["title"]}.mp3').tag
+                            metadata.artist = artist
+                            metadata.album = album
+                            metadata.track_num = song['playlist_index']
+                            metadata.save()
+
                             await read.official(ctx, f'successfully downloaded: "{song["title"]}"', 'white_check_mark')
                         except DownloadError as error:
                             await read.err(ctx, str(error))
                             await read.official(ctx, f'aborting download & skipping: "{song["title"]}"', 'x')
-                await read.official(ctx, f'playlist download complete: "{songs[0]["playlist"]}"', 'white_check_mark')
+
+                await read.official(ctx, f'**completed playlist download: "{playlist}"**', 'white_check_mark')
             else:
                 raise errs.TooSmall
 

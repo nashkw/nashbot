@@ -9,6 +9,7 @@ from discord import FFmpegPCMAudio, FFmpegOpusAudio
 from nashbot import errs, quotes, read, resources, varz
 from youtube_dl import YoutubeDL, DownloadError
 from _collections import deque
+from urllib.error import HTTPError
 from discord.ext.commands import is_owner, Cog, command, MissingRequiredArgument, BadArgument
 
 
@@ -140,44 +141,51 @@ class Music(Cog, name='music'):
                     'ndownload "Alive 2007" "Daft Punk" https://www.youtube.com/watch?v=NFxyYYRqobw'])
     @is_owner()
     async def nashsave(self, ctx, album: str, artist: str, url: str):
-        opts = varz.YDL_DOWNLOAD_OPTS
-        opts['outtmpl'] = opts['outtmpl'].replace('ARTIST', artist).replace('ALBUM', album)
         async with ctx.typing():
+            opts = varz.YDL_DOWNLOAD_OPTS.copy()
+            opts['outtmpl'] = opts['outtmpl'].replace('ARTIST', artist).replace('ALBUM', album)
+
             try:
                 songs = YoutubeDL(opts).extract_info(url, download=False)
             except DownloadError:
                 raise errs.FailedSearch
-            if 'entries' in songs:
-                if songs['entries']:
-                    songs = songs['entries']
-                    playlist = songs[0]['playlist']
-                    await read.official(ctx, f'**initiating playlist download: "{playlist}"**', 'arrow_down')
-                else:
-                    raise errs.TooSmall
+
+            if 'entries' in songs and songs['entries']:
+                playlist, songs = songs['entries'][0]['playlist'], songs['entries']
+                await read.official(ctx, f'**initiating playlist download: "{playlist}"**', 'arrow_down')
+            elif 'entries' in songs:
+                raise errs.TooSmall
             else:
-                songs = [songs]
-                playlist = False
+                playlist, songs = False, [songs]
 
             with YoutubeDL(opts) as ydl:
                 for song in songs:
-                    ydl.cache.remove()
-                    await read.official(ctx, f'now downloading: "{song["title"]}"', 'arrow_down')
+                    title = song["title"]
+                    await read.official(ctx, f'now downloading: "{title}"', 'arrow_down')
                     try:
-                        ydl.download([song['webpage_url']])
-
-                        metadata = load(varz.DOWNLOADS_PATH / f'{artist} ({album})' / f'{song["title"]}.mp3').tag
-                        metadata.artist = artist
-                        metadata.album = f'{artist} ({album})'
-                        metadata.track_num = song['playlist_index']
-                        metadata.save()
-
-                        await read.official(ctx, f'successfully downloaded: "{song["title"]}"', 'white_check_mark')
+                        await self.download(ctx, ydl, song, title, artist, album)
                     except DownloadError as error:
+                        if isinstance(error.exc_info[0], HTTPError) and error.exc_info[1].code == 403:
+                            try:
+                                await read.official(ctx, f'retrying download: "{title}"', 'leftwards_arrow_with_hook')
+                                ydl.cache.remove()
+                                await self.download(ctx, ydl, song, title, artist, album)
+                                break
+                            except DownloadError as e:
+                                error = e
                         await read.err(ctx, str(error))
-                        await read.official(ctx, f'aborting & skipping download: "{song["title"]}"', 'x')
-
+                        await read.official(ctx, f'aborting & skipping download: "{title}"', 'x')
             if playlist:
                 await read.official(ctx, f'**completed playlist download: "{playlist}"**', 'white_check_mark')
+
+    async def download(self, ctx, ydl, song, title, artist, album):
+        ydl.download([song['webpage_url']])
+        metadata = load(varz.DOWNLOADS_PATH / f'{artist} ({album})' / f'{title}.mp3').tag
+        metadata.artist = artist
+        metadata.album = f'{artist} ({album})'
+        metadata.track_num = song['playlist_index']
+        metadata.save()
+        await read.official(ctx, f'successfully downloaded: "{title}"', 'white_check_mark')
 
     @command(name='pause', aliases=['unpause', 'togglepause'], brief='pause or unpause the currently playing song',
              help='toggle the paused effect for the current music queue. keep in mind youll need 2 b playin music b4 '

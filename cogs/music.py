@@ -165,15 +165,15 @@ class Music(Cog, name='music'):
                     try:
                         await self.download(ctx, ydl, song, title, artist, album)
                     except DownloadError as error:
-                        if isinstance(error.exc_info[0], HTTPError) and error.exc_info[1].code == 403:
+                        await read.err(ctx, str(error))
+                        if error.exc_info[0] is HTTPError and error.exc_info[1].code == 403:
                             try:
                                 await read.official(ctx, f'retrying download: "{title}"', 'leftwards_arrow_with_hook')
                                 ydl.cache.remove()
                                 await self.download(ctx, ydl, song, title, artist, album)
-                                break
+                                continue
                             except DownloadError as e:
-                                error = e
-                        await read.err(ctx, str(error))
+                                await read.err(ctx, str(e))
                         await read.official(ctx, f'aborting & skipping download: "{title}"', 'x')
             if playlist:
                 await read.official(ctx, f'**completed playlist download: "{playlist}"**', 'white_check_mark')

@@ -143,7 +143,6 @@ class Music(Cog, name='music'):
     async def nashsave(self, ctx, album: str, artist: str, url: str):
         async with ctx.typing():
             opts = varz.YDL_DOWNLOAD_OPTS.copy()
-            opts['outtmpl'] = opts['outtmpl'].replace('ARTIST', artist).replace('ALBUM', album)
 
             try:
                 songs = YoutubeDL(opts).extract_info(url, download=False)
@@ -158,19 +157,29 @@ class Music(Cog, name='music'):
             else:
                 playlist, songs = False, [songs]
 
+            if album in quotes.default_names:
+                album = playlist
+
+            if artist in quotes.default_names:
+                artist = None
+                folder = album
+            else:
+                folder = f'{artist} ({album})'
+            opts['outtmpl'] = opts['outtmpl'].replace('INSERT_TITLE', folder)
+
             with YoutubeDL(opts) as ydl:
                 for song in songs:
                     title = song["title"]
                     await read.official(ctx, f'now downloading: "{title}"', 'arrow_down')
                     try:
-                        await self.download(ctx, ydl, song, title, artist, album)
+                        await self.download(ctx, ydl, song, title, artist, folder)
                     except DownloadError as error:
                         await read.err(ctx, str(error))
                         if error.exc_info[0] is HTTPError and error.exc_info[1].code == 403:
                             try:
                                 await read.official(ctx, f'retrying download: "{title}"', 'leftwards_arrow_with_hook')
                                 ydl.cache.remove()
-                                await self.download(ctx, ydl, song, title, artist, album)
+                                await self.download(ctx, ydl, song, title, artist, folder)
                                 continue
                             except DownloadError as e:
                                 await read.err(ctx, str(e))
@@ -178,11 +187,11 @@ class Music(Cog, name='music'):
             if playlist:
                 await read.official(ctx, f'**completed playlist download: "{playlist}"**', 'white_check_mark')
 
-    async def download(self, ctx, ydl, song, title, artist, album):
+    async def download(self, ctx, ydl, song, title, artist, folder):
         ydl.download([song['webpage_url']])
-        metadata = load(varz.DOWNLOADS_PATH / f'{artist} ({album})' / f'{title}.mp3').tag
-        metadata.artist = artist
-        metadata.album = f'{artist} ({album})'
+        metadata = load(varz.DOWNLOADS_PATH / folder / f'{title}.mp3').tag
+        metadata.artist = song['uploader'] if artist is None else artist
+        metadata.album = folder
         metadata.track_num = song['playlist_index']
         metadata.save()
         await read.official(ctx, f'successfully downloaded: "{title}"', 'white_check_mark')

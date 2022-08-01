@@ -1831,6 +1831,15 @@ async def get_no_music_quotes(ctx):
     return no_music_quotes
 
 
+default_names = [
+    'default',
+    'automatic',
+    'auto',
+    'ytscoop',
+    'scoopyt',
+    'autoscoop',
+]
+
 meme_activators = [
     'meme',
     'memes',

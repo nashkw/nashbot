@@ -28,7 +28,7 @@ YDL_STREAM_OPTS = {'format': 'bestaudio', 'noplaylist': True, }
 YDL_DOWNLOAD_OPTS = {
             'format': 'bestaudio',
             'download_archive': str(DOWNLOADS_LOG_PATH),
-            'outtmpl': str(DOWNLOADS_PATH / 'ARTIST (ALBUM)' / '%(title)s.%(ext)s'),
+            'outtmpl': str(DOWNLOADS_PATH / 'INSERT_TITLE' / '%(title)s.%(ext)s'),
             'postprocessors': [{
                 'key': 'FFmpegExtractAudio',
                 'preferredcodec': 'mp3',

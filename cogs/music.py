@@ -1,7 +1,7 @@
 # music.py
 
 
-from eyed3 import load
+from eyed3 import load, id3
 from random import choice, shuffle
 from pathlib import Path
 from asyncio import Queue, Event, QueueEmpty
@@ -135,7 +135,8 @@ class Music(Cog, name='music'):
                   'of the album, then the name of the artist, then the url of a youtube playlist w/ at least 1 song. '
                   'if u specify the url of a song instead of a playlist it will still download but it wont have any '
                   'value 4 its track number metadata value. remember that any argument containing spaces will need 2 '
-                  'b enclosed w/in quotes in order 2 avoid getting mixed up w/ other arguments.',
+                  'b enclosed w/in quotes in order 2 avoid getting mixed up w/ other arguments. if u attach an image '
+                  'in either jpeg or png format 2 the msg it will b set as the album art for all songs.',
              usage=['nashsave Kratos VIXX https://youtube.com/playlist?list=PL7nMVfgRrpSllb65Squ4cvfouUQFRjySp',
                     'nsave "Kid A" Radiohead https://youtube.com/playlist?list=PLtP8IJbMRbLwJwxyaCUaUWtBo1KK2K7RG',
                     'ndownload "Alive 2007" "Daft Punk" https://www.youtube.com/watch?v=NFxyYYRqobw'])
@@ -167,19 +168,24 @@ class Music(Cog, name='music'):
                 folder = f'{artist} ({album})'
             opts['outtmpl'] = opts['outtmpl'].replace('INSERT_TITLE', folder)
 
+            if ctx.message.attachments and ctx.message.attachments[0].content_type in ['image/png', 'image/jpeg']:
+                img = ctx.message.attachments[0]
+            else:
+                img = None
+
             with YoutubeDL(opts) as ydl:
                 for song in songs:
                     title = song["title"]
                     await read.official(ctx, f'now downloading: "{title}"', 'arrow_down')
                     try:
-                        await self.download(ctx, ydl, song, title, artist, folder)
+                        await self.download(ctx, ydl, song, title, artist, folder, img)
                     except DownloadError as error:
                         await read.err(ctx, str(error))
                         if error.exc_info[0] is HTTPError and error.exc_info[1].code == 403:
                             try:
                                 await read.official(ctx, f'retrying download: "{title}"', 'leftwards_arrow_with_hook')
                                 ydl.cache.remove()
-                                await self.download(ctx, ydl, song, title, artist, folder)
+                                await self.download(ctx, ydl, song, title, artist, folder, img)
                                 continue
                             except DownloadError as e:
                                 await read.err(ctx, str(e))
@@ -187,13 +193,15 @@ class Music(Cog, name='music'):
             if playlist:
                 await read.official(ctx, f'**completed playlist download: "{playlist}"**', 'white_check_mark')
 
-    async def download(self, ctx, ydl, song, title, artist, folder):
+    async def download(self, ctx, ydl, song, title, artist, folder, img):
         ydl.download([song['webpage_url']])
         metadata = load(varz.DOWNLOADS_PATH / folder / f'{title}.mp3').tag
-        metadata.artist = song['uploader'] if artist is None else artist
         metadata.album = folder
+        metadata.artist = song['uploader'] if artist is None else artist
         metadata.track_num = song['playlist_index']
-        metadata.save()
+        if img:
+            metadata.images.set(3, await img.read(), img.content_type)
+        metadata.save(version=id3.ID3_V2_3)
         await read.official(ctx, f'successfully downloaded: "{title}"', 'white_check_mark')
 
     @command(name='pause', aliases=['unpause', 'togglepause'], brief='pause or unpause the currently playing song',

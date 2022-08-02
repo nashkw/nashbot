@@ -1,6 +1,7 @@
 # debug.py
 
 
+from os import listdir, path
 from emoji import emojize
 from random import randint
 from discord import Embed, HTTPException
@@ -61,11 +62,22 @@ class Debug(Cog, name='debug'):
              help='purge the folder where music is downloaded. any music that hasnt already been moved elsewhere will '
                   'b permanently deleted so use w/ caution !!!')
     @is_owner()
-    async def dlpurge(self, ctx):
-        if resources.empty_folder(varz.DOWNLOADS_PATH):
-            await read.official(ctx, 'downloads folder successfully cleared', 'white_check_mark')
+    async def dlpurge(self, ctx, *, target: str = ''):
+        downloaded = listdir(varz.DOWNLOADS_PATH)
+        if not downloaded:
+            target = None
+        elif target in quotes.all_contents_names or target == '':
+            target = ''
+        elif target in quotes.latest_names:
+            target = path.basename(max([varz.DOWNLOADS_PATH / item for item in downloaded], key=path.getmtime))
+        elif target not in downloaded:
+            raise errs.FailedSearch
+
+        folder = target if target else 'downloads'
+        if target is not None and resources.empty_folder(varz.DOWNLOADS_PATH / target, delete_after=target):
+            await read.official(ctx, f'{folder} folder successfully cleared', 'white_check_mark')
         else:
-            await read.official(ctx, 'downloads folder already empty', 'negative_squared_cross_mark')
+            await read.official(ctx, f'{folder} folder already empty', 'negative_squared_cross_mark')
 
     @command(name='quizresult', aliases=['quizres', 'quizzed'], brief='view a result of a nashbot™ quiz', hidden=True,
              help='generate the result to a given quiz (quiz can b specified in all the same ways as it can b in the '

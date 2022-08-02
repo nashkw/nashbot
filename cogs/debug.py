@@ -1,21 +1,22 @@
-# test.py
+# debug.py
 
 
 from emoji import emojize
 from random import randint
+from pathlib import Path
 from discord import Embed, HTTPException
-from nashbot import errs, quotes, read, resources, menus
+from nashbot import errs, quotes, read, resources, menus, varz
 from discord.ext.commands import is_owner, command, MissingRequiredArgument, Cog
 
 
-class Test(Cog, name='test'):
+class Debug(Cog, name='debug'):
 
     def __init__(self, bot):
         self.bot = bot
         self.emoji = '🔬'
 
     @command(name='emojisets', aliases=['esets', 'eset'], brief='test emoji sets in reactions', hidden=True,
-             help='test all emoji sets in reaction form to confirm they can be successfully converted to unicode',
+             help='test all emoji sets in reaction form 2 confirm they can b successfully converted to unicode',
              usage=['emojisets', 'eset hearts'])
     @is_owner()
     async def emojisets(self, ctx, eset_n: str = None):
@@ -47,7 +48,18 @@ class Test(Cog, name='test'):
     async def msgtruth(self, ctx, *, m: str):
         await read.quote(ctx, f"```unaltered: {m}\nlist of characters: {list(m)}```")
 
-    @command(name='quizresult', aliases=['quizres', 'quizzed'], brief='test a result of a nashbot™ quiz', hidden=True,
+    @command(name='cleardownloads', aliases=['cleardl', 'dlclear'], brief='clear music download history', hidden=True,
+             help='clear the archive list of previously downloaded music that the downloader uses to dynamically skip '
+                  'songs it has already downloaded.')
+    @is_owner()
+    async def cleardownloads(self, ctx):
+        try:
+            varz.DOWNLOADS_LOG_PATH.unlink()
+            await read.official(ctx, 'downloads log successfully cleared', 'white_check_mark')
+        except FileNotFoundError:
+            await read.official(ctx, 'downloads log already empty', 'negative_squared_cross_mark')
+
+    @command(name='quizresult', aliases=['quizres', 'quizzed'], brief='view a result of a nashbot™ quiz', hidden=True,
              help='generate the result to a given quiz (quiz can b specified in all the same ways as it can b in the '
                   'quiz cmd - namely by name, index, or type. if ur specification is more than 1 word remember 2 '
                   'enclose it in quotes otherwise itll get confused w/ ur target result). if u dont specify which '
@@ -115,4 +127,4 @@ class Test(Cog, name='test'):
 
 
 def setup(bot):
-    bot.add_cog(Test(bot))
+    bot.add_cog(Debug(bot))

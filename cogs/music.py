@@ -88,14 +88,8 @@ class Music(Cog, name='music'):
                 raise errs.NotInVChannel
 
             if from_yt:
-                try:
-                    songs = YoutubeDL(varz.YDL_STREAM_OPTS).extract_info(arg, download=False)
-                except DownloadError:
-                    songs = YoutubeDL(varz.YDL_STREAM_OPTS).extract_info(f"ytsearch:{arg}", download=False)
-                    if not songs['entries']:
-                        raise errs.FailedSearch
-                songs, playlist = resources.get_songs(songs)
-                added = f'playlist "{songs[0]["playlist"]}"' if playlist else songs[0]['title']
+                songs = resources.get_songs(YoutubeDL(varz.YDL_STREAM_OPTS).extract_info(arg, download=False))
+                added = f'playlist "{songs[0]["playlist"]}"' if 1 < len(songs) else songs[0]['title']
                 for song in songs:
                     await self.q_sources.put(song['formats'][0]['url'])
                     self.q_titles.append(song['title'])
@@ -164,18 +158,15 @@ class Music(Cog, name='music'):
             opts = varz.YDL_DOWNLOAD_OPTS.copy()
 
             try:
-                songs = YoutubeDL(opts).extract_info(url, download=False)
+                songs = resources.get_songs(YoutubeDL(opts).extract_info(url, download=False))
             except DownloadError:
                 raise errs.FailedSearch
-
-            songs, playlist = resources.get_songs(songs)
+            playlist = songs[0]['playlist'] if 1 < len(songs) else False
             if playlist:
-                playlist = songs[0]['playlist']
                 await read.official(ctx, f'**initiating playlist download: "{playlist}"**', 'arrow_down')
 
             if album in quotes.default_names:
                 album = playlist if playlist else songs[0]['title']
-
             if artist in quotes.default_names:
                 artist = None
                 folder = album

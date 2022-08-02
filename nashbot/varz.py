@@ -24,7 +24,7 @@ MEDIA_PATH = Path('media/')
 SKELLY_PATH = MEDIA_PATH / 'skeleton_gifs/'
 
 FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn', }
-YDL_STREAM_OPTS = {'format': 'bestaudio'}
+YDL_STREAM_OPTS = {'format': 'bestaudio', 'default_search': 'ytsearch'}
 YDL_DOWNLOAD_OPTS = {
             'format': 'bestaudio',
             'download_archive': str(DOWNLOADS_LOG_PATH),

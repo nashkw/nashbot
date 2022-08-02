@@ -68,10 +68,10 @@ def table_paginate(p_list, n, head=None):
 
 def get_songs(songs):
     if '_type' not in songs:
-        return [songs], False
+        return [songs]
     elif not songs['entries']:
-        raise TooSmall
-    return songs['entries'], 1 < len(songs['entries'])
+        raise FailedSearch if songs['extractor'] == 'youtube:search' else TooSmall
+    return songs['entries']
 
 
 # custom checks

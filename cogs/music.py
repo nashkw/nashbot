@@ -25,12 +25,6 @@ class Music(Cog, name='music'):
         self.nowplaying = ''
         self.looping = False
 
-    def np_emoji(self):
-        return 'repeat' if self.repeating is not None else 'notes'
-
-    def np_msg(self):
-        return f'now {"looping" if self.repeating is not None else "playing"}: "{self.nowplaying}"'
-
     async def end_music(self, ctx):
         ctx.voice_client.stop()
         await ctx.voice_client.disconnect()
@@ -40,6 +34,23 @@ class Music(Cog, name='music'):
         self.next = Event()
         self.nowplaying = ''
         self.looping = False
+
+    def np_emoji(self):
+        return 'repeat' if self.repeating is not None else 'notes'
+
+    def np_msg(self):
+        return f'now {"looping" if self.repeating is not None else "playing"}: "{self.nowplaying}"'
+
+    async def download(self, ctx, ydl, song, title, artist, folder, img):
+        ydl.download([song['webpage_url']])
+        metadata = load(varz.DOWNLOADS_PATH / folder / f'{title}.mp3').tag
+        metadata.album = folder
+        metadata.artist = song['uploader'] if artist is None else artist
+        metadata.track_num = song['playlist_index']
+        if img:
+            metadata.images.set(3, await img.read(), img.content_type)
+        metadata.save(version=id3.ID3_V2_3)
+        await read.official(ctx, f'successfully downloaded: "{title}"', 'white_check_mark')
 
     async def music_loop(self, ctx):
         await self.bot.wait_until_ready()
@@ -71,19 +82,23 @@ class Music(Cog, name='music'):
             if self.repeating:
                 self.repeating = pre_source
 
-    async def music_play(self, ctx, arg, is_search=True):
+    async def music_play(self, ctx, arg, from_yt=True):
         async with ctx.typing():
             if not ctx.author.voice:
                 raise errs.NotInVChannel
 
-            if is_search:
-                info = YoutubeDL(varz.YDL_STREAM_OPTS).extract_info(f"ytsearch:{arg}", download=False)
-                if not info['entries']:
-                    raise errs.FailedSearch
-                else:
-                    info = info['entries'][0]
-                    await self.q_sources.put(info['formats'][0]['url'])
-                    self.q_titles.append(info['title'])
+            if from_yt:
+                try:
+                    songs = YoutubeDL(varz.YDL_STREAM_OPTS).extract_info(arg, download=False)
+                except DownloadError:
+                    songs = YoutubeDL(varz.YDL_STREAM_OPTS).extract_info(f"ytsearch:{arg}", download=False)
+                    if not songs['entries']:
+                        raise errs.FailedSearch
+                songs, playlist = resources.get_songs(songs)
+                added = f'playlist "{songs[0]["playlist"]}"' if playlist else songs[0]['title']
+                for song in songs:
+                    await self.q_sources.put(song['formats'][0]['url'])
+                    self.q_titles.append(song['title'])
             else:
                 songs = sorted(list((varz.ALBUMS_PATH / arg).glob('*.mp3')), key=lambda s: load(s).tag.track_num)
                 if not songs:
@@ -95,22 +110,25 @@ class Music(Cog, name='music'):
                             self.q_titles.append(load(song).tag.title)
                         else:
                             self.q_titles.append(song.stem)
+                    added = f'local album "{arg}"'
 
             if not ctx.voice_client:
                 await ctx.author.voice.channel.connect()
             else:
                 await ctx.voice_client.move_to(ctx.author.voice.channel)
 
-        added = f'"{info["title"]}"' if is_search else f'local album "{arg}"'
         await read.official(ctx, f'added to music queue: {added}', 'white_check_mark')
 
         if not self.looping:
             await self.music_loop(ctx)
 
-    @command(name='play', aliases=['ytplay', 'playsong'], brief='play a song from youtube',
-             help='play a song from youtube. the bot will choose the first search result & add it to the music queue. '
-                  'remember 2 make sure ur in a voice channel b4 u try & play music tho',
-             usage=['play organgatangabangin b-man', 'ytplay meme'])
+    @command(name='play', aliases=['playsong', 'ytplay', 'playlist', 'playsongs'], brief='play music from youtube',
+             help='add music from youtube 2 the current music queue & begin playing the queue if its not already '
+                  'playing. u can specify the music by a youtube url (either 4 a single song or 4 a playlist), or u '
+                  'can specify search terms & the bot will choose the first search result. remember 2 make sure ur in '
+                  'a voice channel b4 u try & play music tho',
+             usage=['play organgatangabangin b-man', 'playsong https://youtu.be/O3OGqd6snSE', 'ytplay meme',
+                    'playlist https://youtube.com/playlist?list=PLSdoVPM5WnndV_AXWGXpzUsIw6fN1RQVN'])
     async def play(self, ctx, *, search: str):
         if search.lower().replace(',', '').strip() in quotes.meme_activators:
             search = choice(quotes.meme_songs)
@@ -128,7 +146,7 @@ class Music(Cog, name='music'):
                 album = resources.get_albums().pop(indexes.index(int(album)))[1]
             else:
                 raise errs.BadArg
-        await self.music_play(ctx, album, is_search=False)
+        await self.music_play(ctx, album, from_yt=False)
 
     @command(name='nashsave', aliases=['nsave', 'ndownload'], brief='download a playlist to local files', hidden=True,
              help='download all songs from a youtube playlist to the local file system. ull need 2 specify the name '
@@ -150,16 +168,13 @@ class Music(Cog, name='music'):
             except DownloadError:
                 raise errs.FailedSearch
 
-            if 'entries' in songs and songs['entries']:
-                playlist, songs = songs['entries'][0]['playlist'], songs['entries']
+            songs, playlist = resources.get_songs(songs)
+            if playlist:
+                playlist = songs[0]['playlist']
                 await read.official(ctx, f'**initiating playlist download: "{playlist}"**', 'arrow_down')
-            elif 'entries' in songs:
-                raise errs.TooSmall
-            else:
-                playlist, songs = False, [songs]
 
             if album in quotes.default_names:
-                album = playlist
+                album = playlist if playlist else songs[0]['title']
 
             if artist in quotes.default_names:
                 artist = None
@@ -190,19 +205,8 @@ class Music(Cog, name='music'):
                             except DownloadError as e:
                                 await read.err(ctx, str(e))
                         await read.official(ctx, f'aborting & skipping download: "{title}"', 'x')
-            if playlist:
-                await read.official(ctx, f'**completed playlist download: "{playlist}"**', 'white_check_mark')
-
-    async def download(self, ctx, ydl, song, title, artist, folder, img):
-        ydl.download([song['webpage_url']])
-        metadata = load(varz.DOWNLOADS_PATH / folder / f'{title}.mp3').tag
-        metadata.album = folder
-        metadata.artist = song['uploader'] if artist is None else artist
-        metadata.track_num = song['playlist_index']
-        if img:
-            metadata.images.set(3, await img.read(), img.content_type)
-        metadata.save(version=id3.ID3_V2_3)
-        await read.official(ctx, f'successfully downloaded: "{title}"', 'white_check_mark')
+        if playlist:
+            await read.official(ctx, f'**completed playlist download: "{playlist}"**', 'white_check_mark')
 
     @command(name='pause', aliases=['unpause', 'togglepause'], brief='pause or unpause the currently playing song',
              help='toggle the paused effect for the current music queue. keep in mind youll need 2 b playin music b4 '
@@ -316,8 +320,8 @@ class Music(Cog, name='music'):
         elif isinstance(error, errs.TooSmall):
             if ctx.command == self.bot.get_command('shuffle'):
                 await read.err(ctx, 'but,, wheres the queue?? beef up the queue a bit b4 tryin that lmao')
-            elif ctx.command == self.bot.get_command('nashsave'):
-                await read.err(ctx, 'but,, wheres the playlist?? ull need 2 add at least 1 song b4 tryin that')
+            elif ctx.command in {self.bot.get_command('play'), self.bot.get_command('nashsave')}:
+                await read.err(ctx, 'but,, wheres the playlist?? itll need 2 contain at least 1 song b4 u can try that')
             else:
                 return False
         elif isinstance(error, errs.BadArg):

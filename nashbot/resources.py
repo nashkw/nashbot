@@ -2,7 +2,7 @@
 
 
 from random import choice
-from nashbot.errs import NoVClient, BadArg, FailedSearch
+from nashbot.errs import NoVClient, BadArg, FailedSearch, TooSmall
 from nashbot.varz import ALBUMS_PATH
 from nashbot.quotes import get_table, quizzes, everyone_names
 from discord.ext.commands import check
@@ -64,6 +64,14 @@ def clean_msg(m):
 
 def table_paginate(p_list, n, head=None):
     return [get_table(page, trunc=True, head=head) for page in [p_list[i:i + n] for i in range(0, len(p_list), n)]]
+
+
+def get_songs(songs):
+    if '_type' not in songs:
+        return [songs], False
+    elif not songs['entries']:
+        raise TooSmall
+    return songs['entries'], 1 < len(songs['entries'])
 
 
 # custom checks

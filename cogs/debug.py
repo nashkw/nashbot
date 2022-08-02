@@ -3,7 +3,6 @@
 
 from emoji import emojize
 from random import randint
-from pathlib import Path
 from discord import Embed, HTTPException
 from nashbot import errs, quotes, read, resources, menus, varz
 from discord.ext.commands import is_owner, command, MissingRequiredArgument, Cog
@@ -15,31 +14,30 @@ class Debug(Cog, name='debug'):
         self.bot = bot
         self.emoji = '🔬'
 
+    async def test_eset(self, ctx, emoji_set, name):
+        egroups = [emoji_set[i:i + 20] for i in range(0, len(emoji_set), 20)]
+        for group in egroups:
+            embed = Embed(title=name, description='testing testing')
+            msg = await read.embed(ctx, embed)
+            for e in group:
+                try:
+                    await msg.add_reaction(emojize(e, language='alias'))
+                except HTTPException:
+                    await read.quote(ctx, f'warning: the emoji "{e}" is not reaction safe')
+
     @command(name='emojisets', aliases=['esets', 'eset'], brief='test emoji sets in reactions', hidden=True,
              help='test all emoji sets in reaction form 2 confirm they can b successfully converted to unicode',
              usage=['emojisets', 'eset hearts'])
     @is_owner()
     async def emojisets(self, ctx, eset_n: str = None):
-
-        async def test_eset(emoji_set, name):
-            egroups = [emoji_set[i:i + 20] for i in range(0, len(emoji_set), 20)]
-            for group in egroups:
-                embed = Embed(title=name, description='testing testing')
-                msg = await read.embed(ctx, embed)
-                for e in group:
-                    try:
-                        await msg.add_reaction(emojize(e, language='alias'))
-                    except HTTPException:
-                        await read.quote(ctx, f'warning: the emoji "{e}" is not reaction safe')
-
         if eset_n:
             if eset_n in quotes.emoji_sets:
-                await test_eset(quotes.emoji_sets[eset_n], eset_n)
+                await self.test_eset(ctx, quotes.emoji_sets[eset_n], eset_n)
             else:
                 raise errs.FailedSearch
         else:
             for k, eset in quotes.emoji_sets.items():
-                await test_eset(eset, k)
+                await self.test_eset(ctx, eset, k)
 
     @command(name='msgtruth', aliases=['mtrue', 'etrue'], brief='test the true form of a message', hidden=True,
              help='read back the contents of the users message, separating it out into a list of characters',
@@ -48,16 +46,26 @@ class Debug(Cog, name='debug'):
     async def msgtruth(self, ctx, *, m: str):
         await read.quote(ctx, f"```unaltered: {m}\nlist of characters: {list(m)}```")
 
-    @command(name='cleardownloads', aliases=['cleardl', 'dlclear'], brief='clear music download history', hidden=True,
-             help='clear the archive list of previously downloaded music that the downloader uses to dynamically skip '
-                  'songs it has already downloaded.')
+    @command(name='dlforget', aliases=['dlsforget', 'forgetdl'], brief='forget music download history', hidden=True,
+             help='clear the list of previously downloaded music that the downloader uses to dynamically skip songs it '
+                  'has already downloaded')
     @is_owner()
-    async def cleardownloads(self, ctx):
+    async def dlforget(self, ctx):
         try:
             varz.DOWNLOADS_LOG_PATH.unlink()
             await read.official(ctx, 'downloads log successfully cleared', 'white_check_mark')
         except FileNotFoundError:
             await read.official(ctx, 'downloads log already empty', 'negative_squared_cross_mark')
+
+    @command(name='dlpurge', aliases=['dlspurge', 'purgedl'], brief='purge music downloads folder', hidden=True,
+             help='purge the folder where music is downloaded. any music that hasnt already been moved elsewhere will '
+                  'b permanently deleted so use w/ caution !!!')
+    @is_owner()
+    async def dlpurge(self, ctx):
+        if resources.empty_folder(varz.DOWNLOADS_PATH):
+            await read.official(ctx, 'downloads folder successfully cleared', 'white_check_mark')
+        else:
+            await read.official(ctx, 'downloads folder already empty', 'negative_squared_cross_mark')
 
     @command(name='quizresult', aliases=['quizres', 'quizzed'], brief='view a result of a nashbot™ quiz', hidden=True,
              help='generate the result to a given quiz (quiz can b specified in all the same ways as it can b in the '

@@ -2,6 +2,7 @@
 
 
 from random import choice
+from pathlib import Path
 from nashbot.errs import NoVClient, BadArg, FailedSearch, TooSmall
 from nashbot.varz import ALBUMS_PATH
 from nashbot.quotes import get_table, quizzes, everyone_names
@@ -12,6 +13,19 @@ from discord.ext.commands import check
 
 def flatten(to_flatten):
     return [item for sublist in to_flatten for item in sublist]
+
+
+def empty_folder(pth: Path, delete_after=False):
+    has_done_work = False
+    for item in pth.iterdir():
+        has_done_work = True
+        if item.is_file():
+            item.unlink()
+        else:
+            empty_folder(item, delete_after=True)
+    if delete_after:
+        pth.rmdir()
+    return has_done_work
 
 
 def get_member_variations(members):

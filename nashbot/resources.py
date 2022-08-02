@@ -4,7 +4,7 @@
 from random import choice
 from pathlib import Path
 from nashbot.errs import NoVClient, BadArg, FailedSearch, TooSmall
-from nashbot.varz import ALBUMS_PATH
+from nashbot.varz import ALBUMS_PATH, DOWNLOADS_PATH
 from nashbot.quotes import get_table, quizzes, everyone_names
 from discord.ext.commands import check
 
@@ -34,6 +34,10 @@ def get_member_variations(members):
 
 def get_commands(bot):
     return flatten([[cmd.name] + cmd.aliases for cmd in bot.commands])
+
+
+def get_downloaded():
+    return [[i + 1, d.stem, len(list(d.iterdir()))] for i, d in enumerate(DOWNLOADS_PATH.iterdir()) if d.is_dir()]
 
 
 def get_albums():

@@ -47,6 +47,17 @@ class Debug(Cog, name='debug'):
     async def msgtruth(self, ctx, *, m: str):
         await read.quote(ctx, f"```unaltered: {m}\nlist of characters: {list(m)}```")
 
+    @command(name='dlshow', aliases=['dlcheck', 'dlread', 'showdl'], brief='show downloaded music folders', hidden=True,
+             help='show all folders at the music download location, their index, & the number of files they contain')
+    @is_owner()
+    async def dlshow(self, ctx):
+        downloaded = resources.get_downloaded()
+        if downloaded:
+            fill = resources.table_paginate(downloaded, 10, head=['index', 'name of folder', 'number of files'])
+            await read.paginated(ctx, quotes.wrap('music downloads', 'arrow_down'), fill, hide=True)
+        else:
+            await read.official(ctx, 'downloads folder currently empty', 'x')
+
     @command(name='dlforget', aliases=['dlsforget', 'forgetdl'], brief='remove music download history', hidden=True,
              help='clear the list of previously downloaded music that the downloader uses to dynamically skip songs it '
                   'has already downloaded')
@@ -59,10 +70,10 @@ class Debug(Cog, name='debug'):
             await read.official(ctx, 'downloads log already empty', 'negative_squared_cross_mark')
 
     @command(name='dlpurge', aliases=['dlspurge', 'purgedl'], brief='remove downloaded music', hidden=True,
-             help= 'purge music downloads. u can specify a folder to delete, or tell the bot to remove the most '
-                   'recently downloaded folder. if u dont specify anything all contents of the music downloads folder '
-                   'will b wiped (meaning any music that hasnt already been moved elsewhere will b permanently deleted '
-                   'so use w/ caution !!!)',
+             help='purge music downloads. u can specify a folder to delete, or tell the bot to remove the most '
+                  'recently downloaded folder. if u dont specify anything all contents of the music downloads folder '
+                  'will b wiped (meaning any music that hasnt already been moved elsewhere will b permanently deleted '
+                  'so use w/ caution !!!)',
              usage=['dlpurge', 'dlspurge all', 'purgedl Daft Punk (Alive 2007)', 'dlpurge newest'])
     @is_owner()
     async def dlpurge(self, ctx, *, target: str = ''):

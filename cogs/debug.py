@@ -47,7 +47,7 @@ class Debug(Cog, name='debug'):
     async def msgtruth(self, ctx, *, m: str):
         await read.quote(ctx, f"```unaltered: {m}\nlist of characters: {list(m)}```")
 
-    @command(name='dlforget', aliases=['dlsforget', 'forgetdl'], brief='forget music download history', hidden=True,
+    @command(name='dlforget', aliases=['dlsforget', 'forgetdl'], brief='remove music download history', hidden=True,
              help='clear the list of previously downloaded music that the downloader uses to dynamically skip songs it '
                   'has already downloaded')
     @is_owner()
@@ -58,9 +58,12 @@ class Debug(Cog, name='debug'):
         except FileNotFoundError:
             await read.official(ctx, 'downloads log already empty', 'negative_squared_cross_mark')
 
-    @command(name='dlpurge', aliases=['dlspurge', 'purgedl'], brief='purge music downloads folder', hidden=True,
-             help='purge the folder where music is downloaded. any music that hasnt already been moved elsewhere will '
-                  'b permanently deleted so use w/ caution !!!')
+    @command(name='dlpurge', aliases=['dlspurge', 'purgedl'], brief='remove downloaded music', hidden=True,
+             help= 'purge music downloads. u can specify a folder to delete, or tell the bot to remove the most '
+                   'recently downloaded folder. if u dont specify anything all contents of the music downloads folder '
+                   'will b wiped (meaning any music that hasnt already been moved elsewhere will b permanently deleted '
+                   'so use w/ caution !!!)',
+             usage=['dlpurge', 'dlspurge all', 'purgedl Daft Punk (Alive 2007)', 'dlpurge newest'])
     @is_owner()
     async def dlpurge(self, ctx, *, target: str = ''):
         downloaded = listdir(varz.DOWNLOADS_PATH)
@@ -125,6 +128,8 @@ class Debug(Cog, name='debug'):
         if isinstance(error, errs.FailedSearch):
             if ctx.command == self.bot.get_command('emojisets'):
                 await read.err(ctx, 'uuuh thats not the name of an emoji set, srry man. check 4 typos maybe ??')
+            elif ctx.command == self.bot.get_command('dlpurge'):
+                await read.err(ctx, 'uuuh thats not the name of a downloaded folder, srry man. check 4 typos maybe ??')
             elif ctx.command in {self.bot.get_command('quizresult'), self.bot.get_command('quizresults')}:
                 await read.err(ctx, f'soooo theres no {error}. srry man idk wt 2 say. check 4 typos maybe ??')
             else:

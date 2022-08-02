@@ -1991,6 +1991,7 @@ latest_names = [
     'only recently created',
     'only most recently made',
     'only most recently created',
+    'most recent',
     'recent',
     'recent download',
     'recent downloads',

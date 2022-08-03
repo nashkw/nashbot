@@ -37,7 +37,8 @@ def get_commands(bot):
 
 
 def get_downloaded():
-    return [[i + 1, d.stem, len(list(d.iterdir()))] for i, d in enumerate(DOWNLOADS_PATH.iterdir()) if d.is_dir()]
+    downloads = sorted([d for d in DOWNLOADS_PATH.iterdir()], key=lambda p: p.lstat().st_mtime, reverse=True)
+    return [[i + 1, d.stem, len(list(d.iterdir()))] for i, d in enumerate(downloads) if d.is_dir()]
 
 
 def get_albums():
@@ -80,8 +81,8 @@ def clean_msg(m):
     return m.content.lower().replace('?', '').replace('...', '').replace(' :)', '').strip()
 
 
-def table_paginate(p_list, n, head=None):
-    return [get_table(page, trunc=True, head=head) for page in [p_list[i:i + n] for i in range(0, len(p_list), n)]]
+def table_paginate(p_list, n=10, trunc=50, head=None):
+    return [get_table(page, trunc=trunc, head=head) for page in [p_list[i:i + n] for i in range(0, len(p_list), n)]]
 
 
 def get_songs(songs):

@@ -113,7 +113,7 @@ class Fun(Cog, name='fun'):
     @command(name='quizlist', aliases=['quizzes', 'showquizzes'], brief='show all available nashbot™ quizzes',
              help='show all available nashbot™ quizzes, their types, & their indexes (4 use in the quiz cmd)')
     async def quizlist(self, ctx):
-        fill = resources.table_paginate(resources.get_quizzes(simple=True), 10, head=['index', 'quiz name', 'type'])
+        fill = resources.table_paginate(resources.get_quizzes(simple=True), n=10, head=['index', 'quiz name', 'type'])
         await read.paginated(ctx, quotes.wrap('nashbot™ quizzical questions 4 fun & profit', 'brain'), fill)
 
     async def error_handling(self, ctx, error):

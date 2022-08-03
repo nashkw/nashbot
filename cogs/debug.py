@@ -1,7 +1,6 @@
 # debug.py
 
 
-from os import listdir, path
 from emoji import emojize
 from random import randint
 from discord import Embed, HTTPException
@@ -53,7 +52,7 @@ class Debug(Cog, name='debug'):
     async def dlshow(self, ctx):
         downloaded = resources.get_downloaded()
         if downloaded:
-            fill = resources.table_paginate(downloaded, 10, head=['index', 'name of folder', 'number of files'])
+            fill = resources.table_paginate(downloaded, n=10, trunc=29, head=['index', 'name of folder', 'number of files'])
             await read.paginated(ctx, quotes.wrap('music downloads', 'arrow_down'), fill, hide=True)
         else:
             await read.official(ctx, 'downloads folder currently empty', 'x')
@@ -77,17 +76,23 @@ class Debug(Cog, name='debug'):
              usage=['dlpurge', 'dlspurge all', 'purgedl Daft Punk (Alive 2007)', 'dlpurge newest'])
     @is_owner()
     async def dlpurge(self, ctx, *, target: str = ''):
-        downloaded = listdir(varz.DOWNLOADS_PATH)
+        downloaded = resources.get_downloaded()
         if not downloaded:
             target = None
         elif target in quotes.all_contents_names or target == '':
             target = ''
         elif target in quotes.latest_names:
-            target = path.basename(max([varz.DOWNLOADS_PATH / item for item in downloaded], key=path.getmtime))
-        elif target not in downloaded:
+            target = max([d for d in varz.DOWNLOADS_PATH.iterdir()], key=lambda p: p.lstat().st_mtime).stem
+        elif target.isdigit():
+            indexes = [f[0] for f in resources.get_downloaded()]
+            if int(target) in indexes:
+                target = downloaded.pop(indexes.index(int(target)))[1]
+            else:
+                raise errs.BadArg
+        elif target not in [folder[1] for folder in downloaded]:
             raise errs.FailedSearch
 
-        folder = target if target else 'downloads'
+        folder = f'"{target}"' if target else 'downloads'
         if target is not None and resources.empty_folder(varz.DOWNLOADS_PATH / target, delete_after=target):
             await read.official(ctx, f'{folder} folder successfully cleared', 'white_check_mark')
         else:
@@ -148,6 +153,9 @@ class Debug(Cog, name='debug'):
         elif isinstance(error, errs.BadArg):
             if ctx.command in {self.bot.get_command('quizresult'), self.bot.get_command('quizresults')}:
                 await read.err(ctx, f'yikes, invalid index buddy. maybe check it against the {error} cmd first ??')
+            elif ctx.command == self.bot.get_command('dlpurge'):
+                await read.err(ctx, 'oop, thats an invalid index buddy. here, find the index w/ this list & try again')
+                await ctx.invoke(self.bot.get_command('dlshow'))
             else:
                 return False
         elif isinstance(error, MissingRequiredArgument):

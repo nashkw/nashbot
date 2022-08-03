@@ -9,7 +9,7 @@ from nashbot.varz import BLANK
 
 def get_table(blist, head=None, block=True, trunc=False, bords=True):
     if trunc:
-        blist = [[item[0], item[1][:47] + '...'] if len(item[1]) > 50 else item for item in blist]
+        blist = [[str(col)[:trunc-3] + '...' if len(str(col)) > trunc else col for col in row] for row in blist]
     table = table2ascii(
         header=head,
         body=blist,

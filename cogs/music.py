@@ -137,16 +137,20 @@ class Music(Cog, name='music'):
         await self.music_play(ctx, search)
 
     @command(name='playnext', aliases=['priorityplay', 'nextplay'], brief='add music to the front of the queue',
-             help='add music from youtube 2 the start of the current music queue. u can specify the music by a youtube '
+             help='either add music from youtube 2 the start of the current music queue, or move a queued song 2 the '
+                  'front of the music queue. if u wanna move a queued song ull need 2 give its index (which can b '
+                  'found using the showqueue cmd. if u wanna add new music u can specify the music by a youtube '
                   'url (either 4 a single song or 4 a playlist), or u can specify search terms & the bot will choose '
                   'the first search result. if ur adding multiple songs they will b added in order ahead of the '
                   'pre-exisiting music queue. remember 2 make sure ur in a voice channel b4 u try & play music tho ;)',
-             usage=['playnext organgatangabangin b-man', 'priorityplay meme',
-                    'nextplay https://youtube.com/playlist?list=PLSdoVPM5WnndV_AXWGXpzUsIw6fN1RQVN'])
+             usage=['playnext organgatangabangin b-man', 'priorityplay meme', 'nextplay 3',
+                    'playnext https://youtube.com/playlist?list=PLSdoVPM5WnndV_AXWGXpzUsIw6fN1RQVN'])
     async def playnext(self, ctx, *, search: str):
         if search.isdigit():
             index = int(search) - 1
-            if 0 <= index < len(self.q_titles):
+            if len(self.q_titles) < 1:
+                raise errs.TooSmall
+            elif 0 <= index < len(self.q_titles):
                 sources = list(self.q_sources._queue)
                 sources.insert(0, sources.pop(index))
                 self.q_sources._queue = deque(sources)
@@ -338,7 +342,7 @@ class Music(Cog, name='music'):
             else:
                 return False
         elif isinstance(error, errs.TooSmall):
-            if ctx.command == self.bot.get_command('shuffle'):
+            if ctx.command in {self.bot.get_command('shuffle'), self.bot.get_command('playnext')}:
                 await read.err(ctx, 'but,, wheres the queue?? beef up the queue a bit b4 tryin that lmao')
             elif ctx.command in {self.bot.get_command('play'), self.bot.get_command('nashsave')}:
                 await read.err(ctx, 'but,, wheres the playlist?? itll need 2 contain at least 1 song b4 u can try that')
@@ -346,7 +350,7 @@ class Music(Cog, name='music'):
                 return False
         elif isinstance(error, errs.BadArg):
             await read.err(ctx, 'invalid index buddy. here, find the index w/ this list & try again')
-            if ctx.command == self.bot.get_command('dequeue'):
+            if ctx.command in {self.bot.get_command('dequeue'), self.bot.get_command('playnext')}:
                 await ctx.invoke(self.bot.get_command('showqueue'))
             elif ctx.command == self.bot.get_command('nashplay'):
                 await ctx.invoke(self.bot.get_command('shownash'))

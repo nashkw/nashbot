@@ -43,13 +43,16 @@ class Music(Cog, name='music'):
 
     async def download(self, ctx, ydl, song, title, artist, folder, img):
         ydl.download([song['webpage_url']])
-        metadata = load(varz.DOWNLOADS_PATH / folder / f'{Path(ydl.prepare_filename(song)).stem}.mp3').tag
-        metadata.album = folder
-        metadata.artist = song['uploader'] if artist is None else artist
-        metadata.track_num = song['playlist_index']
-        if img:
-            metadata.images.set(3, await img.read(), img.content_type)
-        metadata.save(version=id3.ID3_V2_3)
+        try:
+            metadata = load(varz.DOWNLOADS_PATH / folder / f'{Path(ydl.prepare_filename(song)).stem}.mp3').tag
+            metadata.album = folder
+            metadata.artist = song['uploader'] if artist is None else artist
+            metadata.track_num = song['playlist_index']
+            if img:
+                metadata.images.set(3, await img.read(), img.content_type)
+            metadata.save(version=id3.ID3_V2_3)
+        except Exception as e:
+            await read.err(ctx, 'skipping metadata due to error:　' + str(e))
         await read.official(ctx, f'successfully downloaded: "{title}"', 'white_check_mark')
 
     async def music_loop(self, ctx):

@@ -4,7 +4,7 @@
 from os import environ, execv
 from sys import argv, executable
 from random import choice
-from discord import Embed
+from discord import Embed, NotFound
 from nashbot import quotes, read, varz, resources, errs
 from discord.ext.commands import Cog, HelpCommand, command, is_owner, BadArgument
 
@@ -20,14 +20,20 @@ class Core(Cog, name='nashbot'):
 
     async def safe_shutdown(self, ctx):
         if varz.active_menus:
-            async with ctx.typing():
-                while varz.active_menus:
-                    varz.active_menus[0].stop()
-                    await varz.active_menus[0].message.remove_reaction(varz.STOP_EMOJI, self.bot.user)
-            await read.official(ctx, 'embeds deactivated', 'x')
+            await self.deactivate_embeds(ctx)
         if ctx.voice_client is not None:
             await ctx.invoke(self.bot.get_command('clearqueue'))
         await read.official(ctx, '...shutting down...', 'zzz')
+
+    async def deactivate_embeds(self, ctx):
+        async with ctx.typing():
+            while varz.active_menus:
+                varz.active_menus[0].stop()
+                try:
+                    await varz.active_menus[0].message.remove_reaction(varz.STOP_EMOJI, self.bot.user)
+                except NotFound:
+                    pass
+        await read.official(ctx, 'embeds deactivated', 'x')
 
     @command(name='shutdown', aliases=['die', 'kys'], brief='shut down the bot', hidden=True,
              help='completely shut down the bot. it wont restart automatically afterwards so use w/ caution !!')
@@ -46,6 +52,15 @@ class Core(Cog, name='nashbot'):
         print('\n> nashbot™ restarting...')
         environ['restart'] = str(ctx.channel.id)
         execv(executable, ['python'] + argv)
+
+    @command(name='stopembeds', aliases=['embedstop', 'killembeds'], brief='deactivate all embeds', hidden=True,
+             help='deactivate all currently active embeds')
+    @is_owner()
+    async def stopembeds(self, ctx):
+        if varz.active_menus:
+            await self.deactivate_embeds(ctx)
+        else:
+            await read.official(ctx, 'no active embeds', 'negative_squared_cross_mark')
 
     @command(name='botlink', aliases=['botadder', 'invitebot'], brief='get nashbots invite link',
              help='ask the bot to send u its invite to server link. this link can be used 2 add the bot 2 a server '

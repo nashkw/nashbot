@@ -8,10 +8,6 @@ from nashbot import errs, quotes, read, varz
 from discord.ext.commands import errors, Bot
 
 
-load_dotenv()
-TOKEN = getenv('DISCORD_TOKEN')
-
-
 bot = Bot(
     command_prefix='',
     intents=Intents.all(),
@@ -48,7 +44,7 @@ async def on_command_error(ctx, error):
         if await ctx.cog.error_handling(ctx, error):
             return
     await read.err(ctx, f'unhandled error: {str(error)}')
-    print(f'\n\n#####　UNHANDLED ERROR:　{str(error)}　#####\n\n')
+    print(f'\n\n#####   UNHANDLED ERROR:   {str(error)}   #####\n\n')
     raise error
 
 
@@ -59,4 +55,5 @@ def check_commands(ctx):
     return True
 
 
-bot.run(TOKEN)
+load_dotenv()
+bot.run(getenv('DISCORD_TOKEN'))

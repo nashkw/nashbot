@@ -85,17 +85,24 @@ class Music(Cog, name='music'):
             if self.repeating:
                 self.repeating = pre_source
 
-    async def music_play(self, ctx, arg, from_yt=True):
+    async def music_play(self, ctx, arg, from_yt=True, play_next=False):
         async with ctx.typing():
             if not ctx.author.voice:
                 raise errs.NotInVChannel
 
             if from_yt:
+                if arg.lower().replace(',', '').strip() in quotes.meme_activators:
+                    arg = choice(quotes.meme_songs)
                 songs = resources.get_songs(YoutubeDL(varz.YDL_STREAM_OPTS).extract_info(arg, download=False))
                 added = f'playlist "{songs[0]["playlist"]}"' if 1 < len(songs) else songs[0]['title']
-                for song in songs:
-                    await self.q_sources.put(song['formats'][0]['url'])
-                    self.q_titles.append(song['title'])
+                if play_next:
+                    for song in reversed(songs):
+                        self.q_sources._queue.appendleft(song['formats'][0]['url'])
+                        self.q_titles.insert(0, song['title'])
+                else:
+                    for song in songs:
+                        await self.q_sources.put(song['formats'][0]['url'])
+                        self.q_titles.append(song['title'])
             else:
                 songs = sorted(list((varz.ALBUMS_PATH / arg).glob('*.mp3')), key=lambda s: load(s).tag.track_num)
                 if not songs:
@@ -123,13 +130,32 @@ class Music(Cog, name='music'):
              help='add music from youtube 2 the current music queue & begin playing the queue if its not already '
                   'playing. u can specify the music by a youtube url (either 4 a single song or 4 a playlist), or u '
                   'can specify search terms & the bot will choose the first search result. remember 2 make sure ur in '
-                  'a voice channel b4 u try & play music tho',
+                  'a voice channel b4 u try & play music tho ;)',
              usage=['play organgatangabangin b-man', 'playsong https://youtu.be/O3OGqd6snSE', 'ytplay meme',
                     'playlist https://youtube.com/playlist?list=PLSdoVPM5WnndV_AXWGXpzUsIw6fN1RQVN'])
     async def play(self, ctx, *, search: str):
-        if search.lower().replace(',', '').strip() in quotes.meme_activators:
-            search = choice(quotes.meme_songs)
         await self.music_play(ctx, search)
+
+    @command(name='playnext', aliases=['priorityplay', 'nextplay'], brief='add music to the front of the queue',
+             help='add music from youtube 2 the start of the current music queue. u can specify the music by a youtube '
+                  'url (either 4 a single song or 4 a playlist), or u can specify search terms & the bot will choose '
+                  'the first search result. if ur adding multiple songs they will b added in order ahead of the '
+                  'pre-exisiting music queue. remember 2 make sure ur in a voice channel b4 u try & play music tho ;)',
+             usage=['playnext organgatangabangin b-man', 'priorityplay meme',
+                    'nextplay https://youtube.com/playlist?list=PLSdoVPM5WnndV_AXWGXpzUsIw6fN1RQVN'])
+    async def playnext(self, ctx, *, search: str):
+        if search.isdigit():
+            index = int(search) - 1
+            if 0 <= index < len(self.q_titles):
+                sources = list(self.q_sources._queue)
+                sources.insert(0, sources.pop(index))
+                self.q_sources._queue = deque(sources)
+                self.q_titles.insert(0, self.q_titles.pop(index))
+                await read.official(ctx, f'moved to front of music queue: "{self.q_titles[0]}"', 'white_check_mark')
+            else:
+                raise errs.BadArg
+        else:
+            await self.music_play(ctx, search, play_next=True)
 
     @command(name='nashplay', aliases=['nplay', 'localplay'], brief='add a local album to the music queue', hidden=True,
              help='play an album from local music files. specify the album by either its name or index (use the nshow '

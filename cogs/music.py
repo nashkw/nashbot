@@ -43,7 +43,7 @@ class Music(Cog, name='music'):
 
     async def download(self, ctx, ydl, song, title, artist, folder, img):
         ydl.download([song['webpage_url']])
-        metadata = load(varz.DOWNLOADS_PATH / folder / f'{title}.mp3').tag
+        metadata = load(varz.DOWNLOADS_PATH / folder / f'{Path(ydl.prepare_filename(song)).stem}.mp3').tag
         metadata.album = folder
         metadata.artist = song['uploader'] if artist is None else artist
         metadata.track_num = song['playlist_index']

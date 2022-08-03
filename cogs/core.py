@@ -179,3 +179,6 @@ class CustomHelp(HelpCommand):
             e.set_footer(text='(warning: this is a nash-only command, unusable by everyone else)')
         await read.embed(self.get_destination(), e)
 
+    async def send_error_message(self, error):
+        await read.err(self.context, 'umm ' + error.lower() + '.. srry man :|')
+

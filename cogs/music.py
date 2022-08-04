@@ -292,12 +292,27 @@ class Music(Cog, name='music'):
         fill = resources.table_paginate(fill, n=10) if fill else [varz.BLANK]
         await read.paginated(ctx, quotes.wrap('music queue', 'musical_note'), fill, heads=np, foots=foot)
 
-    @command(name='shownash', aliases=['nshow'], brief='show the available local music albums', hidden=True,
-             help='show all available local music albums & their indexes 4 use in the nplay cmd')
+    @command(name='shownash', aliases=['nshow', 'showlocal'], brief='show available local music files', hidden=True,
+             help='if no target album is specified this cmd will show all available local music albums & their indexes '
+                  '4 use in the nplay cmd. u can also use these indexes (or album names) 2 specify a target album 4 '
+                  'this cmd. if an album is specified an indexed list of the songs it contains will b shown',
+             usage=['shownash', 'nshow David Bowie (Blackstar)', 'showlocal 17'])
     @is_owner()
-    async def shownash(self, ctx):
-        fill = resources.table_paginate(resources.get_albums(), n=10)
-        await read.paginated(ctx, quotes.wrap('forbidden & secret local albums', 'eyes'), fill, hide=True)
+    async def shownash(self, ctx, *, album: str = None):
+        content, topic = resources.get_albums(), 'forbidden & secret local music albums'
+        if album is not None:
+            if album.isdigit():
+                indexes = [a[0] for a in content]
+                if int(album) in indexes:
+                    album = content.pop(indexes.index(int(album)))[1]
+                    content, topic = resources.list_songs(album), f'local album: "{album}"'
+                else:
+                    raise errs.BadArg
+            elif album in [a[1] for a in content]:
+                content, topic = resources.list_songs(album), f'local album: "{album}"'
+            else:
+                raise errs.FailedSearch
+        await read.paginated(ctx, quotes.wrap(topic, 'eyes'), resources.table_paginate(content, n=10), hide=True)
 
     @command(name='dequeue', aliases=['dq', 'qremove'], brief='remove a song from the music queue',
              help='remove the song at the specified index from the music queue. index 0 is always the currently '
@@ -308,14 +323,9 @@ class Music(Cog, name='music'):
         if index == 0:
             await ctx.invoke(self.bot.get_command('skip'))
         elif 0 <= index - 1 < len(self.q_titles):
-            new_q = Queue()
-            i = 0
-            while not self.q_sources.empty():
-                item = self.q_sources.get_nowait()
-                if i != index - 1:
-                    new_q.put_nowait(item)
-                i = i + 1
-            self.q_sources = new_q
+            sources = list(self.q_sources._queue)
+            sources.pop(index - 1)
+            self.q_sources._queue = deque(sources)
             removed = self.q_titles.pop(index - 1)
             await read.official(ctx, f'removed from music queue: "{removed}"', 'negative_squared_cross_mark')
         else:
@@ -339,6 +349,8 @@ class Music(Cog, name='music'):
                 await read.err(ctx, 'ur search got no results srry, u sure thats the right name??')
             elif ctx.command == self.bot.get_command('nashsave'):
                 await read.err(ctx, 'uhhh, u whaa-?? theres no playlist or song w/ that url i dont think :|')
+            elif ctx.command == self.bot.get_command('shownash'):
+                await read.err(ctx, 'uhhh, u whaa-?? theres no local album w/ that exact name i dont think :|')
             else:
                 return False
         elif isinstance(error, errs.TooSmall):
@@ -352,7 +364,7 @@ class Music(Cog, name='music'):
             await read.err(ctx, 'invalid index buddy. here, find the index w/ this list & try again')
             if ctx.command in {self.bot.get_command('dequeue'), self.bot.get_command('playnext')}:
                 await ctx.invoke(self.bot.get_command('showqueue'))
-            elif ctx.command == self.bot.get_command('nashplay'):
+            elif ctx.command in {self.bot.get_command('nashplay'), self.bot.get_command('shownash')}:
                 await ctx.invoke(self.bot.get_command('shownash'))
             else:
                 return False

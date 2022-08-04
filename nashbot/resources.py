@@ -1,6 +1,7 @@
 # resources.py
 
 
+from eyed3 import load
 from random import choice
 from pathlib import Path
 from nashbot.errs import NoVClient, BadArg, FailedSearch, TooSmall
@@ -44,6 +45,11 @@ def get_downloaded():
 def get_albums():
     albums = [album for album in ALBUMS_PATH.iterdir() if album.stem != 'Album Art' and album.stem[0] != '.']
     return [[i + 1, album.stem] for i, album in enumerate(albums)]
+
+
+def list_songs(album):
+    songs = sorted(list((ALBUMS_PATH / album).glob('*.mp3')), key=lambda s: load(s).tag.track_num)
+    return [[i + 1, load(song).tag.title if load(song).tag.title else song.stem] for i, song in enumerate(songs)]
 
 
 def get_quizzes(simple=False):

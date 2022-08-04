@@ -15,8 +15,7 @@ class Debug(Cog, name='debug'):
         self.emoji = '🔬'
 
     async def test_eset(self, ctx, emoji_set, name):
-        egroups = [emoji_set[i:i + 20] for i in range(0, len(emoji_set), 20)]
-        for group in egroups:
+        for group in [emoji_set[i:i + 20] for i in range(0, len(emoji_set), 20)]:
             embed = Embed(title=name, description='testing testing')
             msg = await read.embed(ctx, embed)
             for e in group:
@@ -50,8 +49,7 @@ class Debug(Cog, name='debug'):
              help='show all folders at the music download location, their index, & the number of files they contain')
     @is_owner()
     async def dlshow(self, ctx):
-        downloaded = resources.get_downloaded()
-        if downloaded:
+        if downloaded := resources.get_downloaded():
             fill = resources.table_paginate(downloaded, n=10, trunc=29, head=['index', 'name of folder', 'number of files'])
             await read.paginated(ctx, quotes.wrap('music downloads', 'arrow_down'), fill, hide=True)
         else:
@@ -76,16 +74,14 @@ class Debug(Cog, name='debug'):
              usage=['dlpurge', 'dlspurge all', 'purgedl Daft Punk (Alive 2007)', 'dlpurge newest'])
     @is_owner()
     async def dlpurge(self, ctx, *, target: str = ''):
-        downloaded = resources.get_downloaded()
-        if not downloaded:
+        if not (downloaded := resources.get_downloaded()):
             target = None
         elif target in quotes.all_contents_names or target == '':
             target = ''
         elif target in quotes.latest_names:
             target = max([d for d in varz.DOWNLOADS_PATH.iterdir()], key=lambda p: p.lstat().st_mtime).stem
         elif target.isdigit():
-            indexes = [f[0] for f in resources.get_downloaded()]
-            if int(target) in indexes:
+            if int(target) in (indexes := [f[0] for f in resources.get_downloaded()]):
                 target = downloaded.pop(indexes.index(int(target)))[1]
             else:
                 raise errs.BadArg
@@ -114,8 +110,8 @@ class Debug(Cog, name='debug'):
         if result is not None:
             if result.isdigit():
                 result = int(result) - 1
-            elif result in [res[0] for res in menu.results]:
-                result = [res[0] for res in menu.results].index(result)
+            elif result in (names := [res[0] for res in menu.results]):
+                result = names.index(result)
             else:
                 raise errs.FailedSearch(message=f'result named "{result}" in the {quiz} quiz')
             if 0 <= result < len(menu.results):

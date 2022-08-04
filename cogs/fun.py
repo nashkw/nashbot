@@ -107,8 +107,7 @@ class Fun(Cog, name='fun'):
                   'select a quiz from (again, check the quizlist cmd to find options)',
              usage=['quiz', 'takequiz 2', 'doquiz uwu', 'quizme uwu vibeomatic', 'quiz meme'])
     async def quiz(self, ctx, *, quiz=None):
-        quiz = choice(resources.get_quizzes())[1] if quiz is None else resources.get_quiz_name(quiz)
-        await read.quiz(ctx, quiz)
+        await read.quiz(ctx, choice(resources.get_quizzes())[1] if quiz is None else resources.get_quiz_name(quiz))
 
     @command(name='quizlist', aliases=['quizzes', 'showquizzes'], brief='show all available nashbot™ quizzes',
              help='show all available nashbot™ quizzes, their types, & their indexes (4 use in the quiz cmd)')

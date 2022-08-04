@@ -23,8 +23,7 @@ def get_table(blist, head=None, block=True, trunc=False, bords=True):
 
 def opt_list(opts, emojis=None, shorthand=False):
     v = [wrap(opt, em, shorthand=shorthand, both=False) for opt, em in zip(opts, emojis)] if emojis else opts
-    v = BLANK.join(v) + BLANK
-    return v
+    return BLANK.join(v) + BLANK
 
 
 def wrap(m, emoji, shorthand=True, both=True):

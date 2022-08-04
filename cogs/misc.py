@@ -52,9 +52,8 @@ class Misc(Cog, name='misc'):
         opts = resources.parse_opts(ctx, opts)
         valid_sets = [eset for eset in quotes.emoji_sets.values() if len(eset) >= len(opts)]
         if valid_sets and len(opts) <= 20:
-            emojis = choice(valid_sets)
             e = Embed(title=quotes.wrap(subject, 'grey_question'))
-            e.add_field(name=varz.BLANK, value=quotes.opt_list(opts, emojis=emojis))
+            e.add_field(name=varz.BLANK, value=quotes.opt_list(opts, emojis=(emojis := choice(valid_sets))))
             e.set_footer(text='(click the matching emoji to vote)')
             msg = await read.embed(ctx, e)
             for i in range(len(opts)):

@@ -110,8 +110,8 @@ class Music(Cog, name='music'):
                 else:
                     for song in songs:
                         await self.q_sources.put(song)
-                        if load(song).tag.title:
-                            self.q_titles.append(load(song).tag.title)
+                        if metadata_title := load(song).tag.title:
+                            self.q_titles.append(metadata_title)
                         else:
                             self.q_titles.append(song.stem)
                     added = f'local album "{arg}"'
@@ -147,10 +147,9 @@ class Music(Cog, name='music'):
                     'playnext https://youtube.com/playlist?list=PLSdoVPM5WnndV_AXWGXpzUsIw6fN1RQVN'])
     async def playnext(self, ctx, *, search: str):
         if search.isdigit():
-            index = int(search) - 1
             if len(self.q_titles) < 1:
                 raise errs.TooSmall
-            elif 0 <= index < len(self.q_titles):
+            elif 0 <= (index := int(search) - 1) < len(self.q_titles):
                 sources = list(self.q_sources._queue)
                 sources.insert(0, sources.pop(index))
                 self.q_sources._queue = deque(sources)
@@ -168,8 +167,7 @@ class Music(Cog, name='music'):
     @is_owner()
     async def nashplay(self, ctx, *, album):
         if album.isdigit():
-            indexes = [al[0] for al in resources.get_albums()]
-            if int(album) in indexes:
+            if int(album) in (indexes := [al[0] for al in resources.get_albums()]):
                 album = resources.get_albums().pop(indexes.index(int(album)))[1]
             else:
                 raise errs.BadArg
@@ -194,15 +192,13 @@ class Music(Cog, name='music'):
                 songs = resources.get_songs(YoutubeDL(opts).extract_info(url, download=False))
             except DownloadError:
                 raise errs.FailedSearch
-            playlist = songs[0]['playlist'] if 1 < len(songs) else False
-            if playlist:
-                await read.official(ctx, f'**initiating playlist download: "{playlist}"**', 'arrow_down')
 
+            if playlist := songs[0]['playlist'] if 1 < len(songs) else False:
+                await read.official(ctx, f'**initiating playlist download: "{playlist}"**', 'arrow_down')
             if album in quotes.default_names:
                 album = playlist if playlist else songs[0]['title']
             if artist in quotes.default_names:
-                artist = None
-                folder = album
+                artist, folder = None, album
             else:
                 folder = f'{artist} ({album})'
             opts['outtmpl'] = opts['outtmpl'].replace('INSERT_TITLE', folder)
@@ -302,8 +298,7 @@ class Music(Cog, name='music'):
         content, topic = resources.get_albums(), 'forbidden & secret local music albums'
         if album is not None:
             if album.isdigit():
-                indexes = [a[0] for a in content]
-                if int(album) in indexes:
+                if int(album) in (indexes := [a[0] for a in content]):
                     album = content.pop(indexes.index(int(album)))[1]
                     content, topic = resources.list_songs(album), f'local album: "{album}"'
                 else:

@@ -1,8 +1,8 @@
 # main.py
 
 
-from os import getenv, environ
-from dotenv import load_dotenv
+from os import environ
+from dotenv import get_key
 from discord import Intents
 from nashbot import errs, quotes, read, varz
 from discord.ext.commands import errors, Bot
@@ -55,5 +55,4 @@ def check_commands(ctx):
     return True
 
 
-load_dotenv()
-bot.run(getenv('DISCORD_TOKEN'))
+bot.run(get_key('.env', 'DISCORD_TOKEN'))

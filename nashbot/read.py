@@ -6,9 +6,9 @@ from nashbot.menus import Paginated, PSource, HelpPages, QuizPages
 from nashbot.quotes import wrap
 
 
-async def embed(ctx, emb):
-    await ctx.trigger_typing()
-    return await ctx.send(embed=emb)
+async def embed(channel, emb):
+    await channel.trigger_typing()
+    return await channel.send(embed=emb)
 
 
 async def paginated(ctx, name, pages, heads=None, foots=None, hide=False):
@@ -31,27 +31,27 @@ async def quiz(ctx, quiz_name):
     await m.start(ctx)
 
 
-async def quote(ctx, quo):
-    await ctx.trigger_typing()
+async def quote(channel, quo):
+    await channel.trigger_typing()
     if isinstance(quo, tuple):
-        await ctx.send(quo[0])
+        await channel.send(quo[0])
         for line in quo[1:]:
-            await ctx.trigger_typing()
+            await channel.trigger_typing()
             await sleep(1)
-            await ctx.send(line)
+            await channel.send(line)
     else:
-        await ctx.send(quo)
+        await channel.send(quo)
 
 
-async def official(ctx, quo, emoji):
-    await ctx.trigger_typing()
-    await ctx.send(wrap(quo, emoji))
+async def official(channel, quo, emoji):
+    await channel.trigger_typing()
+    await channel.send(wrap(quo, emoji))
 
 
-async def err(ctx, quo):
-    await official(ctx, quo, 'warning')
+async def err(channel, quo):
+    await official(channel, quo, 'warning')
 
 
-async def file(ctx, filename):
-    await ctx.trigger_typing()
-    await ctx.send(file=File(filename))
+async def file(channel, filename):
+    await channel.trigger_typing()
+    await channel.send(file=File(filename))

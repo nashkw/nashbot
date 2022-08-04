@@ -58,8 +58,7 @@ def get_quizzes(simple=False):
 
 def get_quiz_name(quiz, return_list=False):
     if quiz.isdigit():
-        indexes = [q[0] for q in get_quizzes()]
-        if int(quiz) in indexes:
+        if int(quiz) in (indexes := [q[0] for q in get_quizzes()]):
             quiz = get_quizzes().pop(indexes.index(int(quiz)))[1]
         else:
             raise BadArg(message='quizlist')

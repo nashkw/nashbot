@@ -4,3 +4,5 @@ python-dotenv==0.20.0
 table2ascii==0.3.0
 
 discord~=1.7.3
+motor~=3.0.0
+dpytools~=0.18.0b0

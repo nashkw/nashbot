@@ -18,18 +18,19 @@ class Reminder(Cog, name='reminder'):
     def __init__(self, bot):
         self.bot = bot
         self.emoji = '⏰'
+        self.db = r_db.reminders
         self.reminder_loop.start()
 
     @tasks.loop(minutes=1)
     async def reminder_loop(self):
         await self.bot.wait_until_ready()
-        async for r in r_db.reminders.find({'time': {'$lte': (now := datetime.now())}}):
+        async for r in self.db.find({'time': {'$lte': (now := datetime.now())}}):
             channel, user = self.bot.get_channel(r['channel']), await self.bot.fetch_user(r['user'])
             await read.official(channel, f'{user.mention} {r["msg"]}', 'alarm_clock')
             if (time := r['repeat']) is not False:
-                await r_db.reminders.update_one({'_id': r['_id']}, {'$set': {'time': now + to_timedelta(time)}})
+                await self.db.update_one({'_id': r['_id']}, {'$set': {'time': now + to_timedelta(time)}})
             else:
-                await r_db.reminders.delete_one({'_id': r['_id']})
+                await self.db.delete_one({'_id': r['_id']})
 
     @command(name='setreminder', aliases=['remindme', 'reminder', 'note2self'], brief='set a reminder in this channel',
              help='set a reminder in this channel. 1st ull need 2 give a message - it can b anything including emojis '
@@ -50,24 +51,28 @@ class Reminder(Cog, name='reminder'):
                 time = parse(time, dayfirst=True, fuzzy=True)
         except ParserError:
             raise errs.BadArg
-        await r_db.reminders.insert_one({
-            'user': ctx.author.id,
-            'channel': ctx.channel.id,
-            'time': time,
-            'msg': content,
-            'repeat': False,
-        })
+        reminder = {'user': ctx.author.id, 'channel': ctx.channel.id, 'time': time, 'msg': content, 'repeat': False}
+        await self.db.insert_one(reminder)
         await read.official(ctx, f'reminder set for {time.strftime("%I:%M%p on %d/%m/%Y")}', 'alarm_clock')
 
     @command(name='reminderlist', aliases=['rshow', 'rlist', 'reminders'], brief='show all reminders in this channel',
              help='show all reminders currently set in this channel')
     async def reminderlist(self, ctx):
-        if fill := await r_db.reminders.find({'channel': ctx.channel.id}).sort('time').to_list(None):
-            fill = [[i + 1, r['msg'], naturaldelta(r['time'] - ctx.message.created_at)] for i, r in enumerate(fill)]
-            fill = resources.table_paginate(fill, trunc=33, head=['', 'message', 'due in'])
+        if fill := await self.db.find({'channel': ctx.channel.id}).sort('time').to_list(None):
+            fill = resources.get_rlist(ctx, fill)
             await read.paginated(ctx, quotes.wrap('reminders set up in this here channelator', 'alarm_clock'), fill)
         else:
             await read.official(ctx, f'no reminders currently set in {ctx.channel.mention}', 'x')
+
+    @command(name='allreminders', aliases=['nashrlist', 'allrlist', 'allr'], brief='show all reminders in all channels',
+             help='show all reminders set across all channels')
+    @is_owner()
+    async def allreminders(self, ctx):
+        if fill := await self.db.find().sort('time').to_list(None):
+            fill = resources.get_rlist(ctx, fill)
+            await read.paginated(ctx, quotes.wrap('master list of all reminders (!!)', 'alarm_clock'), fill, hide=True)
+        else:
+            await read.official(ctx, f'no reminders currently set in any channel', 'x')
 
     @command(name='reminderpurge', aliases=['rpurge', 'rclear'], brief='clear all reminders in a channel', hidden=True,
              help='purge all reminders currently set in a channel. if no channel is specified the bot will assume u '
@@ -76,8 +81,8 @@ class Reminder(Cog, name='reminder'):
     @is_owner()
     async def reminderpurge(self, ctx, channel: TextChannel = None):
         channel = ctx.channel if channel is None else channel
-        if count := await r_db.reminders.count_documents({'channel': channel.id}):
-            r_db.reminders.delete_many({'channel': channel.id})
+        if count := await self.db.count_documents({'channel': channel.id}):
+            self.db.delete_many({'channel': channel.id})
             count = f'{count} {quotes.add_s("reminder", count)}'
             await read.official(ctx, f'successfully purged {count} from {channel.mention}', 'white_check_mark')
         else:

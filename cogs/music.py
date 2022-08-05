@@ -285,7 +285,7 @@ class Music(Cog, name='music'):
         np = quotes.wrap(f'**now playing: "{self.nowplaying}"**', self.np_emoji())
         fill = [[i+1, item] for i, item in enumerate(self.q_titles)]
         foot = None if fill else '(there are no songs queued after this one, use the "play [songname]" cmd to add more)'
-        fill = resources.table_paginate(fill, n=10) if fill else [varz.BLANK]
+        fill = resources.table_paginate(fill) if fill else [varz.BLANK]
         await read.paginated(ctx, quotes.wrap('music queue', 'musical_note'), fill, heads=np, foots=foot)
 
     @command(name='shownash', aliases=['nshow', 'showlocal'], brief='show available local music files', hidden=True,
@@ -307,7 +307,7 @@ class Music(Cog, name='music'):
                 content, topic = resources.list_songs(album), f'local album: "{album}"'
             else:
                 raise errs.FailedSearch
-        await read.paginated(ctx, quotes.wrap(topic, 'eyes'), resources.table_paginate(content, n=10), hide=True)
+        await read.paginated(ctx, quotes.wrap(topic, 'eyes'), resources.table_paginate(content), hide=True)
 
     @command(name='dequeue', aliases=['dq', 'qremove'], brief='remove a song from the music queue',
              help='remove the song at the specified index from the music queue. index 0 is always the currently '

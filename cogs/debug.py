@@ -50,7 +50,7 @@ class Debug(Cog, name='debug'):
     @is_owner()
     async def dlshow(self, ctx):
         if downloaded := resources.get_downloaded():
-            fill = resources.table_paginate(downloaded, n=10, trunc=29, head=['index', 'name of folder', 'number of files'])
+            fill = resources.table_paginate(downloaded, trunc=29, head=['index', 'name of folder', 'number of files'])
             await read.paginated(ctx, quotes.wrap('music downloads', 'arrow_down'), fill, hide=True)
         else:
             await read.official(ctx, 'downloads folder currently empty', 'x')

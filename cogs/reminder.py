@@ -7,7 +7,7 @@ from discord.ext import tasks
 from dateutil.parser import parse, ParserError
 from dpytools.parsers import to_timedelta
 from dpytools.errors import InvalidTimeString
-from discord.ext.commands import Cog, command
+from discord.ext.commands import Cog, command, MissingRequiredArgument
 
 
 class Reminder(Cog, name='reminder'):
@@ -31,10 +31,15 @@ class Reminder(Cog, name='reminder'):
                 await r_db.reminders.delete_one({'_id': r['_id']})
 
     @command(name='setreminder', aliases=['remindme', 'reminder', 'note2self'], brief='set a reminder in this channel',
-             help='TODO',
-             usage=['TODO'])
+             help='set a reminder in this channel. 1st ull need 2 give a message - it can b anything including emojis '
+                  'or mentions, but remember 2 enclose it in quotation marks if it includes a space cus otherwise itll '
+                  'get mixed up w/ the time. the time should b given 2nd, & can either b relative ("15m" will b '
+                  'interpreted as 15min from now) or absolute (such as "8:25am 16th august"). the bot will do its best '
+                  '2 interpret ur input but try & b as clear as possible 2 avoid miscommunication !!',
+             usage=['setreminder games 1h30m', 'remindme "order tickets" in 2w', 'reminder "call ?" 3pm april 4th 2023',
+                    'note2self "<@985864214260371476> bedtime" at 11pm', 'setreminder "winter solstice" for 21/12/22'])
     async def setreminder(self, ctx,  content: str, *, time):
-        if len(spaced := time.split(' ')) > 1 and spaced[0] in {'for', 'at', 'in', 'after'}:
+        if len(spaced := time.split(' ')) > 1 and spaced[0] in {'for', 'at', 'in', 'after', 'on'}:
             time = ''.join(spaced[1:])
         try:
             try:
@@ -50,10 +55,22 @@ class Reminder(Cog, name='reminder'):
             'content': content,
             'recurrent_time': False,
         })
-        await read.official(ctx, f'reminder set for {time}', 'alarm_clock')
+        await read.official(ctx, f'reminder set for {time.strftime("%I:%M%p on %d/%m/%Y")}', 'alarm_clock')
 
     async def error_handling(self, ctx, error):
-        return False
+        if isinstance(error, errs.BadArg):
+            if ctx.command == self.bot.get_command('setreminder'):
+                await read.err(ctx, f'uuuh ngl man idk wtf ur meaning by that. try smth like "2h5m" or "11pm feb 22nd"')
+            else:
+                return False
+        elif isinstance(error, MissingRequiredArgument):
+            if ctx.command == self.bot.get_command('setreminder'):
+                await read.err(ctx, '2 use this cmd u gotta give a msg & then a time (like "2h5m" or "11pm feb 22nd")')
+            else:
+                return False
+        else:
+            return False
+        return True
 
 
 def setup(bot):

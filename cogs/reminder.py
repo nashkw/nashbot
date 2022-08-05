@@ -9,7 +9,7 @@ from discord.ext import tasks
 from dateutil.parser import parse, ParserError
 from dpytools.parsers import to_timedelta
 from dpytools.errors import InvalidTimeString
-from discord.ext.commands import Cog, command, MissingRequiredArgument
+from discord.ext.commands import Cog, command, MissingRequiredArgument, is_owner
 
 
 class Reminder(Cog, name='reminder'):
@@ -64,9 +64,22 @@ class Reminder(Cog, name='reminder'):
         if fill := await r_db.reminders.find({'channel': ctx.channel.id}).sort('time').to_list(None):
             fill = [[i + 1, r['msg'], naturaldelta(r['time'] - ctx.message.created_at)] for i, r in enumerate(fill)]
             fill = resources.table_paginate(fill, trunc=33, head=['', 'message', 'due in'])
-            await read.paginated(ctx, quotes.wrap(f'reminders set up in this here channelator', 'alarm_clock'), fill)
+            await read.paginated(ctx, quotes.wrap('reminders set up in this here channelator', 'alarm_clock'), fill)
         else:
-            await read.official(ctx, f'no reminders currently set in <#{ctx.channel.id}>', 'x')
+            await read.official(ctx, f'no reminders currently set in {ctx.channel.mention}', 'x')
+
+    @command(name='reminderpurge', aliases=['rclear', 'rpurge'], brief='clear all reminders in a channel', hidden=True,
+             help='purge all reminders currently set in a channel. if no channel is specified the bot will assume u '
+                  'mean the current channel. there is no way 2 recover them afterwards so use w/ caution !!!',
+             usage=['reminderpurge', 'rclear 999267695289704549'])
+    @is_owner()
+    async def reminderpurge(self, ctx, channel: int = None):
+        channel = ctx.channel if channel is None else self.bot.get_channel(channel)
+        if await r_db.reminders.count_documents({'channel': channel.id}):
+            r_db.reminders.delete_many({'channel': channel.id})
+            await read.official(ctx, f'successfully purged all reminders from {channel.mention}', 'white_check_mark')
+        else:
+            await read.official(ctx, f'no reminders currently set in {channel.mention}', 'negative_squared_cross_mark')
 
     async def error_handling(self, ctx, error):
         if isinstance(error, errs.BadArg):

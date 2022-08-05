@@ -32,8 +32,9 @@ def wrap(m, emoji, shorthand=True, both=True):
     return f'{emoji}　{m}　{emoji}' if both else f'{emoji}　{m}'
 
 
-def add_s(quote, l_test):
-    return quote + 's' if len(l_test) != 1 else quote
+def add_s(quote, test):
+    test = len(test) if isinstance(test, list) else test
+    return quote + 's' if test != 1 else quote
 
 
 # quotes for core commands
@@ -1338,7 +1339,36 @@ cmd_midcmd_quotes = [
 ]
 
 spam_activators = [
+    'ping',
+    'pinging',
+    'pingspam',
+    'ping spam',
+    'pingalarm',
+    'ping alarm',
+    'pingtoggle',
+    'ping toggle',
     'spam',
+    'spamming',
+    'skellyspam',
+    'skelly spam',
+    'skeletonspam',
+    'skeleton spam',
+    'spamforever',
+    'spam forever',
+    'spamping',
+    'spam ping',
+    'spamtoggle',
+    'spam toggle',
+    'spamforever',
+    'spam forever',
+    'spamloop',
+    'spam loop',
+    'spamcycle',
+    'spam cycle',
+    'spamalarm',
+    'spam alarm',
+    'spamstart',
+    'spam start',
     'toggle',
     'togglespam',
     'toggle spam',

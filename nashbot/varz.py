@@ -8,6 +8,7 @@ from pathlib import Path
 
 frozen_users = []
 active_menus = []
+skelly_spam = False
 
 
 # constants

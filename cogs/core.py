@@ -19,6 +19,8 @@ class Core(Cog, name='nashbot'):
         bot.help_command.cog = self
 
     async def safe_shutdown(self, ctx):
+        if varz.skelly_spam:
+            varz.skelly_spam = False
         if varz.active_menus:
             await self.deactivate_embeds(ctx)
         if ctx.voice_client is not None:
@@ -96,7 +98,7 @@ class Core(Cog, name='nashbot'):
             elif target:
                 target = resources.is_target_member(target)
         gone = await ctx.channel.purge(limit=extent, check=target)
-        await read.official(ctx, f'removed {len(gone)} {quotes.add_s("message", gone)} from <#{ctx.channel.id}>', 'x')
+        await read.official(ctx, f'removed {len(gone)} {quotes.add_s("message", gone)} from {ctx.channel.mention}', 'x')
 
     async def error_handling(self, ctx, error):
         if isinstance(error, BadArgument):

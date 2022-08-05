@@ -1,6 +1,7 @@
 # reminder.py
 
 
+from discord import TextChannel
 from nashbot import read, errs, resources, quotes
 from database import r_db
 from datetime import datetime
@@ -9,7 +10,7 @@ from discord.ext import tasks
 from dateutil.parser import parse, ParserError
 from dpytools.parsers import to_timedelta
 from dpytools.errors import InvalidTimeString
-from discord.ext.commands import Cog, command, MissingRequiredArgument, is_owner
+from discord.ext.commands import Cog, command, MissingRequiredArgument, is_owner, ChannelNotFound
 
 
 class Reminder(Cog, name='reminder'):
@@ -68,21 +69,27 @@ class Reminder(Cog, name='reminder'):
         else:
             await read.official(ctx, f'no reminders currently set in {ctx.channel.mention}', 'x')
 
-    @command(name='reminderpurge', aliases=['rclear', 'rpurge'], brief='clear all reminders in a channel', hidden=True,
+    @command(name='reminderpurge', aliases=['rpurge', 'rclear'], brief='clear all reminders in a channel', hidden=True,
              help='purge all reminders currently set in a channel. if no channel is specified the bot will assume u '
                   'mean the current channel. there is no way 2 recover them afterwards so use w/ caution !!!',
-             usage=['reminderpurge', 'rclear 999267695289704549'])
+             usage=['reminderpurge', 'rpurge general', 'rclear 999267695289704549', f'rpurge <#958642449578872905>'])
     @is_owner()
-    async def reminderpurge(self, ctx, channel: int = None):
-        channel = ctx.channel if channel is None else self.bot.get_channel(channel)
-        if await r_db.reminders.count_documents({'channel': channel.id}):
+    async def reminderpurge(self, ctx, channel: TextChannel = None):
+        channel = ctx.channel if channel is None else channel
+        if count := await r_db.reminders.count_documents({'channel': channel.id}):
             r_db.reminders.delete_many({'channel': channel.id})
-            await read.official(ctx, f'successfully purged all reminders from {channel.mention}', 'white_check_mark')
+            count = f'{count} {quotes.add_s("reminder", count)}'
+            await read.official(ctx, f'successfully purged {count} from {channel.mention}', 'white_check_mark')
         else:
             await read.official(ctx, f'no reminders currently set in {channel.mention}', 'negative_squared_cross_mark')
 
     async def error_handling(self, ctx, error):
-        if isinstance(error, errs.BadArg):
+        if isinstance(error, ChannelNotFound):
+            if ctx.command == self.bot.get_command('reminderpurge'):
+                await read.err(ctx, f'uh, u whaa-?? bruh thats not a channel i dont think. u sure u spellin it right??')
+            else:
+                return False
+        elif isinstance(error, errs.BadArg):
             if ctx.command == self.bot.get_command('setreminder'):
                 await read.err(ctx, f'uuuh ngl man idk wtf ur meaning by that. try smth like "2h5m" or "11pm feb 22nd"')
             else:

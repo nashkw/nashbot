@@ -12,7 +12,6 @@ class Fun(Cog, name='fun'):
     def __init__(self, bot):
         self.bot = bot
         self.emoji = '🎉'
-        self.skelly_spam = False
 
     @command(name='hi', aliases=['hello', 'howdy', 'greetings', 'salutations', 'hewwo', 'helno'], brief='greet the bot',
              help='greet the bot! hopefully itll greet u back? wt a nice lil ping pong cmd :)')
@@ -85,17 +84,18 @@ class Fun(Cog, name='fun'):
     @command(name='skellygif', aliases=['skelly', 'skeleton', 'skellyspam'], brief='ask the bot for a skeleton gif',
              help='ask 4 a skeleton gif. & if u activate the spam theyll just keep comin until u use this cmd again!',
              usage=['skellygif', 'skelly spam', 'skeleton toggle'])
-    async def skellygif(self, ctx, spam: str = None):
-        if self.skelly_spam:
-            self.skelly_spam = False
+    async def skellygif(self, ctx, *, spam: str = None):
+        spam = ctx.invoked_with if ctx.invoked_with == 'skellyspam' else None
+        if varz.skelly_spam:
+            varz.skelly_spam = False
         elif spam in quotes.spam_activators or spam is None:
-            self.skelly_spam = spam
+            varz.skelly_spam = spam
             skelly_gifs = [sgif for sgif in varz.SKELLY_PATH.glob('*.gif')]
             shuffle(skelly_gifs)
             for gif in cycle(skelly_gifs):
                 await read.file(ctx, gif)
-                if not self.skelly_spam:
-                    if self.skelly_spam is not None:
+                if not varz.skelly_spam:
+                    if varz.skelly_spam is not None:
                         await read.official(ctx, 'end of skeleton spam', 'skull_crossbones')
                     return
         else:

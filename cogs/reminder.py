@@ -1,6 +1,7 @@
 # reminder.py
 
 
+from pymongo import DESCENDING
 from discord import TextChannel
 from nashbot import read, errs, resources, quotes
 from database import r_db
@@ -18,7 +19,13 @@ class Reminder(Cog, name='reminder'):
         self.bot = bot
         self.emoji = '⏰'
         self.db = r_db.reminders
+        self.archive = r_db.reminders_archive
         self.reminder_loop.start()
+
+    async def del_entry(self, entry, now):
+        await self.db.delete_one({'_id': entry['_id']})
+        entry['deleted'] = now
+        await self.archive.insert_one(entry)
 
     @tasks.loop(minutes=1)
     async def reminder_loop(self):
@@ -29,7 +36,7 @@ class Reminder(Cog, name='reminder'):
             if (time := r['repeat']) is not False:
                 await self.db.update_one({'_id': r['_id']}, {'$set': {'time': now + to_timedelta(time)}})
             else:
-                await self.db.delete_one({'_id': r['_id']})
+                await self.del_entry(r, now)
 
     @command(name='setreminder', aliases=['remindme', 'reminder', 'rset'], brief='set a reminder in this channel',
              help='set a reminder in this channel. 1st ull need 2 give a message - it can b anything including emojis '
@@ -57,44 +64,55 @@ class Reminder(Cog, name='reminder'):
     @command(name='delreminder', aliases=['rmreminder', 'rdel', 'delrem'], brief='remove a reminder from this channel',
              help='remove a reminder thats currently set in this channel. ull need 2 specify the index of the reminder '
                   'u want gone (which can b found w/ the reminderlist cmd). careful 2 use a recent version of this '
-                  'list when looking up ur index tho cus its indexed by earliest first, meaning new reminders getting '
-                  'set will probs change up the previous indexing. remember that u cant delete reminders u didnt set',
+                  'list when looking up ur index tho cus its indexed by most recently set, meaning new reminders '
+                  'getting set will probs change up the previous indexing. remember that u cant delete reminders u '
+                  'didnt set (unless ur name is nash lol). deleted reminders will b moved 2 the reminder archive',
              usage=['delreminder 3'])
     async def delreminder(self, ctx, index: int):
         if entries := await self.db.find({'channel': ctx.channel.id}).sort('time').to_list(None):
             if 0 <= index - 1 < len(entries):
                 reminder = entries[index - 1]
-                if (u := reminder['user']) != ctx.author.id and u not in self.bot.owner_ids:
+                if reminder['user'] not in {ctx.author.id}.union(self.bot.owner_ids):
                     raise errs.NotAllowed
-                await self.db.delete_one({'_id': reminder['_id']})
-                await read.official(ctx, 'successfully deleted reminder', 'negative_squared_cross_mark')
+                await self.del_entry(reminder, ctx.message.created_at)
+                await read.official(ctx, 'successfully deleted & archived reminder', 'recycle')
             else:
                 raise errs.BadArg
         else:
             await read.official(ctx, f'no reminders currently set in {ctx.channel.mention}', 'x')
 
     @command(name='reminderlist', aliases=['rshow', 'rlist', 'reminders'], brief='show all reminders in this channel',
-             help='show an indexed list of all reminders currently set in this channel, sorted by earliest first')
+             help='show an indexed list of all reminders currently set in this channel, sorted by most recently set')
     async def reminderlist(self, ctx):
         if fill := await self.db.find({'channel': ctx.channel.id}).sort('time').to_list(None):
-            fill = resources.get_rlist(ctx, fill)
+            fill = resources.get_rlist(ctx.message.created_at, fill)
             await read.paginated(ctx, quotes.wrap('reminders set up in this here channelator', 'alarm_clock'), fill)
         else:
             await read.official(ctx, f'no reminders currently set in {ctx.channel.mention}', 'x')
 
+    @command(name='archivelist', aliases=['rarchive', 'rold'], brief='show reminders archived from this channel',
+             help='show an indexed list of all reminders archived from this channel, sorted by most recently deleted')
+    async def archivelist(self, ctx):
+        if fill := await self.archive.find({'channel': ctx.channel.id}).sort('deleted', DESCENDING).to_list(None):
+            fill = resources.get_rlist(None, fill)
+            await read.paginated(ctx, quotes.wrap('reminders archived from this here channelator', 'recycle'), fill)
+        else:
+            await read.official(ctx, f'no reminders archived in {ctx.channel.mention}', 'x')
+
     @command(name='allreminders', aliases=['allrlist', 'allr'], brief='show all reminders in all channels', hidden=True,
-             help='show an indexed list of all reminders across all channels, sorted by earliest first')
+             help='show an indexed list of all reminders set across all channels, sorted by most recently set')
     @is_owner()
     async def allreminders(self, ctx):
         if fill := await self.db.find().sort('time').to_list(None):
-            fill = resources.get_rlist(ctx, fill)
+            fill = resources.get_rlist(ctx.message.created_at, fill)
             await read.paginated(ctx, quotes.wrap('master list of all reminders (!!)', 'alarm_clock'), fill, hide=True)
         else:
             await read.official(ctx, f'no reminders currently set in any channel', 'x')
 
     @command(name='reminderpurge', aliases=['rpurge', 'rclear'], brief='clear all reminders in a channel', hidden=True,
              help='purge all reminders currently set in a channel. if no channel is specified the bot will assume u '
-                  'mean the current channel. there is no way 2 recover them afterwards so use w/ caution !!!',
+                  'mean the current channel. any purged reminders will not b added 2 the reminders archive, meaning '
+                  'there is no way 2 recover them afterwards (so use w/ caution !!!)',
              usage=['reminderpurge', 'rpurge general', 'rclear 999267695289704549', f'rpurge <#958642449578872905>'])
     @is_owner()
     async def reminderpurge(self, ctx, channel: TextChannel = None):

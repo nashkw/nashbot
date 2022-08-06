@@ -58,12 +58,15 @@ class Reminder(Cog, name='reminder'):
              help='remove a reminder thats currently set in this channel. ull need 2 specify the index of the reminder '
                   'u want gone (which can b found w/ the reminderlist cmd). careful 2 use a recent version of this '
                   'list when looking up ur index tho cus its indexed by earliest first, meaning new reminders getting '
-                  'set will probs change up the previous indexing',
+                  'set will probs change up the previous indexing. remember that u cant delete reminders u didnt set',
              usage=['delreminder 3'])
     async def delreminder(self, ctx, index: int):
         if entries := await self.db.find({'channel': ctx.channel.id}).sort('time').to_list(None):
             if 0 <= index - 1 < len(entries):
-                await self.db.delete_one({'_id': entries[index - 1]['_id']})
+                reminder = entries[index - 1]
+                if (u := reminder['user']) != ctx.author.id and u not in self.bot.owner_ids:
+                    raise errs.NotAllowed
+                await self.db.delete_one({'_id': reminder['_id']})
                 await read.official(ctx, 'successfully deleted reminder', 'negative_squared_cross_mark')
             else:
                 raise errs.BadArg
@@ -79,7 +82,7 @@ class Reminder(Cog, name='reminder'):
         else:
             await read.official(ctx, f'no reminders currently set in {ctx.channel.mention}', 'x')
 
-    @command(name='allreminders', aliases=['nashrlist', 'allrlist', 'allr'], brief='show all reminders in all channels',
+    @command(name='allreminders', aliases=['allrlist', 'allr'], brief='show all reminders in all channels', hidden=True,
              help='show an indexed list of all reminders across all channels, sorted by earliest first')
     @is_owner()
     async def allreminders(self, ctx):
@@ -115,6 +118,11 @@ class Reminder(Cog, name='reminder'):
             elif ctx.command == self.bot.get_command('delreminder'):
                 await read.err(ctx, f'ahh invalid index buddy. here, find the index w/ this list & try again')
                 await ctx.invoke(self.bot.get_command('reminderlist'))
+            else:
+                return False
+        elif isinstance(error, errs.NotAllowed):
+            if ctx.command == self.bot.get_command('delreminder'):
+                await read.err(ctx, f'bro u werent the 1 who set that reminder so im not gonna let u delete it ...srry')
             else:
                 return False
         elif isinstance(error, MissingRequiredArgument):

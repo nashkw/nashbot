@@ -29,6 +29,11 @@ class BadArg(CommandError):
         super().__init__(message, *args)
 
 
+class NotAllowed(CommandError):
+    def __init__(self, message='the user is not allowed to take this action', *args):
+        super().__init__(message, *args)
+
+
 class GlobalCheckFailure(CommandError):
     def __init__(self, message='failed to pass the global command check', *args):
         super().__init__(message, *args)

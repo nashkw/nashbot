@@ -61,7 +61,7 @@ class Reminder(Cog, name='reminder'):
         await self.db.insert_one(reminder)
         await read.official(ctx, f'reminder set for {time.strftime("%I:%M%p on %d/%m/%Y")}', 'alarm_clock')
 
-    @command(name='delreminder', aliases=['rmreminder', 'rdel', 'delrem'], brief='remove a reminder from this channel',
+    @command(name='delreminder', aliases=['archivereminder', 'rdel'], brief='remove a reminder from this channel',
              help='remove a reminder thats currently set in this channel. ull need 2 specify the index of the reminder '
                   'u want gone (which can b found w/ the reminderlist cmd). careful 2 use a recent version of this '
                   'list when looking up ur index tho cus its indexed by most recently set, meaning new reminders '
@@ -81,7 +81,7 @@ class Reminder(Cog, name='reminder'):
         else:
             await read.official(ctx, f'no reminders currently set in {ctx.channel.mention}', 'x')
 
-    @command(name='reminderlist', aliases=['rshow', 'rlist', 'reminders'], brief='show all reminders in this channel',
+    @command(name='reminderlist', aliases=['rshow', 'rlist', 'reminders'], brief='show reminders set in this channel',
              help='show an indexed list of all reminders currently set in this channel, sorted by most recently set')
     async def reminderlist(self, ctx):
         r_list = await self.db.find({'channel': ctx.channel.id}).sort('time').to_list(None)
@@ -89,7 +89,7 @@ class Reminder(Cog, name='reminder'):
         empty_quote = f'no reminders currently set in {ctx.channel.mention}'
         await read.reminder_list(ctx, r_list, full_quote, empty_quote)
 
-    @command(name='archivelist', aliases=['rarchive', 'oldrlist'], brief='show reminders archived from this channel',
+    @command(name='archivelist', aliases=['oldrlist', 'rold'], brief='show reminders archived from this channel',
              help='show an indexed list of all reminders archived from this channel, sorted by most recently deleted')
     async def archivelist(self, ctx):
         r_list = await self.archive.find({'channel': ctx.channel.id}).sort('deleted', DESCENDING).to_list(None)
@@ -97,7 +97,7 @@ class Reminder(Cog, name='reminder'):
         empty_quote = f'no reminders archived from {ctx.channel.mention}'
         await read.reminder_list(ctx, r_list, full_quote, empty_quote, archive=True)
 
-    @command(name='allreminders', aliases=['allrlist', 'allr'], brief='show all reminders in all channels', hidden=True,
+    @command(name='allreminders', aliases=['allrlist', 'allr'], brief='show all set reminders', hidden=True,
              help='show an indexed list of all reminders set across all channels, sorted by most recently set')
     @is_owner()
     async def allreminders(self, ctx):
@@ -105,6 +105,15 @@ class Reminder(Cog, name='reminder'):
         full_quote = ['master list of all reminders (!!)', 'alarm_clock']
         empty_quote = 'no reminders currently set in any channel'
         await read.reminder_list(ctx, r_list, full_quote, empty_quote, hide=True)
+
+    @command(name='allarchives', aliases=['alloldrlist', 'allrold'], brief='show all archived reminders', hidden=True,
+             help='show an indexed list of all reminders archived from any channel, sorted by most recently deleted')
+    @is_owner()
+    async def allarchives(self, ctx):
+        r_list = await self.archive.find().sort('deleted', DESCENDING).to_list(None)
+        full_quote = ['master list of all archived reminders (!!)', 'recycle']
+        empty_quote = 'no reminders archived from any channel'
+        await read.reminder_list(ctx, r_list, full_quote, empty_quote, archive=True, hide=True)
 
     @command(name='reminderpurge', aliases=['rpurge', 'rclear'], brief='clear all reminders in a channel', hidden=True,
              help='purge all reminders currently set in a channel. if no channel is specified the bot will assume u '

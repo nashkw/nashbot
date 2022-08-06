@@ -4,7 +4,6 @@
 from eyed3 import load
 from random import choice
 from pathlib import Path
-from humanize import naturaldelta, naturaltime
 from nashbot.errs import NoVClient, BadArg, FailedSearch, TooSmall
 from nashbot.varz import ALBUMS_PATH, DOWNLOADS_PATH
 from nashbot.quotes import get_table, quizzes, everyone_names
@@ -51,12 +50,6 @@ def get_albums():
 def list_songs(album):
     songs = sorted(list((ALBUMS_PATH / album).glob('*.mp3')), key=lambda s: load(s).tag.track_num)
     return [[i + 1, load(song).tag.title if load(song).tag.title else song.stem] for i, song in enumerate(songs)]
-
-
-def get_rlist(now, reminders):
-    for i, r in enumerate(reminders):
-        reminders[i] = [i + 1, r['msg'], naturaldelta(r['time'] - now) if now else naturaltime(r['deleted'])]
-    return table_paginate(reminders, trunc=33, head=['', 'message', 'due in' if now else 'archived'])
 
 
 def get_quizzes(simple=False):

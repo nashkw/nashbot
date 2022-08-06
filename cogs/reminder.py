@@ -3,7 +3,7 @@
 
 from pymongo import DESCENDING
 from discord import TextChannel
-from nashbot import read, errs, resources, quotes
+from nashbot import read, errs, quotes
 from database import r_db
 from datetime import datetime
 from discord.ext import tasks
@@ -84,30 +84,27 @@ class Reminder(Cog, name='reminder'):
     @command(name='reminderlist', aliases=['rshow', 'rlist', 'reminders'], brief='show all reminders in this channel',
              help='show an indexed list of all reminders currently set in this channel, sorted by most recently set')
     async def reminderlist(self, ctx):
-        if fill := await self.db.find({'channel': ctx.channel.id}).sort('time').to_list(None):
-            fill = resources.get_rlist(ctx.message.created_at, fill)
-            await read.paginated(ctx, quotes.wrap('reminders set up in this here channelator', 'alarm_clock'), fill)
-        else:
-            await read.official(ctx, f'no reminders currently set in {ctx.channel.mention}', 'x')
+        r_list = await self.db.find({'channel': ctx.channel.id}).sort('time').to_list(None)
+        full_quote = ['reminders set up in this here channelator', 'alarm_clock']
+        empty_quote = f'no reminders currently set in {ctx.channel.mention}'
+        await read.reminder_list(ctx, r_list, full_quote, empty_quote)
 
-    @command(name='archivelist', aliases=['rarchive', 'rold'], brief='show reminders archived from this channel',
+    @command(name='archivelist', aliases=['rarchive', 'oldrlist'], brief='show reminders archived from this channel',
              help='show an indexed list of all reminders archived from this channel, sorted by most recently deleted')
     async def archivelist(self, ctx):
-        if fill := await self.archive.find({'channel': ctx.channel.id}).sort('deleted', DESCENDING).to_list(None):
-            fill = resources.get_rlist(None, fill)
-            await read.paginated(ctx, quotes.wrap('reminders archived from this here channelator', 'recycle'), fill)
-        else:
-            await read.official(ctx, f'no reminders archived in {ctx.channel.mention}', 'x')
+        r_list = await self.archive.find({'channel': ctx.channel.id}).sort('deleted', DESCENDING).to_list(None)
+        full_quote = ['reminders archived from this here channelator', 'recycle']
+        empty_quote = f'no reminders archived from {ctx.channel.mention}'
+        await read.reminder_list(ctx, r_list, full_quote, empty_quote, archive=True)
 
     @command(name='allreminders', aliases=['allrlist', 'allr'], brief='show all reminders in all channels', hidden=True,
              help='show an indexed list of all reminders set across all channels, sorted by most recently set')
     @is_owner()
     async def allreminders(self, ctx):
-        if fill := await self.db.find().sort('time').to_list(None):
-            fill = resources.get_rlist(ctx.message.created_at, fill)
-            await read.paginated(ctx, quotes.wrap('master list of all reminders (!!)', 'alarm_clock'), fill, hide=True)
-        else:
-            await read.official(ctx, f'no reminders currently set in any channel', 'x')
+        r_list = await self.db.find().sort('time').to_list(None)
+        full_quote = ['master list of all reminders (!!)', 'alarm_clock']
+        empty_quote = 'no reminders currently set in any channel'
+        await read.reminder_list(ctx, r_list, full_quote, empty_quote, hide=True)
 
     @command(name='reminderpurge', aliases=['rpurge', 'rclear'], brief='clear all reminders in a channel', hidden=True,
              help='purge all reminders currently set in a channel. if no channel is specified the bot will assume u '

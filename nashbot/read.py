@@ -2,8 +2,10 @@
 
 from discord import File
 from asyncio import sleep
+from humanize import naturaldelta, naturaltime
 from nashbot.menus import Paginated, PSource, HelpPages, QuizPages
 from nashbot.quotes import wrap
+from nashbot.resources import table_paginate
 
 
 async def embed(channel, emb):
@@ -55,3 +57,14 @@ async def err(channel, quo):
 async def file(channel, filename):
     await channel.trigger_typing()
     await channel.send(file=File(filename))
+
+
+async def reminder_list(ctx, r_list, full_quote, empty_quote, archive=False, hide=False):
+    if r_list:
+        now = ctx.message.created_at
+        for i, r in enumerate(r_list):
+            r_list[i] = [i + 1, r['msg'], naturaltime(r['deleted']) if archive else naturaldelta(r['time'] - now)]
+        r_list = table_paginate(r_list, trunc=33, head=['', 'message', 'archived' if archive else 'due in'])
+        await paginated(ctx, wrap(full_quote[0], full_quote[1]), r_list, hide=hide)
+    else:
+        await official(ctx, empty_quote, 'x')

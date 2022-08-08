@@ -1,9 +1,10 @@
+discord~=1.7.3
+dpytools==0.18.0b0
 emoji==1.7.0
 eyed3==0.9.6
+humanize==4.2.3
+motor==3.0.0
+pymongo==4.2.0
+python-dateutil~=2.8.2
 python-dotenv==0.20.0
 table2ascii==0.3.0
-
-discord~=1.7.3
-motor~=3.0.0
-dpytools~=0.18.0b0
-python-dateutil~=2.8.2

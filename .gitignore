@@ -133,3 +133,6 @@ dmypy.json
 
 # bot history
 history
+
+# convenience batch file
+main.bat

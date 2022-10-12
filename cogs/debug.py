@@ -24,8 +24,9 @@ class Debug(Cog, name='debug'):
                 except HTTPException:
                     await read.quote(ctx, f'warning: the emoji "{e}" is not reaction safe')
 
-    @command(name='emojisets', aliases=['esets', 'eset'], brief='test emoji sets in reactions', hidden=True,
-             help='test all emoji sets in reaction form 2 confirm they can b successfully converted to unicode',
+    @command(name='emojisets', aliases=['esets', 'eset'], brief='test emoji sets as reactions', hidden=True,
+             help='test emoji sets in reaction form 2 confirm they can b successfully converted to unicode. will test '
+                  'a single emoji set as given, or will default to testing all emoji sets.',
              usage=['emojisets', 'eset hearts'])
     @is_owner()
     async def emojisets(self, ctx, eset_n: str = None):
